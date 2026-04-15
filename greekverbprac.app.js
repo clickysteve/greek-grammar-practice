@@ -519,6 +519,100 @@ function classBlock(v) {
   );
 }
 
+const AORIST_RULES = {
+  'A': {
+    title: 'Forming the aorist — Class A',
+    body: 'Replace the present-tense <code>-ω</code> with <code>-σα</code>, and adjust the stem-final consonant as it collides with σ:',
+    transforms: [
+      ['π / β / φ / πτ / εύ', 'ψ', 'γράφω → έγραψα'],
+      ['κ / γ / χ / χν',       'ξ', 'τρέχω → έτρεξα'],
+      ['τ / δ / θ / σ / ζ',    'σ', 'διαβάζω → διάβασα'],
+      ['ν / λ / ρ / other',    '(keep) + σα', 'μένω → έμεινα (irregular stem change for many of these)']
+    ],
+    endings: '-α, -ες, -ε, -αμε, -ατε, -αν',
+    note: 'Add the augment ε- (έ-) in the singular + 3pl when the aorist would otherwise have only 1–2 syllables — this keeps the stress on the antepenultimate. The plural 1pl/2pl drop the augment because the ending itself adds a syllable (έγραψα vs γράψαμε).'
+  },
+  'B1': {
+    title: 'Forming the aorist — Class B1 (-άω / -ώ)',
+    body: 'Drop the <code>-άω / -ώ</code> and add <code>-ησα</code>:',
+    examples: ['αγαπάω → αγάπησα', 'μιλάω → μίλησα', 'ρωτάω → ρώτησα', 'απαντάω → απάντησα'],
+    endings: '-ησα, -ησες, -ησε, -ήσαμε, -ήσατε, -ησαν',
+    note: 'Stress lands naturally on the antepenultimate — no augment needed. Common exceptions: πετάω → πέταξα, γελάω → γέλασα, ξεχνάω → ξέχασα, φυλάω → φύλαξα (take -αξα or -ασα instead of -ησα).'
+  },
+  'B2': {
+    title: 'Forming the aorist — Class B2 (-ώ)',
+    body: 'Drop the <code>-ώ</code> and add <code>-ησα</code>:',
+    examples: ['οδηγώ → οδήγησα', 'τηλεφωνώ → τηλεφώνησα', 'ζητώ → ζήτησα'],
+    endings: '-ησα, -ησες, -ησε, -ήσαμε, -ήσατε, -ησαν',
+    note: 'Exceptions to watch: μπορώ → μπόρεσα, παρακαλώ → παρακάλεσα, ζω → έζησα. Distinguishing B1 vs B2 matters less in the aorist — both mostly end in -ησα — but matters a lot in the present.'
+  },
+  'MP': {
+    title: 'Forming the aorist — mediopassive',
+    body: 'Drop <code>-ομαι / -άμαι</code> and add <code>-θηκα</code> (sometimes <code>-ηκα</code>). The aorist uses its own middle-voice endings:',
+    endings: '-θηκα, -θηκες, -θηκε, -θήκαμε, -θήκατε, -θηκαν',
+    examples: ['ντύνομαι → ντύθηκα', 'κοιμάμαι → κοιμήθηκα', 'σκέφτομαι → σκέφτηκα', 'σηκώνομαι → σηκώθηκα'],
+    note: 'Some MP verbs are irregular and switch to active-voice endings in the aorist: έρχομαι → ήρθα, γίνομαι → έγινα. For these, drop the mediopassive pattern and treat them as Class A for the past.'
+  },
+  'IRR': {
+    title: 'Forming the aorist — irregular verbs',
+    body: 'No rule — the past stem is a different root from the present. Endings are the standard Class A set:',
+    endings: '-α, -ες, -ε, -αμε, -ατε, -αν',
+    examples: ['παίρνω → πήρα', 'λέω → είπα', 'βλέπω → είδα', 'τρώω → έφαγα', 'δίνω → έδωσα', 'βρίσκω → βρήκα', 'βάζω → έβαλα', 'μαθαίνω → έμαθα'],
+    note: 'These have to be memorised. The good news: once you know the principal parts (present, aorist, perfective future) the rest of the paradigm is regular.'
+  }
+};
+
+function aoristBlock(v) {
+  const rule = AORIST_RULES[v.class];
+  if (!rule) return '';
+  const forms = conjugate(v, 'past');
+  const persons = ['1sg','2sg','3sg','1pl','2pl','3pl'];
+  const noAorist = v.defective && /no aorist/i.test(v.defective);
+
+  let transformsTable = '';
+  if (rule.transforms) {
+    const rows = [
+      `<div class="et-h">Stem ends in</div><div class="et-h">+ σ becomes</div><div class="et-h">Example</div>`,
+      ...rule.transforms.map(([from, to, ex]) =>
+        `<div class="et-person">${escapeHtml(from)}</div>` +
+        `<div class="et-ending">${escapeHtml(to)}</div>` +
+        `<div class="et-form">${escapeHtml(ex)}</div>`
+      )
+    ];
+    transformsTable = `<div class="endings-table" style="margin-top:8px;">${rows.join('')}</div>`;
+  }
+
+  let examplesList = '';
+  if (rule.examples) {
+    examplesList = `<p class="cb-desc" style="margin-top:8px;">` +
+      rule.examples.map(e => `<span style="display:inline-block; margin-right:14px; color:var(--text);">${escapeHtml(e)}</span>`).join('') +
+      `</p>`;
+  }
+
+  const endingsLine = `<p class="cb-desc" style="margin-top:10px;"><strong>Aorist endings:</strong> <code>${escapeHtml(rule.endings)}</code></p>`;
+
+  const thisVerbBlock = noAorist
+    ? `<p class="cb-desc" style="margin-top:12px;"><strong>${escapeHtml(v.present)}</strong>: ${escapeHtml(v.defective)}</p>`
+    : `<p class="cb-desc" style="margin-top:12px;"><strong>${escapeHtml(v.present)}</strong> in the aorist:</p>` +
+      `<div class="endings-table" style="grid-template-columns:auto 1fr; margin-top:4px;">` +
+        persons.map((p, i) =>
+          `<div class="et-person">${p}</div><div class="et-form">${escapeHtml(forms[i] || '')}</div>`
+        ).join('') +
+      `</div>`;
+
+  return (
+    `<div class="class-block">` +
+      `<div class="cb-head"><span class="tag aorist">AORIST</span><span class="cb-title">${escapeHtml(rule.title)}</span></div>` +
+      `<p class="cb-desc">${rule.body}</p>` +
+      transformsTable +
+      examplesList +
+      endingsLine +
+      `<p class="cb-desc" style="margin-top:10px;">${escapeHtml(rule.note)}</p>` +
+      thisVerbBlock +
+    `</div>`
+  );
+}
+
 function renderGrammar() {
   const v = state.current, tense = state.currentTense;
   if (!v) { el.grammarContent.innerHTML = ''; return; }
@@ -544,6 +638,7 @@ function renderGrammar() {
     (note ? `<p><strong>${note.title}</strong></p>` : '') +
     (tips[tense] || '') +
     classBlock(v) +
+    aoristBlock(v) +
     family +
     stemBlock;
 }
