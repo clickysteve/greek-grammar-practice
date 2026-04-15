@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greek Verb Memoriser</title>
+  <style>
+    :root {
+      --bg: #111315;
+      --panel: #1b1f24;
+      --panel2: #232a31;
+      --text: #eef2f7;
+      --muted: #aab4c0;
+      --border: #36404a;
+      --accent: #ff9f43;
+      --accent-strong: #ff9f43;
+      --good: #8ee28e;
+      --bad: #ff8f8f;
+      --warn: #ffd84d;
+      --shadow: 0 12px 34px rgba(0,0,0,.28);
+      --present: #4ea1ff;
+      --past: #ffd84d;
+      --future: #7fdcff;
+      --pastc: #ff9f43;
+      --futurec: #b78cff;
+      --english: rgba(255,255,255,.03);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top, rgba(255,159,67,.08), transparent 28%), linear-gradient(180deg, #0f1114 0%, #171a1f 100%);
+      color: var(--text);
+    }
+    .wrap { max-width: 1260px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: clamp(28px, 4vw, 42px); margin: 0 0 6px; letter-spacing: -.03em; }
+    .sub { color: var(--muted); margin-bottom: 16px; }
+    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+    .top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    .panel, .inline-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .tiny-title { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .08em; }
+    .group { margin-bottom: 18px; }
+    .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, select, input[type="text"], input[type="color"] {
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    button { padding: 10px 14px; cursor: pointer; }
+    button.active { outline: 2px solid rgba(255,159,67,.35); }
+    input[type="text"], select { width: 100%; padding: 12px 14px; }
+    input[type="color"] { width: 44px; height: 36px; padding: 4px; background: transparent; }
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 16px; }
+    .stat { background: #12161b; border: 1px solid var(--border); border-radius: 16px; padding: 14px; }
+    .stat .n { font-size: 24px; font-weight: 700; margin-top: 4px; }
+    .card {
+      min-height: 340px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+      border: 1px solid var(--border); border-radius: 24px;
+      background: radial-gradient(circle at top, rgba(255,159,67,.08), transparent 40%), #12161b;
+      padding: 24px; margin-bottom: 16px;
+    }
+    .prompt { font-size: 14px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
+    .prompt-tense.present { color: var(--present); }
+    .prompt-tense.past { color: var(--past); }
+    .prompt-tense.future { color: var(--future); }
+    .prompt-tense.pastCont { color: var(--pastc); }
+    .prompt-tense.futureCont { color: var(--futurec); }
+    .big { font-size: clamp(34px, 6vw, 64px); font-weight: 700; line-height: 1.1; margin-bottom: 12px; letter-spacing: -.04em; }
+    .person-chip { display: inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(255,159,67,.14); border: 1px solid rgba(255,159,67,.3); color: var(--accent-strong); font-size: 13px; margin: 6px 0 10px; letter-spacing: .04em; }
+    .hint { color: var(--muted); font-size: 15px; max-width: 760px; display: grid; gap: 10px; }
+    .hint-main { color: var(--text); font-size: 16px; }
+    .hint-note { text-align: left; padding: 12px 14px; border: 1px solid var(--border); border-radius: 16px; background: rgba(255,255,255,.03); line-height: 1.5; }
+    .hint-note strong { color: var(--text); }
+    .example { text-align: left; margin-top: 14px; padding: 12px 14px; border: 1px dashed var(--border); border-radius: 14px; background: rgba(78,161,255,.04); width: min(620px, 100%); }
+    .example .el-gr { font-size: 18px; color: var(--text); }
+    .example .el-en { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .answer-wrap { width: min(620px,100%); margin-top: 18px; }
+    .answer-input { width: 100%; text-align: center; padding: 16px 18px; font-size: 24px; background: #101419; }
+    .answer-input.correct { border-color: var(--good); box-shadow: 0 0 0 3px rgba(142,226,142,.22); }
+    .answer-input.wrong { border-color: var(--bad); box-shadow: 0 0 0 3px rgba(255,143,143,.20); }
+    .answer-input.accent { border-color: var(--warn); box-shadow: 0 0 0 3px rgba(255,216,77,.22); }
+    .center-btns { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .feedback { min-height: 24px; margin-top: 10px; font-size: 15px; font-weight: 600; }
+    .feedback.correct { color: var(--good); }
+    .feedback.wrong { color: var(--bad); }
+    .feedback.accent { color: var(--warn); }
+    .answers { display: none; width: 100%; border-top: 1px solid var(--border); padding-top: 18px; margin-top: 18px; }
+    .answers.show { display: block; }
+    .answer-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; text-align: left; }
+    .mini { border: 1px solid var(--border); border-radius: 16px; padding: 14px; min-height: 108px; }
+    .mini.focus { transform: translateY(-2px) scale(1.01); }
+    .mini.present.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 0 0 2px rgba(78,161,255,.22), 0 0 34px rgba(78,161,255,.42); }
+    .mini.past.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.18), 0 0 0 2px rgba(255,216,77,.24), 0 0 34px rgba(255,216,77,.36); }
+    .mini.future.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 0 0 2px rgba(127,220,255,.24), 0 0 34px rgba(127,220,255,.40); }
+    .mini.pastCont.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 0 0 2px rgba(255,159,67,.24), 0 0 34px rgba(255,159,67,.40); }
+    .mini.futureCont.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 0 0 2px rgba(183,140,255,.24), 0 0 34px rgba(183,140,255,.40); }
+    .mini.english.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.18), 0 0 0 2px rgba(255,255,255,.08), 0 0 24px rgba(255,255,255,.14); }
+    .mini.english { background: var(--english); }
+    .mini.present { background: color-mix(in srgb, var(--present) 18%, transparent); border-color: color-mix(in srgb, var(--present) 55%, var(--border)); }
+    .mini.past { background: color-mix(in srgb, var(--past) 18%, transparent); border-color: color-mix(in srgb, var(--past) 55%, var(--border)); }
+    .mini.future { background: color-mix(in srgb, var(--future) 18%, transparent); border-color: color-mix(in srgb, var(--future) 55%, var(--border)); }
+    .mini.pastCont { background: color-mix(in srgb, var(--pastc) 18%, transparent); border-color: color-mix(in srgb, var(--pastc) 55%, var(--border)); }
+    .mini.futureCont { background: color-mix(in srgb, var(--futurec) 18%, transparent); border-color: color-mix(in srgb, var(--futurec) 55%, var(--border)); }
+    .mini .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .mini .v { font-size: 22px; font-weight: 700; line-height: 1.15; }
+    .mini .row-line { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 3px 0; border-bottom: 1px dashed rgba(255,255,255,.08); }
+    .mini .row-line:last-child { border-bottom: 0; }
+    .mini .row-line .per { color: var(--muted); font-size: 12px; min-width: 52px; }
+    .mini .row-line.focus-row { background: rgba(255,159,67,.14); margin: 0 -6px; padding: 3px 6px; border-radius: 8px; font-weight: 700; }
+    .grammar, .siblings { margin-top: 14px; border: 1px solid var(--border); border-radius: 18px; background: rgba(255,255,255,.02); overflow: hidden; }
+    .disc-btn { width: 100%; text-align: left; border: 0; background: transparent; padding: 14px 16px; font-size: 15px; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: center; }
+    .disc-content { display: none; padding: 0 16px 16px; color: var(--muted); line-height: 1.5; }
+    .disc-content.show { display: block; }
+    .sibling-chip { display: inline-block; padding: 6px 10px; margin: 4px 6px 4px 0; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,.04); font-size: 13px; color: var(--text); cursor: pointer; }
+    .sibling-chip:hover { background: rgba(255,159,67,.14); border-color: rgba(255,159,67,.35); }
+    .sibling-chip .eng { color: var(--muted); margin-left: 6px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 14px; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th:nth-child(1), td:nth-child(1) { background: var(--english); }
+    th:nth-child(2), td:nth-child(2) { background: color-mix(in srgb, var(--present) 18%, transparent); }
+    th:nth-child(3), td:nth-child(3) { background: color-mix(in srgb, var(--past) 18%, transparent); color: #f7f0c8; }
+    th:nth-child(4), td:nth-child(4) { background: color-mix(in srgb, var(--future) 18%, transparent); }
+    th:nth-child(5), td:nth-child(5) { background: color-mix(in srgb, var(--pastc) 18%, transparent); }
+    th:nth-child(6), td:nth-child(6) { background: color-mix(in srgb, var(--futurec) 18%, transparent); }
+    th { text-align: left; color: var(--muted); font-weight: 600; position: sticky; top: 0; }
+    tr.active-row td { box-shadow: inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(255,255,255,.10); filter: brightness(1.12); }
+    tr.active-row td:first-child { box-shadow: inset 3px 0 0 var(--accent), inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(255,255,255,.10); font-weight: 700; }
+    tr.active-row { outline: 2px solid rgba(255,159,67,.22); outline-offset: -2px; }
+    .table-wrap { max-height: none; overflow: auto; border: 1px solid var(--border); border-radius: 18px; }
+    .pill { display: inline-block; padding: 5px 9px; border-radius: 999px; background: rgba(255,159,67,.16); border: 1px solid rgba(255,159,67,.28); color: var(--accent-strong); font-size: 12px; margin-left: 8px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,.04); font-size: 11px; color: var(--muted); margin-left: 6px; }
+    .tag.cls-A { color: #a5d0ff; border-color: rgba(78,161,255,.35); }
+    .tag.cls-B1 { color: #ffd9a5; border-color: rgba(255,159,67,.35); }
+    .tag.cls-B2 { color: #ffe28e; border-color: rgba(255,216,77,.35); }
+    .tag.cls-MP { color: #d9bdff; border-color: rgba(183,140,255,.35); }
+    .tag.cls-IRR { color: #ff8f8f; border-color: rgba(255,143,143,.35); }
+    .tag.defective { color: #ffd84d; border-color: rgba(255,216,77,.35); }
+    .small { color: var(--muted); font-size: 13px; }
+    @media (max-width: 980px) {
+      .wrap { display: flex; flex-direction: column; gap: 14px; }
+      .wrap > h1  { order: 0; margin-bottom: 0; }
+      .wrap > .sub { order: 1; margin-bottom: 0; }
+      .top { display: contents; }
+      .layout { display: contents; }
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .answer-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .main-panel        { order: 2; }
+      .theme-panel       { order: 3; }
+      .progress-panel    { order: 4; }
+      .controls-panel    { order: 5; }
+    }
+    @media (max-width: 640px) {
+      .answer-grid { grid-template-columns: 1fr; }
+      .big { font-size: 42px; }
+      .answer-input { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Greek Verb Memoriser</h1>
+    <div class="sub">Flashcards, typed answers, tense drilling, full conjugation practice, and repetition for the verbs that actually matter.</div>
+
+    <div class="layout">
+      <div class="panel controls controls-panel">
+        <h2 style="margin-top:0;">Controls</h2>
+        <div class="group"><label class="label">Drill type</label><div class="btns" id="drillTypeBtns"></div></div>
+        <div class="group"><label class="label">Card direction</label><div class="btns" id="directionBtns"></div></div>
+        <div class="group"><label class="label">Prompt tense</label><div class="btns" id="tenseBtns"></div></div>
+        <div class="group" id="personGroup" style="display:none;"><label class="label">Person</label><div class="btns" id="personBtns"></div></div>
+        <div class="group"><label class="label">Verb set</label><div class="btns" id="setBtns"></div></div>
+        <div class="group"><label class="label">Study mode</label><div class="btns" id="modeBtns"></div></div>
+        <div class="group"><label class="label">Review filter</label><div class="btns" id="reviewBtns"></div></div>
+        <div class="group"><label class="label">Filter by English or Greek</label><input id="search" type="text" placeholder="e.g. take, βλέπω, eat"></div>
+        <div class="group"><label class="label">Actions</label><div class="btns"><button id="shuffleBtn">Shuffle</button><button id="revealBtn">Reveal</button><button id="nextBtn">Next card</button></div></div>
+        <div class="group"><label class="label">Knowledge rating</label><div class="btns" id="ratingBtns"></div></div>
+        <div class="small" style="margin-top:-8px;">0 = no knowledge · 5 = mastered. Use number keys 0–5.</div>
+        <div class="stats">
+          <div class="stat"><div class="label">Cards</div><div class="n" id="cardsN">0</div></div>
+          <div class="stat"><div class="label">Seen</div><div class="n" id="seenN">0</div></div>
+          <div class="stat"><div class="label">Strong</div><div class="n" id="strongN">0</div></div>
+          <div class="stat"><div class="label">Weak</div><div class="n" id="weakN">0</div></div>
+        </div>
+      </div>
+
+      <div class="panel main main-panel">
+        <h2 style="margin-top:0;">Flashcard <span class="pill" id="modePill"></span></h2>
+        <div class="card">
+          <div class="prompt" id="promptLabel"></div>
+          <div class="big" id="promptText">Loading…</div>
+          <div id="personChip" class="person-chip" style="display:none;"></div>
+          <div class="hint" id="hintText"></div>
+
+          <div class="answer-wrap" id="typedWrap">
+            <input class="answer-input" id="answerInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type your answer here">
+            <div class="center-btns"><button id="checkBtn">Check answer</button><button id="clearTypedBtn">Clear</button></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="small">Enter = check / next. Shift+Enter = reveal. Space = reveal / next when not typing.</div>
+          </div>
+
+          <div class="example" id="exampleBox" style="display:none;">
+            <div class="el-gr" id="exampleGr"></div>
+            <div class="el-en" id="exampleEn"></div>
+          </div>
+
+          <div class="answers" id="answersBox"><div class="answer-grid" id="answerGrid"></div></div>
+        </div>
+
+        <div class="grammar">
+          <button class="disc-btn" id="grammarBtn"><span>Quick grammar note</span><span id="grammarIcon">+</span></button>
+          <div class="disc-content" id="grammarContent"></div>
+        </div>
+
+        <div class="siblings">
+          <button class="disc-btn" id="siblingsBtn"><span>Sibling verbs (same pattern)</span><span id="siblingsIcon">+</span></button>
+          <div class="disc-content" id="siblingsContent"></div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;">
+          <h2 style="margin-bottom:0;">All verbs in current set</h2>
+          <button id="toggleTableBtn">Collapse</button>
+        </div>
+        <div class="table-wrap" id="tableWrap">
+          <table>
+            <thead>
+              <tr><th>English</th><th>Present</th><th>Simple Past</th><th>Future Simple</th><th>Past Continuous</th><th>Future Continuous</th></tr>
+            </thead>
+            <tbody id="verbRows"></tbody>
+          </table>
+        </div>
+        <div class="small" style="margin-top:16px;">Your ratings, history, and review schedule are saved in your browser, and you can export/import them as JSON backups whenever you want.</div>
+      </div>
+    </div>
+
+    <div class="top">
+      <div class="inline-panel theme-panel">
+        <div class="tiny-title">Theme</div>
+        <div class="row">
+          <span>Accent</span><input type="color" id="accentPicker" value="#ff9f43">
+          <span>Background</span><input type="color" id="bgPicker" value="#111315">
+          <span>Panel</span><input type="color" id="panelPicker" value="#1b1f24">
+          <span>Text</span><input type="color" id="textPicker" value="#eef2f7">
+          <button id="resetThemeBtn">Reset</button>
+        </div>
+      </div>
+      <div class="inline-panel progress-panel">
+        <div class="tiny-title">Progress data</div>
+        <div class="row">
+          <button id="exportBtn">Export JSON</button>
+          <button id="importBtn">Import JSON</button>
+          <button id="clearProgressBtn">Clear data</button>
+          <input id="importFile" type="file" accept="application/json" style="display:none;">
+        </div>
+        <div class="small" style="margin-top:8px;">Export a backup of ratings and history, then import it on another browser or device.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="greekverbprac.data.js"></script>
+  <script src="greekverbprac.app.js"></script>
+</body>
+</html>
