@@ -176,6 +176,7 @@ function idFor(v, tense, dir, drillType, personIdx) {
   return drillType === 'conjugation' ? `${base}__${personIdx}` : base;
 }
 
+function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]); }
 function norm(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'΄]/g, '').replace(/\s+/g, ' ').trim(); }
 function stripAccentsOnly(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim(); }
 
@@ -398,8 +399,16 @@ function resetTyped() {
   el.feedback.className = 'feedback';
   el.feedback.textContent = '';
 }
-function reveal() { state.revealed = true; el.answersBox.classList.add('show'); }
-function hideReveal() { state.revealed = false; el.answersBox.classList.remove('show'); }
+function reveal() {
+  state.revealed = true;
+  el.answersBox.classList.add('show');
+  if (el.exampleBox && el.exampleBox.dataset.hasContent === '1') el.exampleBox.style.display = '';
+}
+function hideReveal() {
+  state.revealed = false;
+  el.answersBox.classList.remove('show');
+  if (el.exampleBox) el.exampleBox.style.display = 'none';
+}
 
 function renderAnswers(v, tense, personIdx) {
   el.answerGrid.innerHTML = '';
@@ -438,10 +447,16 @@ function renderHint(instruction) {
 function renderExample(v, tense) {
   const ex = (window.EXAMPLES || {})[v.english];
   const pair = ex && ex[tense];
-  if (!pair) { el.exampleBox.style.display = 'none'; return; }
+  if (!pair) {
+    el.exampleBox.style.display = 'none';
+    el.exampleBox.dataset.hasContent = '0';
+    return;
+  }
   el.exampleGr.textContent = pair[0];
   el.exampleEn.textContent = pair[1];
-  el.exampleBox.style.display = '';
+  el.exampleBox.dataset.hasContent = '1';
+  // Stay hidden until the user reveals or checks — otherwise the example gives the answer away.
+  el.exampleBox.style.display = state.revealed ? '' : 'none';
 }
 
 function renderGrammar() {
@@ -591,13 +606,22 @@ function checkAnswer() {
       el.feedback.textContent = `Correct: ${answerDisplay}. Rate 0–5 or press Enter/Space for next.`;
     } else if (match.result === 'accent') {
       el.answerInput.classList.add('accent'); el.feedback.classList.add('accent');
-      el.feedback.textContent = accentExplanation(typed, match.expected) + ' Rate 0–5 or press Enter/Space for next.';
+      el.feedback.innerHTML =
+        `<span class="feedback-label">Right word — wrong accent.</span>` +
+        `<span class="big-answer">${escapeHtml(match.expected)}</span>` +
+        `<span class="feedback-tail">${escapeHtml(accentExplanation(typed, match.expected))} Rate 0–5 or press Enter/Space for next.</span>`;
     } else if (match.result === 'oo-mix') {
       el.answerInput.classList.add('accent'); el.feedback.classList.add('accent');
-      el.feedback.textContent = ooMixExplanation(typed, match.expected) + ' Rate 0–5 or press Enter/Space for next.';
+      el.feedback.innerHTML =
+        `<span class="feedback-label">Right sounds — wrong letter (ο / ω).</span>` +
+        `<span class="big-answer">${escapeHtml(match.expected)}</span>` +
+        `<span class="feedback-tail">${escapeHtml(ooMixExplanation(typed, match.expected))} Rate 0–5 or press Enter/Space for next.</span>`;
     } else {
       el.answerInput.classList.add('wrong'); el.feedback.classList.add('wrong');
-      el.feedback.textContent = `Not quite. Correct answer: ${answerDisplay}. Rate 0–5 or press Enter/Space for next.`;
+      el.feedback.innerHTML =
+        `<span class="feedback-label">Not quite. Correct answer:</span>` +
+        `<span class="big-answer">${escapeHtml(answerDisplay)}</span>` +
+        `<span class="feedback-tail">Rate 0–5 or press Enter/Space for next.</span>`;
     }
   } else {
     if (norm(typed) === norm(exp[0])) {
@@ -605,7 +629,10 @@ function checkAnswer() {
       el.feedback.textContent = `Correct: ${exp[0]}. Rate 0–5 or press Enter/Space for next.`;
     } else {
       el.answerInput.classList.add('wrong'); el.feedback.classList.add('wrong');
-      el.feedback.textContent = `Not quite. Correct answer: ${exp[0]}. Rate 0–5 or press Enter/Space for next.`;
+      el.feedback.innerHTML =
+        `<span class="feedback-label">Not quite. Correct answer:</span>` +
+        `<span class="big-answer">${escapeHtml(exp[0])}</span>` +
+        `<span class="feedback-tail">Rate 0–5 or press Enter/Space for next.</span>`;
     }
   }
   reveal();
