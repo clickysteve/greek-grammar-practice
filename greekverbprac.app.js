@@ -459,6 +459,66 @@ function renderExample(v, tense) {
   el.exampleBox.style.display = state.revealed ? '' : 'none';
 }
 
+const CLASS_INFO = {
+  'A':  { tag: 'A',  title: 'Class A — regular -ω verbs',
+          desc: 'The default pattern. Present stem + standard active endings. Covers the majority of everyday verbs.',
+          endings: ['-ω','-εις','-ει','-ουμε','-ετε','-ουν'] },
+  'B1': { tag: 'B1', title: 'Class B1 — contract verbs in -άω / -ώ',
+          desc: 'The stressed-α contract pattern. 1sg can be written -άω or -ώ; the other persons use the -α- endings.',
+          endings: ['-ώ / -άω','-άς','-ά','-άμε','-άτε','-άνε'] },
+  'B2': { tag: 'B2', title: 'Class B2 — contract verbs in -ώ',
+          desc: 'The stressed-ε contract pattern. Endings use ει/ου throughout; distinguishable from B1 by the 2sg -είς.',
+          endings: ['-ώ','-είς','-εί','-ούμε','-είτε','-ούν'] },
+  'MP': { tag: 'MP', title: 'Mediopassive — deponent / middle-voice verbs',
+          desc: 'Verbs ending in -ομαι (or -άμαι for some). No active form — they only live in the middle voice. Past-tense pattern usually ends -θηκα / -ηκα.',
+          endings: ['-ομαι','-εσαι','-εται','-όμαστε','-εστε','-ονται'] },
+  'IRR':{ tag: 'IRR',title: 'Irregular — stems shift across tenses',
+          desc: 'Doesn\'t conjugate cleanly under any rule. The present-stem, past-stem, and sometimes future-stem are different roots. Memorise the principal parts; the endings are still the standard Class A set.',
+          endings: null }
+};
+
+function classBlock(v) {
+  const info = CLASS_INFO[v.class];
+  if (!info) return '';
+  const presentForms = conjugate(v, 'present');
+  const personLabels = ['1sg','2sg','3sg','1pl','2pl','3pl'];
+  let table = '';
+  if (info.endings) {
+    const rows = [
+      `<div class="et-h">Person</div><div class="et-h">Ending</div><div class="et-h">${escapeHtml(v.present)}</div>`,
+      ...personLabels.map((p, i) =>
+        `<div class="et-person">${p}</div>` +
+        `<div class="et-ending">${escapeHtml(info.endings[i])}</div>` +
+        `<div class="et-form">${escapeHtml(presentForms[i] || '')}</div>`
+      )
+    ];
+    table = `<div class="endings-table">${rows.join('')}</div>`;
+  } else {
+    // IRR — show just the forms side-by-side with the standard A endings for reference
+    const aEndings = CLASS_INFO['A'].endings;
+    const rows = [
+      `<div class="et-h">Person</div><div class="et-h">Standard</div><div class="et-h">${escapeHtml(v.present)}</div>`,
+      ...personLabels.map((p, i) =>
+        `<div class="et-person">${p}</div>` +
+        `<div class="et-ending">${escapeHtml(aEndings[i])}</div>` +
+        `<div class="et-form">${escapeHtml(presentForms[i] || '')}</div>`
+      )
+    ];
+    table = `<div class="endings-table">${rows.join('')}</div>`;
+  }
+  const classNote = v.classNote ? `<p class="cb-desc" style="margin-top:10px;"><em>${escapeHtml(v.classNote)}</em></p>` : '';
+  const defective = v.defective ? `<p class="cb-desc" style="margin-top:10px;"><strong>Defective:</strong> ${escapeHtml(v.defective)}</p>` : '';
+  return (
+    `<div class="class-block">` +
+      `<div class="cb-head"><span class="tag cls-${info.tag}">${info.tag}</span><span class="cb-title">${escapeHtml(info.title)}</span></div>` +
+      `<p class="cb-desc">${escapeHtml(info.desc)}</p>` +
+      table +
+      classNote +
+      defective +
+    `</div>`
+  );
+}
+
 function renderGrammar() {
   const v = state.current, tense = state.currentTense;
   if (!v) { el.grammarContent.innerHTML = ''; return; }
@@ -480,9 +540,12 @@ function renderGrammar() {
     pastCont: `<p><strong>Mental model:</strong> was inside the action.</p><p><strong>Build:</strong> present stem + past endings (+ ε- sometimes).</p>`,
     futureCont: `<p><strong>Mental model:</strong> ongoing in the future.</p><p><strong>Build:</strong> θα + present tense.</p>`
   };
-  const defectiveNote = v.defective ? `<p><strong>Defective verb:</strong> ${v.defective}</p>` : '';
-  const classNote = v.class ? `<p><strong>Class:</strong> ${v.class}${v.classNote ? ' — ' + v.classNote : ''}.</p>` : '';
-  el.grammarContent.innerHTML = (note ? `<p><strong>${note.title}</strong></p>` : '') + (tips[tense] || '') + classNote + defectiveNote + family + stemBlock;
+  el.grammarContent.innerHTML =
+    (note ? `<p><strong>${note.title}</strong></p>` : '') +
+    (tips[tense] || '') +
+    classBlock(v) +
+    family +
+    stemBlock;
 }
 
 function renderSiblings() {
