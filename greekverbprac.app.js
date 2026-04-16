@@ -613,6 +613,81 @@ function aoristBlock(v) {
   );
 }
 
+const PAST_CONT_RULES = {
+  'A': {
+    title: 'Forming the past continuous (παρατατικός) — Class A',
+    body: 'Same <strong>present stem</strong> as the present tense, but with the past endings. Think of it as "present tense, backdated":',
+    endings: '-α, -ες, -ε, -αμε, -ατε, -αν',
+    examples: ['γράφω → έγραφα (I was writing)', 'τρέχω → έτρεχα', 'διαβάζω → διάβαζα', 'δουλεύω → δούλευα'],
+    note: 'Add the augment ε- (έ-) in the singular + 3pl when the form would otherwise be only 1–2 syllables, just like the aorist. The plural 1pl/2pl drop the augment (γράφαμε, not εγράφαμε). Key contrast: aorist uses the <em>past stem</em> (έγραψα — one-shot); past continuous uses the <em>present stem</em> (έγραφα — was doing it, ongoing).'
+  },
+  'B1': {
+    title: 'Forming the past continuous — Class B1 (-άω / -ώ)',
+    body: 'Drop <code>-άω / -ώ</code> and add <code>-ούσα</code>. This is the form that trips most learners up — the -ούσα suffix is distinctive and applies to B1 + B2 alike:',
+    endings: '-ούσα, -ούσες, -ούσε, -ούσαμε, -ούσατε, -ούσαν',
+    examples: ['αγαπάω → αγαπούσα (I was loving)', 'μιλάω → μιλούσα', 'ρωτάω → ρωτούσα', 'περνάω → περνούσα'],
+    note: 'No augment needed — the -ούσα ending already carries the stress on the penultimate. Compare with the aorist: αγαπάω → αγάπησα (one-shot) vs αγαπούσα (was loving, ongoing).'
+  },
+  'B2': {
+    title: 'Forming the past continuous — Class B2 (-ώ)',
+    body: 'Drop <code>-ώ</code> and add <code>-ούσα</code>. Same pattern as B1:',
+    endings: '-ούσα, -ούσες, -ούσε, -ούσαμε, -ούσατε, -ούσαν',
+    examples: ['μπορώ → μπορούσα (I could / was able to)', 'οδηγώ → οδηγούσα', 'τηλεφωνώ → τηλεφωνούσα', 'ζω → ζούσα'],
+    note: '<strong>μπορούσα</strong> is the classic example — μπορώ (B2) just drops the -ώ and takes -ούσα, giving "I could / was able to". The contrast with the aorist μπόρεσα is meaning-driven: μπορούσα = I had the ongoing ability; μπόρεσα = I managed it (one specific time).'
+  },
+  'MP': {
+    title: 'Forming the past continuous — mediopassive',
+    body: 'The mediopassive past continuous uses its own special endings. Drop <code>-ομαι / -άμαι</code> and add:',
+    endings: '-όμουν(α), -όσουν(α), -όταν(ε), -όμασταν, -όσασταν, -ονταν / -όντουσαν',
+    examples: ['ντύνομαι → ντυνόμουν (I was getting dressed)', 'κοιμάμαι → κοιμόμουν', 'σκέφτομαι → σκεφτόμουν', 'έρχομαι → ερχόμουν'],
+    note: 'The optional final α in 1sg/2sg (ντυνόμουνα) is colloquial — both forms are fine. 3pl has two standard variants: -ονταν and -όντουσαν. These endings are different from every other tense, so worth memorising as a set.'
+  },
+  'IRR': {
+    title: 'Forming the past continuous — irregular verbs',
+    body: 'Use the <strong>present stem</strong> with Class A past endings (same approach as regular Class A). The aorist uses a different stem; the past continuous stays with the present one:',
+    endings: '-α, -ες, -ε, -αμε, -ατε, -αν',
+    examples: ['παίρνω → έπαιρνα (was taking) vs πήρα (took)', 'λέω → έλεγα vs είπα', 'βλέπω → έβλεπα vs είδα', 'τρώω → έτρωγα vs έφαγα'],
+    note: 'The stem-split is the whole point here: present-family (present + past continuous + future continuous) all share one stem; past-family (aorist + future simple) share another. So if you know the present, you know the past continuous — just add augment + past endings.'
+  }
+};
+
+function pastContBlock(v) {
+  const rule = PAST_CONT_RULES[v.class];
+  if (!rule) return '';
+  const forms = conjugate(v, 'pastCont');
+  const persons = ['1sg','2sg','3sg','1pl','2pl','3pl'];
+  const noPastCont = v.defective && /no past cont|no imperfect/i.test(v.defective);
+
+  let examplesList = '';
+  if (rule.examples) {
+    examplesList = `<p class="cb-desc" style="margin-top:8px;">` +
+      rule.examples.map(e => `<span style="display:inline-block; margin-right:14px; color:var(--text);">${escapeHtml(e)}</span>`).join('') +
+      `</p>`;
+  }
+
+  const endingsLine = `<p class="cb-desc" style="margin-top:10px;"><strong>Past continuous endings:</strong> <code>${escapeHtml(rule.endings)}</code></p>`;
+
+  const thisVerbBlock = noPastCont
+    ? `<p class="cb-desc" style="margin-top:12px;"><strong>${escapeHtml(v.present)}</strong>: ${escapeHtml(v.defective)}</p>`
+    : `<p class="cb-desc" style="margin-top:12px;"><strong>${escapeHtml(v.present)}</strong> in the past continuous:</p>` +
+      `<div class="endings-table" style="grid-template-columns:auto 1fr; margin-top:4px;">` +
+        persons.map((p, i) =>
+          `<div class="et-person">${p}</div><div class="et-form">${escapeHtml(forms[i] || '')}</div>`
+        ).join('') +
+      `</div>`;
+
+  return (
+    `<div class="class-block">` +
+      `<div class="cb-head"><span class="tag pastcont">PAST CONT.</span><span class="cb-title">${escapeHtml(rule.title)}</span></div>` +
+      `<p class="cb-desc">${rule.body}</p>` +
+      examplesList +
+      endingsLine +
+      `<p class="cb-desc" style="margin-top:10px;">${rule.note}</p>` +
+      thisVerbBlock +
+    `</div>`
+  );
+}
+
 function renderGrammar() {
   const v = state.current, tense = state.currentTense;
   if (!v) { el.grammarContent.innerHTML = ''; return; }
@@ -639,6 +714,7 @@ function renderGrammar() {
     (tips[tense] || '') +
     classBlock(v) +
     aoristBlock(v) +
+    pastContBlock(v) +
     family +
     stemBlock;
 }
