@@ -47,7 +47,12 @@ window.STEM_MAPS = {
   'understand': { presentSide:'καταλαβαιν-',    pastSide:'καταλαβ-', note:'<strong>καταλαβαίνω / καταλάβαινα / θα καταλαβαίνω</strong> vs <strong>κατάλαβα / θα καταλάβω</strong>.' },
   'be':         { presentSide:'ειμ- / εισ- / ειν-', pastSide:'ημ- / ησ- / ητ-', note:'είμαι has no aorist: simple past and past continuous coincide in the imperfect ήμουν. Both futures coincide as θα είμαι.' },
   'have':       { presentSide:'εχ- side',       pastSide:'ειχ- side', note:'έχω has no aorist: simple past and past continuous are both είχα. Both futures are θα έχω.' },
-  'want':       { presentSide:'θελ- side',      pastSide:'(θελησ- rare)', note:'θέλω is defective — simple past and past continuous both normally surface as ήθελα. Both futures are θα θέλω.' }
+  'want':       { presentSide:'θελ- side',      pastSide:'(θελησ- rare)', note:'θέλω is defective — simple past and past continuous both normally surface as ήθελα. Both futures are θα θέλω.' },
+  'hear / listen':{ presentSide:'ακου- (→ ακουγ- in imperfect)', pastSide:'ακουσ- side', note:'Type A/B: present <strong>ακούω</strong>, imperfect adds -γ- → <strong>άκουγα</strong>, aorist <strong>άκουσα</strong> / future <strong>θα ακούσω</strong>.' },
+  'burn':       { presentSide:'και- (→ καιγ- in imperfect)', pastSide:'καψ- side', note:'Type A/B: <strong>καίω / έκαιγα</strong> (with -γ-) vs <strong>έκαψα / θα κάψω</strong>.' },
+  'cry':        { presentSide:'κλαι- (→ κλαιγ- in imperfect)', pastSide:'κλαψ- side', note:'Type A/B: <strong>κλαίω / έκλαιγα</strong> (with -γ-) vs <strong>έκλαψα / θα κλάψω</strong>.' },
+  'be at fault':{ presentSide:'φται- (→ φταιγ- in imperfect)', pastSide:'φταιξ- side', note:'Type A/B: <strong>φταίω / έφταιγα</strong> (with -γ-) vs <strong>έφταιξα / θα φταίξω</strong>.' },
+  'exist':      { presentSide:'υπαρχ- side', pastSide:'υπηρξ- side', note:'Irregular η- augment: <strong>υπάρχω / υπήρχα</strong> (imperfect) vs <strong>υπήρξα / θα υπάρξω</strong>.' }
 };
 
 window.FAMILIES = {
@@ -85,6 +90,11 @@ window.FAMILIES = {
     label: 'Auxiliaries and defective verbs',
     note: 'είμαι, έχω, θέλω, ξέρω — no real aorist; tense distinctions collapse.',
     members: ['be', 'have', 'want', 'know']
+  },
+  '-γ- vowel stems (Type A/B)': {
+    label: 'Type A/B — vowel-stem verbs with -γ- in the imperfect',
+    note: 'The textbook "Τύπος Α/Β". Present looks Class-A-ish but contracts (ακούω, ακούς, ακούει…). The giveaway is the παρατατικός: a -γ- slots in before the past endings — άκουγα, έκαιγα, έκλαιγα, έφταιγα. λέω→έλεγα and τρώω→έτρωγα share this imperfect even though their aorists are stem-split.',
+    members: ['hear / listen', 'burn', 'cry', 'be at fault']
   }
 };
 
@@ -95,14 +105,14 @@ window.VERBS = [
   { set: 1, english: 'do / make',       present: 'κάνω',    past: 'έκανα',     future: 'θα κάνω',     pastCont: 'έκανα',     futureCont: 'θα κάνω',     class: 'A' },
   { set: 1, english: 'take',            present: 'παίρνω',  past: 'πήρα',      future: 'θα πάρω',     pastCont: 'έπαιρνα',   futureCont: 'θα παίρνω',   class: 'IRR', family: 'stem-split common irregulars' },
   { set: 1, english: 'give',            present: 'δίνω',    past: 'έδωσα',     future: 'θα δώσω',     pastCont: 'έδινα',     futureCont: 'θα δίνω',     class: 'IRR', family: 'stem-split common irregulars' },
-  { set: 1, english: 'say / tell',      present: 'λέω',     past: 'είπα',      future: 'θα πω',       pastCont: 'έλεγα',     futureCont: 'θα λέω',      class: 'IRR', family: 'stem-split common irregulars' },
+  { set: 1, english: 'say / tell',      present: 'λέω',     past: 'είπα',      future: 'θα πω',       pastCont: 'έλεγα',     futureCont: 'θα λέω',      class: 'IRR', family: 'stem-split common irregulars', classNote: 'its imperfect follows the Type A/B -γ- pattern (έλεγα), even though the aorist είπα is stem-split.' },
   { set: 1, english: 'see',             present: 'βλέπω',   past: 'είδα',      future: 'θα δω',       pastCont: 'έβλεπα',    futureCont: 'θα βλέπω',    class: 'IRR', family: 'stem-split common irregulars' },
   { set: 1, english: 'find',            present: 'βρίσκω',  past: 'βρήκα',     future: 'θα βρω',      pastCont: 'έβρισκα',   futureCont: 'θα βρίσκω',   class: 'IRR', family: 'stem-split common irregulars' },
   { set: 1, english: 'put',             present: 'βάζω',    past: 'έβαλα',     future: 'θα βάλω',     pastCont: 'έβαζα',     futureCont: 'θα βάζω',     class: 'IRR', family: 'stem-split common irregulars' },
   { set: 1, english: 'leave',           present: 'αφήνω',   past: 'άφησα',     future: 'θα αφήσω',    pastCont: 'άφηνα',     futureCont: 'θα αφήνω',    class: 'A' },
   { set: 1, english: 'go',              present: 'πάω',     presentAlt: ['πηγαίνω'], past: 'πήγα', future: 'θα πάω', pastCont: 'πήγαινα', futureCont: 'θα πηγαίνω', class: 'IRR', family: 'stem-split common irregulars', classNote: 'two present stems: πάω is shorter/more colloquial, πηγαίνω is fuller' },
   { set: 1, english: 'come',            present: 'έρχομαι', past: 'ήρθα',      future: 'θα έρθω',     pastCont: 'ερχόμουν',  futureCont: 'θα έρχομαι',  class: 'MP', family: 'stem-split common irregulars' },
-  { set: 1, english: 'eat',             present: 'τρώω',    past: 'έφαγα',     future: 'θα φάω',      pastCont: 'έτρωγα',    futureCont: 'θα τρώω',     class: 'IRR', family: 'stem-split common irregulars' },
+  { set: 1, english: 'eat',             present: 'τρώω',    past: 'έφαγα',     future: 'θα φάω',      pastCont: 'έτρωγα',    futureCont: 'θα τρώω',     class: 'IRR', family: 'stem-split common irregulars', classNote: 'its imperfect follows the Type A/B -γ- pattern (έτρωγα), even though the aorist έφαγα is stem-split.' },
   { set: 1, english: 'drink',           present: 'πίνω',    past: 'ήπια',      future: 'θα πιω',      pastCont: 'έπινα',     futureCont: 'θα πίνω',     class: 'IRR', family: 'stem-split common irregulars' },
   { set: 1, english: 'enter',           present: 'μπαίνω',  past: 'μπήκα',     future: 'θα μπω',      pastCont: 'έμπαινα',   futureCont: 'θα μπαίνω',   class: 'IRR', family: '-αίνω / -ηκα (stem-jump)' },
   { set: 1, english: 'go out',          present: 'βγαίνω',  past: 'βγήκα',     future: 'θα βγω',      pastCont: 'έβγαινα',   futureCont: 'θα βγαίνω',   class: 'IRR', family: '-αίνω / -ηκα (stem-jump)' },
@@ -157,12 +167,56 @@ window.VERBS = [
   { set: 3, english: 'change',          present: 'αλλάζω',      past: 'άλλαξα',        future: 'θα αλλάξω',       pastCont: 'άλλαζα',        futureCont: 'θα αλλάζω',      class: 'A',   family: '-ω / -σα (A regular)' },
   { set: 3, english: 'continue',        present: 'συνεχίζω',    past: 'συνέχισα',      future: 'θα συνεχίσω',     pastCont: 'συνέχιζα',      futureCont: 'θα συνεχίζω',    class: 'A',   family: '-ω / -σα (A regular)' },
   { set: 3, english: 'stop',            present: 'σταματάω',    past: 'σταμάτησα',     future: 'θα σταματήσω',    pastCont: 'σταματούσα',    futureCont: 'θα σταματάω',    class: 'B1',  family: '-άω / -ησα (B1 contract)' },
-  { set: 3, english: 'arrive',          present: 'φτάνω',       past: 'έφτασα',        future: 'θα φτάσω',        pastCont: 'έφτανα',        futureCont: 'θα φτάνω',       class: 'A',   family: '-ω / -σα (A regular)' }
+  { set: 3, english: 'arrive',          present: 'φτάνω',       past: 'έφτασα',        future: 'θα φτάσω',        pastCont: 'έφτανα',        futureCont: 'θα φτάνω',       class: 'A',   family: '-ω / -σα (A regular)' },
+
+  // --- Set 4: Type A/B — vowel-stem verbs with -γ- in the imperfect (textbook "Τύπος Α/Β") ---
+  // Present looks Class-A-ish but contracts (ακούω, ακούς, ακούει…); the παρατατικός inserts -γ- (άκουγα).
+  { set: 4, english: 'hear / listen',   present: 'ακούω',       past: 'άκουσα',        future: 'θα ακούσω',       pastCont: 'άκουγα',        futureCont: 'θα ακούω',       class: 'AB',  family: '-γ- vowel stems (Type A/B)' },
+  { set: 4, english: 'burn',            present: 'καίω',        past: 'έκαψα',         future: 'θα κάψω',         pastCont: 'έκαιγα',        futureCont: 'θα καίω',        class: 'AB',  family: '-γ- vowel stems (Type A/B)' },
+  { set: 4, english: 'cry',             present: 'κλαίω',       past: 'έκλαψα',        future: 'θα κλάψω',        pastCont: 'έκλαιγα',       futureCont: 'θα κλαίω',       class: 'AB',  family: '-γ- vowel stems (Type A/B)' },
+  { set: 4, english: 'be at fault',     present: 'φταίω',       past: 'έφταιξα',       future: 'θα φταίξω',       pastCont: 'έφταιγα',       futureCont: 'θα φταίω',       class: 'AB',  family: '-γ- vowel stems (Type A/B)' },
+  { set: 4, english: 'exist',           present: 'υπάρχω',      past: 'υπήρξα',        future: 'θα υπάρξω',       pastCont: 'υπήρχα',        futureCont: 'θα υπάρχω',      class: 'A',   classNote: 'irregular augment: the past forms take η- not ε- (imperfect υπήρχα, aorist υπήρξα). Listed in the textbook alongside the irregular imperfects θέλω→ήθελα and ξέρω→ήξερα.' }
 ];
 
 // Conjugation overrides keyed by verb.english. Order: [1sg, 2sg, 3sg, 1pl, 2pl, 3pl].
 // If an override is present, it wins over the computed class-based conjugation.
 window.CONJUGATIONS = {
+  // --- Type A/B vowel stems: -γ- in the imperfect ---
+  'hear / listen': {
+    present:   ['ακούω','ακούς','ακούει','ακούμε','ακούτε','ακούν'],
+    past:      ['άκουσα','άκουσες','άκουσε','ακούσαμε','ακούσατε','άκουσαν'],
+    pastCont:  ['άκουγα','άκουγες','άκουγε','ακούγαμε','ακούγατε','άκουγαν'],
+    future:    ['θα ακούσω','θα ακούσεις','θα ακούσει','θα ακούσουμε','θα ακούσετε','θα ακούσουν'],
+    futureCont:['θα ακούω','θα ακούς','θα ακούει','θα ακούμε','θα ακούτε','θα ακούν']
+  },
+  'burn': {
+    present:   ['καίω','καις','καίει','καίμε','καίτε','καίνε'],
+    past:      ['έκαψα','έκαψες','έκαψε','κάψαμε','κάψατε','έκαψαν'],
+    pastCont:  ['έκαιγα','έκαιγες','έκαιγε','καίγαμε','καίγατε','έκαιγαν'],
+    future:    ['θα κάψω','θα κάψεις','θα κάψει','θα κάψουμε','θα κάψετε','θα κάψουν'],
+    futureCont:['θα καίω','θα καις','θα καίει','θα καίμε','θα καίτε','θα καίνε']
+  },
+  'cry': {
+    present:   ['κλαίω','κλαις','κλαίει','κλαίμε','κλαίτε','κλαίνε'],
+    past:      ['έκλαψα','έκλαψες','έκλαψε','κλάψαμε','κλάψατε','έκλαψαν'],
+    pastCont:  ['έκλαιγα','έκλαιγες','έκλαιγε','κλαίγαμε','κλαίγατε','έκλαιγαν'],
+    future:    ['θα κλάψω','θα κλάψεις','θα κλάψει','θα κλάψουμε','θα κλάψετε','θα κλάψουν'],
+    futureCont:['θα κλαίω','θα κλαις','θα κλαίει','θα κλαίμε','θα κλαίτε','θα κλαίνε']
+  },
+  'be at fault': {
+    present:   ['φταίω','φταις','φταίει','φταίμε','φταίτε','φταίνε'],
+    past:      ['έφταιξα','έφταιξες','έφταιξε','φταίξαμε','φταίξατε','έφταιξαν'],
+    pastCont:  ['έφταιγα','έφταιγες','έφταιγε','φταίγαμε','φταίγατε','έφταιγαν'],
+    future:    ['θα φταίξω','θα φταίξεις','θα φταίξει','θα φταίξουμε','θα φταίξετε','θα φταίξουν'],
+    futureCont:['θα φταίω','θα φταις','θα φταίει','θα φταίμε','θα φταίτε','θα φταίνε']
+  },
+  'exist': {
+    present:   ['υπάρχω','υπάρχεις','υπάρχει','υπάρχουμε','υπάρχετε','υπάρχουν'],
+    past:      ['υπήρξα','υπήρξες','υπήρξε','υπήρξαμε','υπήρξατε','υπήρξαν'],
+    pastCont:  ['υπήρχα','υπήρχες','υπήρχε','υπήρχαμε','υπήρχατε','υπήρχαν'],
+    future:    ['θα υπάρξω','θα υπάρξεις','θα υπάρξει','θα υπάρξουμε','θα υπάρξετε','θα υπάρξουν'],
+    futureCont:['θα υπάρχω','θα υπάρχεις','θα υπάρχει','θα υπάρχουμε','θα υπάρχετε','θα υπάρχουν']
+  },
   'be': {
     present:   ['είμαι','είσαι','είναι','είμαστε','είστε','είναι'],
     past:      ['ήμουν','ήσουν','ήταν','ήμασταν','ήσασταν','ήταν'],
@@ -377,6 +431,11 @@ window.CONJUGATIONS = {
 
 // Example sentences, always in 1sg for each tense. Add more as you like.
 window.EXAMPLES = {
+  'hear / listen':   { present:['Ακούω μουσική κάθε βράδυ.','I listen to music every evening.'], past:['Άκουσα έναν θόρυβο.','I heard a noise.'], pastCont:['Άκουγα ραδιόφωνο όταν χτύπησε το τηλέφωνο.','I was listening to the radio when the phone rang.'], future:['Θα ακούσω το νέο τραγούδι.','I will listen to the new song.'], futureCont:['Θα ακούω podcast στο ταξίδι.','I will be listening to podcasts on the trip.'] },
+  'burn':            { present:['Το τζάκι καίει όλη μέρα.','The fireplace burns all day.'], past:['Έκαψα το φαγητό.','I burned the food.'], pastCont:['Το κερί έκαιγε στο τραπέζι.','The candle was burning on the table.'], future:['Θα κάψω τα παλιά γράμματα.','I will burn the old letters.'], futureCont:['Θα καίω ξύλα όλον τον χειμώνα.','I will be burning wood all winter.'] },
+  'cry':             { present:['Το μωρό κλαίει πάλι.','The baby is crying again.'], past:['Έκλαψα στην ταινία.','I cried during the film.'], pastCont:['Έκλαιγε όλο το βράδυ.','He was crying all night.'], future:['Θα κλάψω αν φύγεις.','I will cry if you leave.'], futureCont:['Μη μου πεις πως θα κλαις όλη μέρα.','Don\'t tell me you\'ll be crying all day.'] },
+  'be at fault':     { present:['Εσύ φταις γι\' αυτό.','You are to blame for this.'], past:['Έφταιξα εγώ, το παραδέχομαι.','I was at fault, I admit it.'], pastCont:['Νόμιζε πως έφταιγε ο καιρός.','He thought the weather was to blame.'], future:['Αν χαλάσει, θα φταίξω εγώ.','If it breaks, I\'ll be the one at fault.'], futureCont:['Δεν θα φταίω εγώ για τα λάθη σου.','I won\'t be the one at fault for your mistakes.'] },
+  'exist':           { present:['Υπάρχει ένα πρόβλημα.','There is a problem.'], past:['Υπήρξε μια παρεξήγηση.','There was a misunderstanding.'], pastCont:['Υπήρχε πάντα μια λύση.','There always was a solution.'], future:['Θα υπάρξει ευκαιρία αργότερα.','There will be an opportunity later.'], futureCont:['Θα υπάρχω για σένα πάντα.','I will always be there for you.'] },
   'be':              { present:['Είμαι κουρασμένος.','I am tired.'], past:['Ήμουν στο σπίτι.','I was at home.'], pastCont:['Ήμουν κουρασμένος όλη μέρα.','I was tired all day.'], future:['Θα είμαι εκεί στις οκτώ.','I will be there at eight.'], futureCont:['Θα είμαι στο γραφείο αύριο.','I will be at the office tomorrow.'] },
   'have':            { present:['Έχω ένα αυτοκίνητο.','I have a car.'], past:['Είχα πολλή δουλειά.','I had a lot of work.'], pastCont:['Είχα πονοκέφαλο όλη μέρα.','I had a headache all day.'], future:['Θα έχω χρόνο αύριο.','I will have time tomorrow.'], futureCont:['Θα έχω δουλειά όλη την εβδομάδα.','I will have work all week.'] },
   'do / make':       { present:['Κάνω γυμναστική κάθε πρωί.','I do exercise every morning.'], past:['Έκανα ένα λάθος.','I made a mistake.'], pastCont:['Έκανα δουλειές όλο το πρωί.','I was doing chores all morning.'], future:['Θα κάνω ένα διάλειμμα.','I will take a break.'], futureCont:['Θα κάνω μάθημα κάθε Τρίτη.','I will be having class every Tuesday.'] },

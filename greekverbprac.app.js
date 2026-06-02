@@ -474,7 +474,10 @@ const CLASS_INFO = {
           endings: ['-ομαι','-εσαι','-εται','-όμαστε','-εστε','-ονται'] },
   'IRR':{ tag: 'IRR',title: 'Irregular — stems shift across tenses',
           desc: 'Doesn\'t conjugate cleanly under any rule. The present-stem, past-stem, and sometimes future-stem are different roots. Memorise the principal parts; the endings are still the standard Class A set.',
-          endings: null }
+          endings: null },
+  'AB': { tag: 'AB', title: 'Type A/B — vowel-stem verbs (-γ- imperfect)',
+          desc: 'Vowel-stem verbs (ακούω, καίω, κλαίω, φταίω). The present looks Class-A-ish but contracts onto the vowel, so the endings are short. The defining trait is the imperfect, which slots in a -γ- (άκουγα). Endings shown are the ακούω model — the others vary slightly (καις, κλαις, φταις).',
+          endings: ['-ω','-ς','-ει','-με','-τε','-νε'] }
 };
 
 function classBlock(v) {
@@ -559,6 +562,13 @@ const AORIST_RULES = {
     endings: '-α, -ες, -ε, -αμε, -ατε, -αν',
     examples: ['παίρνω → πήρα', 'λέω → είπα', 'βλέπω → είδα', 'τρώω → έφαγα', 'δίνω → έδωσα', 'βρίσκω → βρήκα', 'βάζω → έβαλα', 'μαθαίνω → έμαθα'],
     note: 'These have to be memorised. The good news: once you know the principal parts (present, aorist, perfective future) the rest of the paradigm is regular.'
+  },
+  'AB': {
+    title: 'Forming the aorist — Type A/B (vowel stems)',
+    body: 'Drop the vowel ending and add a sibilant (<code>-σα / -ψα / -ξα</code>), exactly like Class A. Note: the aorist drops the -γ- of the imperfect entirely — the -γ- belongs only to the present-side forms:',
+    examples: ['ακούω → άκουσα', 'καίω → έκαψα', 'κλαίω → έκλαψα', 'φταίω → έφταιξα'],
+    endings: '-α, -ες, -ε, -αμε, -ατε, -αν',
+    note: 'Add the augment ε- (έ-) in the singular + 3pl when the form would otherwise be too short (έκαψα), and drop it in 1pl/2pl (κάψαμε). ακούω keeps its accent without an ε- augment (άκουσα).'
   }
 };
 
@@ -648,6 +658,13 @@ const PAST_CONT_RULES = {
     endings: '-α, -ες, -ε, -αμε, -ατε, -αν',
     examples: ['παίρνω → έπαιρνα (was taking) vs πήρα (took)', 'λέω → έλεγα vs είπα', 'βλέπω → έβλεπα vs είδα', 'τρώω → έτρωγα vs έφαγα'],
     note: 'The stem-split is the whole point here: present-family (present + past continuous + future continuous) all share one stem; past-family (aorist + future simple) share another. So if you know the present, you know the past continuous — just add augment + past endings.'
+  },
+  'AB': {
+    title: 'Forming the past continuous — Type A/B (-γ- vowel stems)',
+    body: 'This is the group\'s signature. These vowel-stem verbs slot a <strong>-γ-</strong> in before the standard Class A past endings — so the stem visibly gains a γ that isn\'t in the present:',
+    endings: '-γα, -γες, -γε, -γαμε, -γατε, -γαν',
+    examples: ['ακούω → άκουγα (I was hearing)', 'καίω → έκαιγα', 'κλαίω → έκλαιγα', 'φταίω → έφταιγα', 'λέω → έλεγα', 'τρώω → έτρωγα'],
+    note: 'Same augment logic as Class A: take ε- (έ-) in the singular + 3pl when the form is short (έκαιγα), drop it in 1pl/2pl (καίγαμε). ακούω needs no ε- (άκουγα). λέω and τρώω form their imperfect the same way (έλεγα, έτρωγα) even though their aorists are stem-split — that is why the textbook files them under Type A/B for this tense.'
   }
 };
 
