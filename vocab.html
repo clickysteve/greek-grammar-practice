@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greek Vocabulary — Writing Prompts</title>
+  <style>
+    :root {
+      --bg: #111315;
+      --panel: #1b1f24;
+      --panel2: #232a31;
+      --text: #eef2f7;
+      --muted: #aab4c0;
+      --border: #36404a;
+      --accent: #ff9f43;
+      --accent-strong: #ff9f43;
+      --good: #8ee28e;
+      --shadow: 0 12px 34px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top, rgba(255,159,67,.08), transparent 28%), linear-gradient(180deg, #0f1114 0%, #171a1f 100%);
+      color: var(--text);
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .nav { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; font-size: 14px; }
+    .nav a { color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 7px 12px; border-radius: 999px; background: var(--panel2); }
+    .nav a:hover { color: var(--text); }
+    h1 { font-size: clamp(26px, 4vw, 38px); margin: 0 0 6px; letter-spacing: -.03em; }
+    .sub { color: var(--muted); margin-bottom: 20px; max-width: 640px; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); padding: 18px; margin-bottom: 18px; }
+    .label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .08em; }
+    button {
+      border: 1px solid var(--border); background: var(--panel2); color: var(--text);
+      border-radius: 12px; font-size: 14px; padding: 10px 14px; cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+    .controls-row { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-end; }
+    .control { flex: 1 1 240px; }
+    .slider-row { display: flex; align-items: center; gap: 12px; }
+    input[type="range"] { flex: 1; accent-color: var(--accent); }
+    .count-val { font-size: 22px; font-weight: 700; min-width: 28px; text-align: center; }
+    .mix-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .08em; }
+    .mix-label { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    .prompt-card {
+      border: 1px solid var(--border); border-radius: 24px;
+      background: radial-gradient(circle at top, rgba(255,159,67,.08), transparent 45%), #12161b;
+      padding: 24px; margin-bottom: 18px;
+    }
+    .scenario-label { font-size: 12px; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin-bottom: 8px; }
+    .scenario-text { font-size: clamp(20px, 3.2vw, 28px); font-weight: 700; line-height: 1.25; letter-spacing: -.02em; margin-bottom: 20px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 12px; }
+    .vchip {
+      border: 1px solid var(--border); border-left: 4px solid var(--chip);
+      border-radius: 14px; padding: 12px 16px; background: rgba(255,255,255,.03); min-width: 150px;
+      transition: background .15s, border-color .15s;
+    }
+    .vchip.everyday { border-style: dashed; }
+    .vchip.used { background: rgba(142,226,142,.10); border-color: rgba(142,226,142,.4); }
+    .vchip-gr { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+    .vchip-gr .art { font-size: 15px; color: var(--muted); font-weight: 500; }
+    .vchip-gr .tick { color: var(--good); margin-left: 8px; font-size: 18px; }
+    .vchip-en { font-size: 15px; color: var(--text); margin-top: 3px; }
+    .vchip-meta { font-size: 11px; color: var(--muted); margin-top: 6px; display: flex; gap: 6px; align-items: center; }
+    .vchip-meta .pos { font-style: italic; }
+    .vchip-meta .reg { text-transform: uppercase; letter-spacing: .06em; padding: 1px 6px; border-radius: 999px; border: 1px solid var(--border); font-size: 10px; }
+    .vchip-meta .reg-expressive { color: var(--chip); }
+    .vchip-meta .reg-everyday { color: var(--muted); }
+    .pool-note { font-size: 13px; color: var(--muted); margin-top: 16px; }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .btn-primary { background: var(--accent); color: #1a1205; border-color: var(--accent); font-weight: 700; }
+    .btn-primary:hover { filter: brightness(1.05); border-color: var(--accent); }
+
+    .write-head { display: flex; justify-content: space-between; align-items: baseline; }
+    .write-count { font-size: 13px; color: var(--muted); }
+    textarea {
+      width: 100%; min-height: 220px; resize: vertical; margin-top: 10px;
+      border: 1px solid var(--border); background: #101419; color: var(--text);
+      border-radius: 14px; padding: 16px 18px; font-size: 17px; line-height: 1.6;
+      font-family: Inter, system-ui, sans-serif;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,159,67,.18); }
+    .write-actions { margin-top: 12px; }
+    .foot { color: var(--muted); font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="index.html">← Verb practice</a>
+      <span style="color:var(--muted)">Vocabulary writing</span>
+    </div>
+
+    <h1>Vocabulary — Writing Prompts</h1>
+    <div class="sub">Get a handful of Greek words and a scenario, then write. A blend of everyday words (the ones that never seem to stick) and expressive ones (to keep it alive). Slide the mix toward whichever you need.</div>
+
+    <div class="panel">
+      <div class="controls-row">
+        <div class="control">
+          <label class="label">Words per prompt</label>
+          <div class="slider-row">
+            <input type="range" id="countSlider" min="1" max="10" value="4" />
+            <span class="count-val" id="countVal">4</span>
+          </div>
+        </div>
+        <div class="control">
+          <label class="label">Mix</label>
+          <input type="range" id="mixSlider" min="0" max="100" step="10" value="60" />
+          <div class="mix-ends"><span>All everyday</span><span>All expressive</span></div>
+          <div class="mix-label" id="mixLabel"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prompt-card">
+      <div class="scenario-label">Your prompt</div>
+      <div class="scenario-text" id="scenarioText"></div>
+      <div class="chips" id="wordChips"></div>
+      <div class="pool-note" id="poolNote"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" id="newPromptBtn">↻ New prompt</button>
+      <button id="shuffleWordsBtn">Shuffle words</button>
+      <button id="newScenarioBtn">New scenario</button>
+    </div>
+
+    <div class="panel">
+      <div class="write-head">
+        <label class="label" style="margin:0;">Your writing</label>
+        <span class="write-count" id="writeCount">0 words</span>
+      </div>
+      <textarea id="writing" placeholder="Γράψε εδώ… (write your sentence, paragraph, or story here)"></textarea>
+      <div class="write-actions"><button id="clearBtn">Clear</button></div>
+      <div class="foot">Solid chips = expressive words, dashed = everyday. Words you use light up green as you write (inflected forms count too). Nothing is graded or saved — it's a space to play. Hover an expressive word for a usage note.</div>
+    </div>
+  </div>
+
+  <script src="greekvocab.data.js"></script>
+  <script src="greekvocab.app.js"></script>
+</body>
+</html>
