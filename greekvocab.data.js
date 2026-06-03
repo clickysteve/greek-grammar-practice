@@ -214,6 +214,7 @@ window.VOCAB = [
   { gr: 'ανεπιτήδευτος',art: '',  en: 'unpretentious, unaffected', pos: 'adj', theme: 'social', register: 'expressive', note: 'Brilliant, nuanced Greek cultural word.' },
   { gr: 'αμέτοχος',     art: '',  en: 'uninvolved, detached',pos: 'adj', theme: 'social', register: 'expressive' },
   { gr: 'κυνικός',      art: '',  en: 'cynical',            pos: 'adj',  theme: 'social', register: 'expressive' },
+  { gr: 'πονηρός',      art: '',  en: 'cunning, sly, mischievous', pos: 'adj', theme: 'social', register: 'expressive', note: 'Sly/crafty, but often playful — a knowing, mischievous streak.' },
   { gr: 'προφορά',      art: 'η', en: 'pronunciation, accent', pos: 'noun', theme: 'social', register: 'expressive' },
   { gr: 'παρουσία',     art: 'η', en: 'presence',           pos: 'noun', theme: 'social', register: 'expressive' },
   { gr: 'σύνδεση',      art: 'η', en: 'connection',         pos: 'noun', theme: 'social', register: 'expressive' },
