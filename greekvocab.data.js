@@ -86,6 +86,12 @@ window.VOCAB = [
   { gr: 'εβδομάδα',    art: 'η',  en: 'week',               pos: 'noun', theme: 'everyday', register: 'everyday' },
   { gr: 'πρωί',        art: 'το', en: 'morning',            pos: 'noun', theme: 'everyday', register: 'everyday' },
   { gr: 'βράδυ',       art: 'το', en: 'evening',            pos: 'noun', theme: 'everyday', register: 'everyday' },
+  { gr: 'κοινότητα',   art: 'η',  en: 'community',          pos: 'noun', theme: 'everyday', register: 'everyday' },
+  { gr: 'υποχρέωση',   art: 'η',  en: 'obligation, commitment', pos: 'noun', theme: 'everyday', register: 'everyday', note: 'Obligation / commitment. (Everyday "routine" is usually ρουτίνα.)' },
+  // Common verbs
+  { gr: 'μαντεύω',     art: '',   en: 'to guess',           pos: 'verb', theme: 'everyday', register: 'everyday' },
+  { gr: 'περιγράφω',   art: '',   en: 'to describe',        pos: 'verb', theme: 'everyday', register: 'everyday' },
+  { gr: 'καίω',        art: '',   en: 'to burn',            pos: 'verb', theme: 'everyday', register: 'everyday' },
   // Common connectors / softeners (high-frequency, make speech natural)
   { gr: 'κάπως',       art: '',   en: 'kind of, somehow',   pos: 'adv',  theme: 'everyday', register: 'everyday', note: 'Tiny but very natural conversational softener.' },
   { gr: 'τελείως',     art: '',   en: 'completely, totally',pos: 'adv',  theme: 'everyday', register: 'everyday' },
