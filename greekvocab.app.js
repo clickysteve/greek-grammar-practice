@@ -37,6 +37,17 @@
     daily: false, usedCounted: {}
   };
   CATS.forEach(function (c) { state.counts[c.key] = c.def; });
+  // Restore saved per-category counts (settings live in a collapsed panel, so make them sticky).
+  var COUNTS_KEY = 'gvm_vocab_counts';
+  try {
+    var savedCounts = JSON.parse(localStorage.getItem(COUNTS_KEY) || '{}');
+    CATS.forEach(function (c) {
+      if (typeof savedCounts[c.key] === 'number') {
+        state.counts[c.key] = Math.max(0, Math.min(MAX_PER_CAT, savedCounts[c.key]));
+      }
+    });
+  } catch (e) {}
+  function saveCounts() { try { localStorage.setItem(COUNTS_KEY, JSON.stringify(state.counts)); } catch (e) {} }
 
   var el = {};
   ['scenarioText', 'scenarioEn', 'scenarioBadge', 'wordChips', 'catSteppers', 'totalNote',
@@ -471,6 +482,7 @@
         var d = parseInt(b.getAttribute('data-d'), 10);
         var max = Math.min(MAX_PER_CAT, pools[key].length);
         state.counts[key] = Math.max(0, Math.min(max, state.counts[key] + d));
+        saveCounts();
         renderSteppers();
         regenerate(false);
       });
