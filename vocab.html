@@ -54,7 +54,40 @@
       padding: 24px; margin-bottom: 18px;
     }
     .scenario-label { font-size: 12px; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin-bottom: 8px; }
-    .scenario-text { font-size: clamp(20px, 3.2vw, 28px); font-weight: 700; line-height: 1.25; letter-spacing: -.02em; margin-bottom: 20px; }
+    .scenario-text { font-size: clamp(20px, 3.2vw, 28px); font-weight: 700; line-height: 1.25; letter-spacing: -.02em; }
+    .scenario-en { font-size: 14px; color: var(--muted); margin: 6px 0 20px; }
+    .badge-daily { display: inline-block; margin-left: 8px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); font-size: 11px; letter-spacing: .06em; }
+    .vchip { cursor: pointer; }
+    .vchip:hover { border-color: var(--chip); }
+
+    /* word detail modal */
+    #wordModal { position: fixed; inset: 0; z-index: 50; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.62); }
+    .modal-panel {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: min(560px, calc(100vw - 32px)); max-height: 84vh; overflow-y: auto;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+      box-shadow: var(--shadow); padding: 22px;
+    }
+    .modal-close { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; padding: 0; border-radius: 10px; font-size: 18px; line-height: 1; }
+    .wd-head { border-left: 4px solid var(--chip); padding-left: 14px; margin-bottom: 12px; }
+    .wd-gr { font-size: 30px; font-weight: 700; letter-spacing: -.02em; }
+    .wd-gr .art { font-size: 18px; color: var(--muted); font-weight: 500; }
+    .wd-en { font-size: 16px; margin-top: 2px; }
+    .wd-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .wd-note { font-size: 14px; color: var(--text); background: rgba(255,255,255,.04); border: 1px dashed var(--border); border-radius: 12px; padding: 10px 12px; }
+    .wd-section { margin-top: 16px; }
+    .wd-title { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+    .wd-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 15px; }
+    .wd-grid-3 { grid-template-columns: auto 1fr 1fr; }
+    .wd-k { color: var(--muted); }
+    .wd-v.muted { color: var(--muted); }
+    .wd-approx { font-size: 12px; color: var(--muted); margin: 8px 0 0; font-style: italic; }
+    .wd-link { margin-top: 14px; font-size: 14px; }
+    .wd-link a { color: var(--accent); }
+    .wd-rel { display: flex; flex-wrap: wrap; gap: 8px; }
+    .wd-rel-chip { border-radius: 999px; font-size: 14px; padding: 7px 12px; }
+    .wd-rel-en { color: var(--muted); font-size: 12px; }
     .chips { display: flex; flex-wrap: wrap; gap: 12px; }
     .vchip {
       border: 1px solid var(--border); border-left: 4px solid var(--chip);
@@ -108,14 +141,16 @@
     </div>
 
     <div class="prompt-card">
-      <div class="scenario-label">Your prompt</div>
+      <div class="scenario-label">Your prompt <span class="badge-daily" id="scenarioBadge" style="display:none;">σημερινό</span></div>
       <div class="scenario-text" id="scenarioText"></div>
+      <div class="scenario-en" id="scenarioEn"></div>
       <div class="chips" id="wordChips"></div>
       <div class="pool-note" id="poolNote"></div>
     </div>
 
     <div class="btn-row">
       <button class="btn-primary" id="newPromptBtn">↻ New prompt</button>
+      <button id="todayBtn">Σημερινό πρόμπτ</button>
       <button id="shuffleWordsBtn">Shuffle words</button>
       <button id="newScenarioBtn">New scenario</button>
     </div>
@@ -127,10 +162,13 @@
       </div>
       <textarea id="writing" placeholder="Γράψε εδώ… (write your sentence, paragraph, or story here)"></textarea>
       <div class="write-actions"><button id="clearBtn">Clear</button></div>
-      <div class="foot">Solid chips = expressive words, dashed = everyday. Words you use light up green as you write (inflected forms count too). Nothing is graded or saved — it's a space to play. Hover an expressive word for a usage note.</div>
+      <div class="foot">Solid chips = expressive words, dashed = everyday. Words you use light up green as you write (inflected forms count too). Click any word for grammar, conjugations, and related words. Nothing is graded or saved — it's a space to play.</div>
     </div>
   </div>
 
+  <div id="wordModal" style="display:none;"></div>
+
+  <script src="greekverbprac.data.js"></script>
   <script src="greekvocab.data.js"></script>
   <script src="greekvocab.app.js"></script>
 </body>
