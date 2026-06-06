@@ -99,6 +99,13 @@
     .wd-track-stats { font-size: 12px; color: var(--muted); }
     .wd-known-btn { font-size: 13px; padding: 8px 12px; border-radius: 999px; }
     .wd-known-btn.is-known { border-color: var(--good); color: var(--good); }
+    .gh-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); background: #101419; color: var(--text); border-radius: 10px; font-size: 14px; }
+    .gh-status { font-size: 13px; color: var(--muted); margin: 10px 0; }
+    .gh-status a { color: var(--accent); }
+    .gh-msg { margin-top: 6px; color: var(--text); }
+    .gh-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .gh-btns button { font-size: 13px; }
+    .gh-btns button:disabled { opacity: .4; cursor: default; }
     .chips { display: flex; flex-wrap: wrap; gap: 12px; }
     .vchip {
       border: 1px solid var(--border); border-left: 4px solid var(--chip);
@@ -155,6 +162,7 @@
           <button id="includeKnownBtn">Known words: hidden</button>
           <button id="exportBtn">Export progress</button>
           <button id="importBtn">Import</button>
+          <button id="ghBtn">☁ GitHub backup</button>
           <button id="resetTrackBtn">Reset</button>
           <input type="file" id="importFile" accept="application/json" style="display:none;" />
         </span>
