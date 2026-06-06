@@ -2,7 +2,13 @@
  * Reads globals from greekvocab.data.js: VOCAB, SCENARIOS, THEMES.
  * Also reads greekverbprac.data.js (VERBS, CONJUGATIONS) when loaded, to show real
  * conjugations for verbs that exist in the Verb Memoriser.
- * No backend: word lists regenerate by re-sampling the pool client-side.
+ *
+ * Tracking: progress lives in localStorage ('gvm_vocab_track'):
+ *   { "<greek word>": { known: bool, seen: n, used: n, last: "YYYY-MM-DD" }, "__settings": {...} }
+ *   - seen  = times the word was drawn into a prompt
+ *   - used  = times you actually used it in your writing
+ *   - known = retired from the pool (unless "include known" is on)
+ * Sampling is weighted toward words you have seen/used least.
  */
 (function () {
   'use strict';
@@ -12,7 +18,6 @@
   var THEMES = window.THEMES || {};
   var VERB_APP = { verbs: window.VERBS || [], conj: window.CONJUGATIONS || {} };
 
-  // Word categories, each with an independent stepper.
   var CATS = [
     { key: 'everyNoun', label: 'Everyday nouns',        match: function (w) { return w.register === 'everyday'  && w.pos === 'noun'; }, def: 2 },
     { key: 'everyAdj',  label: 'Everyday adjectives',   match: function (w) { return w.register === 'everyday'  && w.pos === 'adj';  }, def: 1 },
@@ -27,17 +32,50 @@
   var pools = {};
   CATS.forEach(function (c) { pools[c.key] = VOCAB.filter(c.match); });
 
-  var state = { counts: {}, words: [], scenario: SCENARIOS[0] || { gr: '', en: '' }, daily: false };
+  var state = {
+    counts: {}, words: [], scenario: SCENARIOS[0] || { gr: '', en: '' },
+    daily: false, usedCounted: {}
+  };
   CATS.forEach(function (c) { state.counts[c.key] = c.def; });
 
   var el = {};
   ['scenarioText', 'scenarioEn', 'scenarioBadge', 'wordChips', 'catSteppers', 'totalNote',
    'newPromptBtn', 'todayBtn', 'shuffleWordsBtn', 'newScenarioBtn', 'writing',
-   'writeCount', 'clearBtn', 'poolNote', 'wordModal'].forEach(function (id) {
+   'writeCount', 'clearBtn', 'poolNote', 'wordModal',
+   'trackStats', 'includeKnownBtn', 'exportBtn', 'importBtn', 'importFile', 'resetTrackBtn'].forEach(function (id) {
     el[id] = document.getElementById(id);
   });
 
-  /* ---------- randomness (regular + date-seeded) ---------- */
+  /* ---------- tracking store ---------- */
+  var TRACK_KEY = 'gvm_vocab_track';
+  var DAILY_KEY = 'gvm_vocab_daily';
+  var track = {};
+  try { track = JSON.parse(localStorage.getItem(TRACK_KEY) || '{}'); } catch (e) { track = {}; }
+  if (!track.__settings) track.__settings = { includeKnown: false };
+
+  function saveTrack() { try { localStorage.setItem(TRACK_KEY, JSON.stringify(track)); } catch (e) {} }
+  function rec(gr) {
+    if (!track[gr]) track[gr] = { known: false, seen: 0, used: 0, last: null };
+    return track[gr];
+  }
+  function todayStr() {
+    var d = new Date();
+    function p(n) { return (n < 10 ? '0' : '') + n; }
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+  function countSeen(words) {
+    words.forEach(function (w) { var r = rec(w.gr); r.seen += 1; r.last = todayStr(); });
+    saveTrack();
+  }
+  function isKnown(gr) { return !!(track[gr] && track[gr].known); }
+  function toggleKnown(gr) {
+    var r = rec(gr);
+    r.known = !r.known;
+    saveTrack();
+    renderTrackStats();
+  }
+
+  /* ---------- randomness & weighted sampling ---------- */
   function mulberry32(seed) {
     return function () {
       seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
@@ -59,11 +97,33 @@
     }
     return c;
   }
-  function take(arr, n, rng) { return shuffle(arr, rng).slice(0, Math.max(0, Math.min(n, arr.length))); }
+  // Weight: fresh words come up most; well-practised ones fade; known ones are excluded
+  // (or heavily downweighted when "include known" is on).
+  function weightOf(w) {
+    var r = track[w.gr];
+    var known = r && r.known;
+    if (known && !track.__settings.includeKnown) return 0;
+    var seen = r ? r.seen : 0, used = r ? r.used : 0;
+    var base = 1 / (1 + seen * 0.5 + used * 1.5);
+    return known ? base * 0.15 : base;
+  }
+  function weightedTake(arr, n, rng) {
+    var rnd = rng || Math.random;
+    var items = arr.slice(), out = [];
+    while (out.length < n && items.length) {
+      var weights = items.map(weightOf);
+      var total = weights.reduce(function (a, b) { return a + b; }, 0);
+      if (total <= 0) break; // everything known & excluded
+      var r = rnd() * total, i = 0;
+      while (i < items.length - 1 && r > weights[i]) { r -= weights[i]; i++; }
+      out.push(items.splice(i, 1)[0]);
+    }
+    return out;
+  }
 
   function buildWords(rng) {
     var picked = [];
-    CATS.forEach(function (c) { picked = picked.concat(take(pools[c.key], state.counts[c.key], rng)); });
+    CATS.forEach(function (c) { picked = picked.concat(weightedTake(pools[c.key], state.counts[c.key], rng)); });
     return shuffle(picked, rng);
   }
   function pickScenario(rng) {
@@ -99,7 +159,6 @@
 
   var GR_VOWELS = 'αεηιουωάέήίόύώϊϋΐΰ';
   var GR_ACCENTED = 'άέήίόύώΐΰ';
-  // Move the stress one vowel-group to the right (υπόθεσεις → υποθέσεις).
   function shiftStressRight(s) {
     var DE = { 'ά': 'α', 'έ': 'ε', 'ή': 'η', 'ί': 'ι', 'ό': 'ο', 'ύ': 'υ', 'ώ': 'ω', 'ΐ': 'ϊ', 'ΰ': 'ϋ' };
     var AC = { 'α': 'ά', 'ε': 'έ', 'η': 'ή', 'ι': 'ί', 'ο': 'ό', 'υ': 'ύ', 'ω': 'ώ' };
@@ -109,20 +168,19 @@
     if (i < 0) return s;
     arr[i] = DE[arr[i]];
     var j = i + 1;
-    while (j < arr.length && GR_VOWELS.indexOf(arr[j]) !== -1) j++;       // end of current vowel group
-    while (j < arr.length && GR_VOWELS.indexOf(arr[j]) === -1) j++;      // skip consonants
+    while (j < arr.length && GR_VOWELS.indexOf(arr[j]) !== -1) j++;
+    while (j < arr.length && GR_VOWELS.indexOf(arr[j]) === -1) j++;
     if (j >= arr.length) return s;
     var k = j;
-    while (k + 1 < arr.length && GR_VOWELS.indexOf(arr[k + 1]) !== -1) k++; // accent the last vowel of the group
+    while (k + 1 < arr.length && GR_VOWELS.indexOf(arr[k + 1]) !== -1) k++;
     arr[k] = AC[arr[k]] || arr[k];
     return arr.join('');
   }
-  // Count vowel groups after the accented one (2+ means proparoxytone).
   function groupsAfterAccent(s) {
     var i = -1;
     for (var x = 0; x < s.length; x++) if (GR_ACCENTED.indexOf(s[x]) !== -1) { i = x; break; }
     if (i < 0) return 0;
-    var n = 0, inGroup = true; // we start inside the accented group
+    var n = 0, inGroup = true;
     for (var y = i + 1; y < s.length; y++) {
       var isV = GR_VOWELS.indexOf(s[y]) !== -1;
       if (isV && !inGroup) n++;
@@ -249,11 +307,18 @@
 
   function detailHtml(w) {
     var color = (THEMES[w.theme] && THEMES[w.theme].color) || 'var(--accent)';
+    var r = track[w.gr] || { known: false, seen: 0, used: 0 };
     var h = '<div class="wd-head" style="--chip:' + color + '">' +
       '<div class="wd-gr">' + (w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '') + escapeHtml(w.gr) + '</div>' +
       '<div class="wd-en">' + escapeHtml(w.en) + '</div>' +
       '<div class="wd-meta">' + escapeHtml(POS_LABEL[w.pos] || w.pos) + ' · ' + escapeHtml(w.register) +
         (THEMES[w.theme] ? ' · ' + escapeHtml(THEMES[w.theme].label) : '') + '</div>' +
+      '</div>';
+
+    h += '<div class="wd-track">' +
+      '<span class="wd-track-stats">drawn ' + (r.seen || 0) + '× · used in writing ' + (r.used || 0) + '×</span>' +
+      '<button class="wd-known-btn' + (r.known ? ' is-known' : '') + '" data-gr="' + escapeHtml(w.gr) + '">' +
+        (r.known ? '↩ Bring it back' : '✓ Mark as known') + '</button>' +
       '</div>';
 
     if (w.note) h += '<p class="wd-note">' + escapeHtml(w.note) + '</p>';
@@ -265,7 +330,7 @@
       if (v) {
         h += '<div class="wd-section"><div class="wd-title">Principal parts (from the Verb Memoriser)</div><div class="wd-grid">' +
           [['Present', v.present], ['Simple past', v.past], ['Past continuous', v.pastCont], ['Future simple', v.future], ['Future continuous', v.futureCont]]
-            .map(function (r) { return '<div class="wd-k">' + r[0] + '</div><div class="wd-v">' + escapeHtml(r[1] || '—') + '</div>'; }).join('') +
+            .map(function (row) { return '<div class="wd-k">' + row[0] + '</div><div class="wd-v">' + escapeHtml(row[1] || '—') + '</div>'; }).join('') +
           '</div></div>';
         var ov = VERB_APP.conj[v.english];
         var pres = (ov && ov.present) || verbPresentTable(w.gr);
@@ -312,9 +377,9 @@
     var rel = relatedWords(w);
     if (rel.length) {
       h += '<div class="wd-section"><div class="wd-title">Related words</div><div class="wd-rel">' +
-        rel.map(function (r) {
-          return '<button class="wd-rel-chip" data-gr="' + escapeHtml(r.gr) + '">' +
-            (r.art ? r.art + ' ' : '') + escapeHtml(r.gr) + ' <span class="wd-rel-en">' + escapeHtml(r.en) + '</span></button>';
+        rel.map(function (x) {
+          return '<button class="wd-rel-chip" data-gr="' + escapeHtml(x.gr) + '">' +
+            (x.art ? x.art + ' ' : '') + escapeHtml(x.gr) + ' <span class="wd-rel-en">' + escapeHtml(x.en) + '</span></button>';
         }).join('') + '</div></div>';
     }
     return h;
@@ -327,6 +392,11 @@
     el.wordModal.style.display = 'block';
     el.wordModal.querySelector('.modal-backdrop').addEventListener('click', closeDetail);
     el.wordModal.querySelector('.modal-close').addEventListener('click', closeDetail);
+    var kb = el.wordModal.querySelector('.wd-known-btn');
+    if (kb) kb.addEventListener('click', function () {
+      toggleKnown(kb.getAttribute('data-gr'));
+      openDetail(w); // re-render with new state
+    });
     el.wordModal.querySelectorAll('.wd-rel-chip').forEach(function (b) {
       b.addEventListener('click', function () {
         var found = VOCAB.filter(function (x) { return x.gr === b.getAttribute('data-gr'); })[0];
@@ -347,12 +417,17 @@
 
   function renderChips() {
     if (!state.words.length) {
-      el.wordChips.innerHTML = '<div class="no-words">No words selected — turn up at least one category above.</div>';
+      el.wordChips.innerHTML = '<div class="no-words">No words selected — turn up at least one category above, or you have marked everything as known.</div>';
       return;
     }
     var text = el.writing ? el.writing.value : '';
     el.wordChips.innerHTML = state.words.map(function (w, i) {
       var used = wordUsed(w, text);
+      if (used && !state.usedCounted[w.gr]) {
+        state.usedCounted[w.gr] = true;
+        var r = rec(w.gr); r.used += 1; r.last = todayStr(); saveTrack();
+        renderTrackStats();
+      }
       var color = (THEMES[w.theme] && THEMES[w.theme].color) || 'var(--accent)';
       var article = w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '';
       var reg = w.register === 'everyday' ? 'everyday' : 'expressive';
@@ -409,20 +484,78 @@
     var words = v ? v.split(/\s+/).length : 0;
     el.writeCount.textContent = words + (words === 1 ? ' word' : ' words');
   }
+  function renderTrackStats() {
+    var known = 0, practised = 0, unseen = 0;
+    VOCAB.forEach(function (w) {
+      var r = track[w.gr];
+      if (r && r.known) known++;
+      else if (r && r.used > 0) practised++;
+      else if (!r || !r.seen) unseen++;
+    });
+    el.trackStats.textContent = known + ' known · ' + practised + ' practised · ' + unseen + ' unseen of ' + VOCAB.length;
+    el.includeKnownBtn.classList.toggle('active', !!track.__settings.includeKnown);
+    el.includeKnownBtn.textContent = track.__settings.includeKnown ? 'Known words: included' : 'Known words: hidden';
+  }
 
   /* ---------- actions ---------- */
   function regenerate(newScenario) {
     state.daily = false;
+    state.usedCounted = {};
     state.words = buildWords();
+    countSeen(state.words);
     if (newScenario) state.scenario = pickScenario();
-    renderScenario(); renderChips(); renderPoolNote();
+    renderScenario(); renderChips(); renderPoolNote(); renderTrackStats();
   }
   function todayPrompt() {
-    var rng = mulberry32(dateSeed());
-    state.scenario = pickScenario(rng);
-    state.words = buildWords(rng);
+    var snap = null;
+    try { snap = JSON.parse(localStorage.getItem(DAILY_KEY) || 'null'); } catch (e) {}
+    state.usedCounted = {};
+    if (snap && snap.date === todayStr()) {
+      state.words = snap.words.map(function (g) {
+        return VOCAB.filter(function (w) { return w.gr === g; })[0];
+      }).filter(Boolean);
+      state.scenario = SCENARIOS[snap.scenario] || SCENARIOS[0];
+    } else {
+      var rng = mulberry32(dateSeed());
+      state.scenario = pickScenario(rng);
+      state.words = buildWords(rng);
+      countSeen(state.words);
+      try {
+        localStorage.setItem(DAILY_KEY, JSON.stringify({
+          date: todayStr(),
+          scenario: SCENARIOS.indexOf(state.scenario),
+          words: state.words.map(function (w) { return w.gr; })
+        }));
+      } catch (e) {}
+    }
     state.daily = true;
-    renderScenario(); renderChips(); renderPoolNote();
+    renderScenario(); renderChips(); renderPoolNote(); renderTrackStats();
+  }
+
+  function exportTrack() {
+    var blob = new Blob([JSON.stringify(track, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'greek-vocab-progress-' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+  function importTrack(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        if (typeof data !== 'object' || data === null) throw new Error('bad format');
+        track = data;
+        if (!track.__settings) track.__settings = { includeKnown: false };
+        saveTrack();
+        renderTrackStats();
+        alert('Progress imported.');
+      } catch (e) { alert('Could not read that file — is it a progress export?'); }
+    };
+    reader.readAsText(file);
   }
 
   /* ---------- wiring ---------- */
@@ -442,9 +575,29 @@
       el.writing.focus();
     }
   });
+  el.includeKnownBtn.addEventListener('click', function () {
+    track.__settings.includeKnown = !track.__settings.includeKnown;
+    saveTrack();
+    renderTrackStats();
+  });
+  el.exportBtn.addEventListener('click', exportTrack);
+  el.importBtn.addEventListener('click', function () { el.importFile.click(); });
+  el.importFile.addEventListener('change', function () {
+    if (el.importFile.files && el.importFile.files[0]) importTrack(el.importFile.files[0]);
+    el.importFile.value = '';
+  });
+  el.resetTrackBtn.addEventListener('click', function () {
+    if (confirm('Reset ALL vocabulary progress (known words, counts)? This cannot be undone.')) {
+      track = { __settings: { includeKnown: false } };
+      saveTrack();
+      try { localStorage.removeItem(DAILY_KEY); } catch (e) {}
+      renderTrackStats();
+    }
+  });
 
   /* ---------- init ---------- */
   renderSteppers();
   regenerate(true);
   renderWriteCount();
+  renderTrackStats();
 })();
