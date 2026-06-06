@@ -1,7 +1,7 @@
 /* Greek Vocabulary Writing Prompts — app logic.
  * Reads globals from greekvocab.data.js: VOCAB, SCENARIOS, THEMES.
  * No backend, no network: the word list "regenerates" by re-sampling the pool client-side.
- * The mix slider blends everyday vs expressive words.
+ * Each word category (everyday nouns, expressive adjectives, …) has its own counter.
  */
 (function () {
   'use strict';
@@ -10,22 +10,32 @@
   var SCENARIOS = window.SCENARIOS || [];
   var THEMES = window.THEMES || {};
 
+  // Word categories, each with an independent stepper.
+  var CATS = [
+    { key: 'everyNoun', label: 'Everyday nouns',        match: function (w) { return w.register === 'everyday'  && w.pos === 'noun'; }, def: 2 },
+    { key: 'everyVerb', label: 'Everyday verbs',        match: function (w) { return w.register === 'everyday'  && w.pos === 'verb'; }, def: 0 },
+    { key: 'connector', label: 'Connectors / adverbs',  match: function (w) { return w.register === 'everyday'  && w.pos === 'adv';  }, def: 0 },
+    { key: 'exprAdj',   label: 'Expressive adjectives', match: function (w) { return w.register === 'expressive' && w.pos === 'adj';  }, def: 2 },
+    { key: 'exprNoun',  label: 'Expressive nouns',      match: function (w) { return w.register === 'expressive' && w.pos === 'noun'; }, def: 1 }
+  ];
+  var MAX_PER_CAT = 8;
+
+  var pools = {};
+  CATS.forEach(function (c) { pools[c.key] = VOCAB.filter(c.match); });
+
   var state = {
-    count: 4,        // words per prompt
-    exprRatio: 0.6,  // fraction of words that should be expressive (0 = all everyday, 1 = all expressive)
+    counts: {},
     words: [],
     scenario: SCENARIOS[0] || ''
   };
+  CATS.forEach(function (c) { state.counts[c.key] = c.def; });
 
   var el = {};
-  ['scenarioText', 'wordChips', 'countSlider', 'countVal', 'mixSlider', 'mixLabel',
+  ['scenarioText', 'wordChips', 'catSteppers', 'totalNote',
    'newPromptBtn', 'shuffleWordsBtn', 'newScenarioBtn', 'writing',
    'writeCount', 'clearBtn', 'poolNote'].forEach(function (id) {
     el[id] = document.getElementById(id);
   });
-
-  var everydayPool = VOCAB.filter(function (w) { return w.register === 'everyday'; });
-  var expressivePool = VOCAB.filter(function (w) { return w.register === 'expressive'; });
 
   /* ---------- helpers ---------- */
   function shuffle(arr) {
@@ -37,22 +47,15 @@
     return c;
   }
   function take(arr, n) { return shuffle(arr).slice(0, Math.max(0, Math.min(n, arr.length))); }
+  function totalCount() {
+    return CATS.reduce(function (s, c) { return s + state.counts[c.key]; }, 0);
+  }
 
-  // Blend everyday + expressive according to the ratio, filling shortfalls from the other pool.
   function buildWords() {
-    var n = state.count;
-    var nExpr = Math.round(n * state.exprRatio);
-    var nEvery = n - nExpr;
-    var expr = take(expressivePool, nExpr);
-    var every = take(everydayPool, nEvery);
-    var picked = expr.concat(every);
-    // Fill any shortfall (a pool was too small) from whatever's left.
-    if (picked.length < n) {
-      var have = {};
-      picked.forEach(function (w) { have[w.gr] = 1; });
-      var rest = shuffle(VOCAB.filter(function (w) { return !have[w.gr]; }));
-      picked = picked.concat(rest.slice(0, n - picked.length));
-    }
+    var picked = [];
+    CATS.forEach(function (c) {
+      picked = picked.concat(take(pools[c.key], state.counts[c.key]));
+    });
     return shuffle(picked);
   }
 
@@ -89,6 +92,10 @@
   }
 
   function renderChips() {
+    if (!state.words.length) {
+      el.wordChips.innerHTML = '<div class="no-words">No words selected — turn up at least one category on the left.</div>';
+      return;
+    }
     var text = el.writing ? el.writing.value : '';
     el.wordChips.innerHTML = state.words.map(function (w) {
       var used = wordUsed(w, text);
@@ -107,16 +114,36 @@
     }).join('');
   }
 
-  function renderMixLabel() {
-    var nExpr = Math.round(state.count * state.exprRatio);
-    var nEvery = state.count - nExpr;
-    el.mixLabel.textContent = nExpr + ' expressive · ' + nEvery + ' everyday';
+  function renderSteppers() {
+    el.catSteppers.innerHTML = CATS.map(function (c) {
+      var n = state.counts[c.key];
+      var max = Math.min(MAX_PER_CAT, pools[c.key].length);
+      return '' +
+        '<div class="stepper-row">' +
+          '<span class="stepper-label">' + escapeHtml(c.label) +
+            ' <span class="stepper-pool">(' + pools[c.key].length + ')</span></span>' +
+          '<span class="stepper-ctrl">' +
+            '<button class="step-btn" data-cat="' + c.key + '" data-d="-1"' + (n <= 0 ? ' disabled' : '') + '>−</button>' +
+            '<span class="step-val">' + n + '</span>' +
+            '<button class="step-btn" data-cat="' + c.key + '" data-d="1"' + (n >= max ? ' disabled' : '') + '>+</button>' +
+          '</span>' +
+        '</div>';
+    }).join('');
+    el.totalNote.textContent = totalCount() + ' words per prompt';
+    el.catSteppers.querySelectorAll('.step-btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var key = b.getAttribute('data-cat');
+        var d = parseInt(b.getAttribute('data-d'), 10);
+        var max = Math.min(MAX_PER_CAT, pools[key].length);
+        state.counts[key] = Math.max(0, Math.min(max, state.counts[key] + d));
+        renderSteppers();
+        regenerate(false);
+      });
+    });
   }
 
   function renderPoolNote() {
-    el.poolNote.textContent =
-      'Pool: ' + expressivePool.length + ' expressive + ' + everydayPool.length +
-      ' everyday words · drawing ' + state.words.length + ' per prompt';
+    el.poolNote.textContent = 'Pool: ' + VOCAB.length + ' words · ' + SCENARIOS.length + ' scenarios';
   }
 
   function renderWriteCount() {
@@ -135,17 +162,6 @@
   }
 
   /* ---------- wiring ---------- */
-  el.countSlider.addEventListener('input', function () {
-    state.count = parseInt(el.countSlider.value, 10) || 1;
-    el.countVal.textContent = String(state.count);
-    renderMixLabel();
-    regenerate(false);
-  });
-  el.mixSlider.addEventListener('input', function () {
-    state.exprRatio = (parseInt(el.mixSlider.value, 10) || 0) / 100;
-    renderMixLabel();
-    regenerate(false);
-  });
   el.newPromptBtn.addEventListener('click', function () { regenerate(true); });
   el.shuffleWordsBtn.addEventListener('click', function () { regenerate(false); });
   el.newScenarioBtn.addEventListener('click', function () {
@@ -162,10 +178,7 @@
   });
 
   /* ---------- init ---------- */
-  el.countSlider.value = String(state.count);
-  el.countVal.textContent = String(state.count);
-  el.mixSlider.value = String(Math.round(state.exprRatio * 100));
-  renderMixLabel();
+  renderSteppers();
   regenerate(true);
   renderWriteCount();
 })();
