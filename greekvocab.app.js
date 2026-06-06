@@ -13,9 +13,11 @@
   // Word categories, each with an independent stepper.
   var CATS = [
     { key: 'everyNoun', label: 'Everyday nouns',        match: function (w) { return w.register === 'everyday'  && w.pos === 'noun'; }, def: 2 },
-    { key: 'everyVerb', label: 'Everyday verbs',        match: function (w) { return w.register === 'everyday'  && w.pos === 'verb'; }, def: 0 },
-    { key: 'connector', label: 'Connectors / adverbs',  match: function (w) { return w.register === 'everyday'  && w.pos === 'adv';  }, def: 0 },
-    { key: 'exprAdj',   label: 'Expressive adjectives', match: function (w) { return w.register === 'expressive' && w.pos === 'adj';  }, def: 2 },
+    { key: 'everyAdj',  label: 'Everyday adjectives',   match: function (w) { return w.register === 'everyday'  && w.pos === 'adj';  }, def: 1 },
+    { key: 'verb',      label: 'Verbs',                 match: function (w) { return w.pos === 'verb'; },   def: 1 },
+    { key: 'connector', label: 'Connectors & little words', match: function (w) { return w.pos === 'adv'; }, def: 0 },
+    { key: 'phrase',    label: 'Phrases & expressions', match: function (w) { return w.pos === 'phrase'; }, def: 0 },
+    { key: 'exprAdj',   label: 'Expressive adjectives', match: function (w) { return w.register === 'expressive' && w.pos === 'adj';  }, def: 1 },
     { key: 'exprNoun',  label: 'Expressive nouns',      match: function (w) { return w.register === 'expressive' && w.pos === 'noun'; }, def: 1 }
   ];
   var MAX_PER_CAT = 8;
