@@ -62,12 +62,30 @@
   var DAILY_KEY = 'gvm_vocab_daily';
   var track = {};
   try { track = JSON.parse(localStorage.getItem(TRACK_KEY) || '{}'); } catch (e) { track = {}; }
-  if (!track.__settings) track.__settings = { includeKnown: false };
+  // Migrate older data: binary known → rating (0–5 scale; 5 = known).
+  function migrateTrack(t) {
+    if (!t || typeof t !== 'object') t = {};
+    Object.keys(t).forEach(function (k) {
+      if (k === '__settings') return;
+      var r = t[k];
+      if (r && typeof r.rating !== 'number') r.rating = r.known ? 5 : 0;
+    });
+    if (!t.__settings) t.__settings = { includeKnown: false };
+    return t;
+  }
+  track = migrateTrack(track);
 
   function saveTrack() { try { localStorage.setItem(TRACK_KEY, JSON.stringify(track)); } catch (e) {} }
   function rec(gr) {
-    if (!track[gr]) track[gr] = { known: false, seen: 0, used: 0, last: null };
+    if (!track[gr]) track[gr] = { rating: 0, seen: 0, used: 0, last: null };
     return track[gr];
+  }
+  function ratingOf(gr) { return track[gr] ? (track[gr].rating || 0) : 0; }
+  function setRating(gr, n) {
+    var r = rec(gr);
+    r.rating = Math.max(0, Math.min(5, n));
+    saveTrack();
+    renderTrackStats();
   }
   function todayStr() {
     var d = new Date();
@@ -77,13 +95,6 @@
   function countSeen(words) {
     words.forEach(function (w) { var r = rec(w.gr); r.seen += 1; r.last = todayStr(); });
     saveTrack();
-  }
-  function isKnown(gr) { return !!(track[gr] && track[gr].known); }
-  function toggleKnown(gr) {
-    var r = rec(gr);
-    r.known = !r.known;
-    saveTrack();
-    renderTrackStats();
   }
 
   /* ---------- randomness & weighted sampling ---------- */
@@ -108,15 +119,16 @@
     }
     return c;
   }
-  // Weight: fresh words come up most; well-practised ones fade; known ones are excluded
-  // (or heavily downweighted when "include known" is on).
+  // Weight: fresh words come up most; well-practised ones fade; the higher your 0–5
+  // rating, the rarer the word — at 5 it is retired (unless "include mastered" is on).
   function weightOf(w) {
     var r = track[w.gr];
-    var known = r && r.known;
-    if (known && !track.__settings.includeKnown) return 0;
+    var rating = r ? (r.rating || 0) : 0;
+    if (rating >= 5 && !track.__settings.includeKnown) return 0;
     var seen = r ? r.seen : 0, used = r ? r.used : 0;
     var base = 1 / (1 + seen * 0.5 + used * 1.5);
-    return known ? base * 0.15 : base;
+    var factor = Math.max(0.05, 1 - rating / 5);
+    return base * factor;
   }
   function weightedTake(arr, n, rng) {
     var rnd = rng || Math.random;
@@ -318,7 +330,8 @@
 
   function detailHtml(w) {
     var color = (THEMES[w.theme] && THEMES[w.theme].color) || 'var(--accent)';
-    var r = track[w.gr] || { known: false, seen: 0, used: 0 };
+    var r = track[w.gr] || { rating: 0, seen: 0, used: 0 };
+    var rating = r.rating || 0;
     var h = '<div class="wd-head" style="--chip:' + color + '">' +
       '<div class="wd-gr">' + (w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '') + escapeHtml(w.gr) + '</div>' +
       '<div class="wd-en">' + escapeHtml(w.en) + '</div>' +
@@ -326,10 +339,13 @@
         (THEMES[w.theme] ? ' · ' + escapeHtml(THEMES[w.theme].label) : '') + '</div>' +
       '</div>';
 
+    var rateBtns = '';
+    for (var ri = 0; ri <= 5; ri++) {
+      rateBtns += '<button class="wd-rate lvl' + ri + (ri === rating ? ' active' : '') + '" data-gr="' + escapeHtml(w.gr) + '" data-r="' + ri + '">' + ri + '</button>';
+    }
     h += '<div class="wd-track">' +
-      '<span class="wd-track-stats">drawn ' + (r.seen || 0) + '× · used in writing ' + (r.used || 0) + '×</span>' +
-      '<button class="wd-known-btn' + (r.known ? ' is-known' : '') + '" data-gr="' + escapeHtml(w.gr) + '">' +
-        (r.known ? '↩ Bring it back' : '✓ Mark as known') + '</button>' +
+      '<div class="wd-rate-row"><span class="wd-rate-label">Known:</span>' + rateBtns + '</div>' +
+      '<span class="wd-track-stats">0 = not at all · 5 = known (retired) · drawn ' + (r.seen || 0) + '× · used ' + (r.used || 0) + '× · keys 0–5 work</span>' +
       '</div>';
 
     if (w.note) h += '<p class="wd-note">' + escapeHtml(w.note) + '</p>';
@@ -396,17 +412,21 @@
     return h;
   }
 
+  var currentDetailWord = null;
   function openDetail(w) {
+    currentDetailWord = w;
     el.wordModal.innerHTML =
       '<div class="modal-backdrop"></div>' +
       '<div class="modal-panel"><button class="modal-close" aria-label="Close">×</button>' + detailHtml(w) + '</div>';
     el.wordModal.style.display = 'block';
     el.wordModal.querySelector('.modal-backdrop').addEventListener('click', closeDetail);
     el.wordModal.querySelector('.modal-close').addEventListener('click', closeDetail);
-    var kb = el.wordModal.querySelector('.wd-known-btn');
-    if (kb) kb.addEventListener('click', function () {
-      toggleKnown(kb.getAttribute('data-gr'));
-      openDetail(w); // re-render with new state
+    el.wordModal.querySelectorAll('.wd-rate').forEach(function (b) {
+      b.addEventListener('click', function () {
+        setRating(b.getAttribute('data-gr'), parseInt(b.getAttribute('data-r'), 10));
+        openDetail(w); // re-render with new state
+        renderChips(); // refresh chip dots
+      });
     });
     el.wordModal.querySelectorAll('.wd-rel-chip').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -415,8 +435,17 @@
       });
     });
   }
-  function closeDetail() { el.wordModal.style.display = 'none'; el.wordModal.innerHTML = ''; }
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDetail(); });
+  function closeDetail() { el.wordModal.style.display = 'none'; el.wordModal.innerHTML = ''; currentDetailWord = null; }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeDetail(); return; }
+    // 0–5 rates the word while its detail panel is open (and you are not typing somewhere).
+    if (currentDetailWord && /^[0-5]$/.test(e.key) &&
+        !(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA'))) {
+      setRating(currentDetailWord.gr, parseInt(e.key, 10));
+      openDetail(currentDetailWord);
+      renderChips();
+    }
+  });
 
   /* ---------- rendering ---------- */
   function renderScenario() {
@@ -442,13 +471,17 @@
       var color = (THEMES[w.theme] && THEMES[w.theme].color) || 'var(--accent)';
       var article = w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '';
       var reg = w.register === 'everyday' ? 'everyday' : 'expressive';
+      var rating = ratingOf(w.gr);
+      var dots = '';
+      for (var k = 1; k <= 5; k++) dots += '<span class="dot' + (k <= rating ? ' on' : '') + '"></span>';
       return '' +
-        '<div class="vchip ' + reg + (used ? ' used' : '') + '" style="--chip:' + color + '" data-idx="' + i + '" title="Click for grammar & related words">' +
+        '<div class="vchip ' + reg + (used ? ' used' : '') + '" style="--chip:' + color + '" data-idx="' + i + '" title="Click for grammar, related words & rating">' +
           '<div class="vchip-gr">' + article + escapeHtml(w.gr) +
             (used ? '<span class="tick">✓</span>' : '') + '</div>' +
           '<div class="vchip-en">' + escapeHtml(w.en) + '</div>' +
           '<div class="vchip-meta"><span class="pos">' + escapeHtml(w.pos) + '</span>' +
-            '<span class="reg reg-' + reg + '">' + reg + '</span></div>' +
+            '<span class="reg reg-' + reg + '">' + reg + '</span>' +
+            '<span class="vchip-dots lvl' + rating + '" title="known ' + rating + '/5">' + dots + '</span></div>' +
         '</div>';
     }).join('');
   }
@@ -497,16 +530,17 @@
     el.writeCount.textContent = words + (words === 1 ? ' word' : ' words');
   }
   function renderTrackStats() {
-    var known = 0, practised = 0, unseen = 0;
+    var mastered = 0, learning = 0, unseen = 0;
     VOCAB.forEach(function (w) {
       var r = track[w.gr];
-      if (r && r.known) known++;
-      else if (r && r.used > 0) practised++;
+      var rt = r ? (r.rating || 0) : 0;
+      if (rt >= 5) mastered++;
+      else if (rt > 0 || (r && r.used > 0)) learning++;
       else if (!r || !r.seen) unseen++;
     });
-    el.trackStats.textContent = known + ' known · ' + practised + ' practised · ' + unseen + ' unseen of ' + VOCAB.length;
+    el.trackStats.textContent = mastered + ' mastered (5) · ' + learning + ' learning (1–4) · ' + unseen + ' unseen of ' + VOCAB.length;
     el.includeKnownBtn.classList.toggle('active', !!track.__settings.includeKnown);
-    el.includeKnownBtn.textContent = track.__settings.includeKnown ? 'Known words: included' : 'Known words: hidden';
+    el.includeKnownBtn.textContent = track.__settings.includeKnown ? 'Mastered words: included' : 'Mastered words: hidden';
   }
 
   /* ---------- actions ---------- */
@@ -560,8 +594,7 @@
       try {
         var data = JSON.parse(reader.result);
         if (typeof data !== 'object' || data === null) throw new Error('bad format');
-        track = data;
-        if (!track.__settings) track.__settings = { includeKnown: false };
+        track = migrateTrack(data);
         saveTrack();
         renderTrackStats();
         alert('Progress imported.');
@@ -622,8 +655,7 @@
       if (!confirm('Replace the progress in this browser with the GitHub backup?')) return;
       var data = JSON.parse(f.content);
       if (typeof data !== 'object' || data === null) throw new Error('bad backup format');
-      track = data;
-      if (!track.__settings) track.__settings = { includeKnown: false };
+      track = migrateTrack(data);
       saveTrack();
       renderTrackStats();
       openGhModal('Restored ✓');

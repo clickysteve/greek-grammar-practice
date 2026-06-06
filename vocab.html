@@ -15,6 +15,8 @@
       --accent: #ff9f43;
       --accent-strong: #ff9f43;
       --good: #8ee28e;
+      --warn: #ffd84d;
+      --bad: #ff8f8f;
       --shadow: 0 12px 34px rgba(0,0,0,.28);
     }
     * { box-sizing: border-box; }
@@ -104,10 +106,24 @@
     .track-btns { display: flex; flex-wrap: wrap; gap: 8px; }
     .track-btns button { font-size: 12px; padding: 7px 11px; }
     .track-btns button.active { outline: 2px solid rgba(255,159,67,.35); }
-    .wd-track { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 10px 0 2px; flex-wrap: wrap; }
+    .wd-track { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 2px; }
     .wd-track-stats { font-size: 12px; color: var(--muted); }
-    .wd-known-btn { font-size: 13px; padding: 8px 12px; border-radius: 999px; }
-    .wd-known-btn.is-known { border-color: var(--good); color: var(--good); }
+    .wd-rate-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .wd-rate-label { font-size: 13px; color: var(--muted); margin-right: 4px; }
+    .wd-rate { width: 36px; height: 36px; padding: 0; border-radius: 10px; font-size: 15px; font-weight: 600; opacity: .65; }
+    .wd-rate:hover { opacity: 1; }
+    .wd-rate.active { opacity: 1; outline: 2px solid rgba(255,255,255,.25); }
+    .wd-rate.lvl0.active { border-color: var(--bad); color: var(--bad); }
+    .wd-rate.lvl1.active, .wd-rate.lvl2.active { border-color: var(--accent); color: var(--accent); }
+    .wd-rate.lvl3.active, .wd-rate.lvl4.active { border-color: var(--warn); color: var(--warn); }
+    .wd-rate.lvl5.active { border-color: var(--good); color: var(--good); }
+
+    /* knowledge dots on chips */
+    .vchip-dots { display: inline-flex; gap: 3px; align-items: center; margin-left: 2px; }
+    .vchip-dots .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.13); }
+    .vchip-dots.lvl1 .dot.on, .vchip-dots.lvl2 .dot.on { background: var(--accent); }
+    .vchip-dots.lvl3 .dot.on, .vchip-dots.lvl4 .dot.on { background: var(--warn); }
+    .vchip-dots.lvl5 .dot.on { background: var(--good); }
     .gh-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); background: #101419; color: var(--text); border-radius: 10px; font-size: 14px; }
     .gh-status { font-size: 13px; color: var(--muted); margin: 10px 0; }
     .gh-status a { color: var(--accent); }
