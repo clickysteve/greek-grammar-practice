@@ -18,41 +18,28 @@
   var THEMES = window.THEMES || {};
   var VERB_APP = { verbs: window.VERBS || [], conj: window.CONJUGATIONS || {} };
 
-  var CATS = [
-    { key: 'everyNoun', label: 'Everyday nouns',        match: function (w) { return w.register === 'everyday'  && w.pos === 'noun'; }, def: 2 },
-    { key: 'everyAdj',  label: 'Everyday adjectives',   match: function (w) { return w.register === 'everyday'  && w.pos === 'adj';  }, def: 1 },
-    { key: 'verb',      label: 'Verbs',                 match: function (w) { return w.pos === 'verb'; },   def: 1 },
-    { key: 'connector', label: 'Connectors & little words', match: function (w) { return w.pos === 'adv'; }, def: 0 },
-    { key: 'phrase',    label: 'Phrases & expressions', match: function (w) { return w.pos === 'phrase'; }, def: 0 },
-    { key: 'exprAdj',   label: 'Expressive adjectives', match: function (w) { return w.register === 'expressive' && w.pos === 'adj';  }, def: 1 },
-    { key: 'exprNoun',  label: 'Expressive nouns',      match: function (w) { return w.register === 'expressive' && w.pos === 'noun'; }, def: 1 }
-  ];
-  var MAX_PER_CAT = 8;
-
-  var pools = {};
-  CATS.forEach(function (c) { pools[c.key] = VOCAB.filter(c.match); });
+  var everydayPool = VOCAB.filter(function (w) { return w.register === 'everyday'; });
+  var expressivePool = VOCAB.filter(function (w) { return w.register === 'expressive'; });
 
   var state = {
-    counts: {}, words: [], scenario: SCENARIOS[0] || { gr: '', en: '' },
+    count: 4,        // words per prompt
+    exprRatio: 0.6,  // fraction of words that should be expressive
+    words: [], scenario: SCENARIOS[0] || { gr: '', en: '' },
     daily: false, usedCounted: {}
   };
-  CATS.forEach(function (c) { state.counts[c.key] = c.def; });
-  // Restore saved per-category counts (settings live in a collapsed panel, so make them sticky).
-  var COUNTS_KEY = 'gvm_vocab_counts';
+  // Restore saved settings (the panel is collapsed, so make them sticky).
+  var COUNTS_KEY = 'gvm_vocab_simple';
   try {
-    var savedCounts = JSON.parse(localStorage.getItem(COUNTS_KEY) || '{}');
-    CATS.forEach(function (c) {
-      if (typeof savedCounts[c.key] === 'number') {
-        state.counts[c.key] = Math.max(0, Math.min(MAX_PER_CAT, savedCounts[c.key]));
-      }
-    });
+    var savedCfg = JSON.parse(localStorage.getItem(COUNTS_KEY) || '{}');
+    if (typeof savedCfg.count === 'number') state.count = Math.max(1, Math.min(10, savedCfg.count));
+    if (typeof savedCfg.exprRatio === 'number') state.exprRatio = Math.max(0, Math.min(1, savedCfg.exprRatio));
   } catch (e) {}
-  function saveCounts() { try { localStorage.setItem(COUNTS_KEY, JSON.stringify(state.counts)); } catch (e) {} }
+  function saveCounts() { try { localStorage.setItem(COUNTS_KEY, JSON.stringify({ count: state.count, exprRatio: state.exprRatio })); } catch (e) {} }
 
   var el = {};
-  ['scenarioText', 'scenarioEn', 'scenarioBadge', 'wordChips', 'catSteppers', 'totalNote',
+  ['scenarioText', 'scenarioEn', 'scenarioBadge', 'wordChips',
    'newPromptBtn', 'todayBtn', 'shuffleWordsBtn', 'newScenarioBtn', 'writing',
-   'writeCount', 'clearBtn', 'poolNote', 'wordModal',
+   'writeCount', 'clearBtn', 'poolNote', 'wordModal', 'countSlider', 'countVal', 'mixSlider', 'mixLabel',
    'trackStats', 'includeKnownBtn', 'exportBtn', 'importBtn', 'importFile', 'resetTrackBtn', 'ghBtn'].forEach(function (id) {
     el[id] = document.getElementById(id);
   });
@@ -145,8 +132,16 @@
   }
 
   function buildWords(rng) {
-    var picked = [];
-    CATS.forEach(function (c) { picked = picked.concat(weightedTake(pools[c.key], state.counts[c.key], rng)); });
+    var n = state.count;
+    var nExpr = Math.round(n * state.exprRatio);
+    var picked = weightedTake(expressivePool, nExpr, rng)
+      .concat(weightedTake(everydayPool, n - nExpr, rng));
+    // Fill any shortfall (a pool exhausted by ratings) from whatever is left.
+    if (picked.length < n) {
+      var have = {};
+      picked.forEach(function (w) { have[w.gr] = 1; });
+      picked = picked.concat(weightedTake(VOCAB.filter(function (w) { return !have[w.gr]; }), n - picked.length, rng));
+    }
     return shuffle(picked, rng);
   }
   function pickScenario(rng) {
@@ -457,7 +452,7 @@
 
   function renderChips() {
     if (!state.words.length) {
-      el.wordChips.innerHTML = '<div class="no-words">No words selected — turn up at least one category above, or you have marked everything as known.</div>';
+      el.wordChips.innerHTML = '<div class="no-words">No words to draw — everything eligible is rated 5. Lower some ratings or include mastered words.</div>';
       return;
     }
     var text = el.writing ? el.writing.value : '';
@@ -490,36 +485,9 @@
     if (chip) openDetail(state.words[parseInt(chip.getAttribute('data-idx'), 10)]);
   });
 
-  function totalCount() {
-    return CATS.reduce(function (s, c) { return s + state.counts[c.key]; }, 0);
-  }
-  function renderSteppers() {
-    el.catSteppers.innerHTML = CATS.map(function (c) {
-      var n = state.counts[c.key];
-      var max = Math.min(MAX_PER_CAT, pools[c.key].length);
-      return '' +
-        '<div class="stepper-row">' +
-          '<span class="stepper-label">' + escapeHtml(c.label) +
-            ' <span class="stepper-pool">(' + pools[c.key].length + ')</span></span>' +
-          '<span class="stepper-ctrl">' +
-            '<button class="step-btn" data-cat="' + c.key + '" data-d="-1"' + (n <= 0 ? ' disabled' : '') + '>−</button>' +
-            '<span class="step-val">' + n + '</span>' +
-            '<button class="step-btn" data-cat="' + c.key + '" data-d="1"' + (n >= max ? ' disabled' : '') + '>+</button>' +
-          '</span>' +
-        '</div>';
-    }).join('');
-    el.totalNote.textContent = totalCount() + ' words per prompt';
-    el.catSteppers.querySelectorAll('.step-btn').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var key = b.getAttribute('data-cat');
-        var d = parseInt(b.getAttribute('data-d'), 10);
-        var max = Math.min(MAX_PER_CAT, pools[key].length);
-        state.counts[key] = Math.max(0, Math.min(max, state.counts[key] + d));
-        saveCounts();
-        renderSteppers();
-        regenerate(false);
-      });
-    });
+  function renderMixLabel() {
+    var nExpr = Math.round(state.count * state.exprRatio);
+    el.mixLabel.textContent = nExpr + ' expressive · ' + (state.count - nExpr) + ' everyday';
   }
   function renderPoolNote() {
     el.poolNote.textContent = 'Pool: ' + VOCAB.length + ' words · ' + SCENARIOS.length + ' scenarios';
@@ -713,6 +681,19 @@
       el.writing.focus();
     }
   });
+  el.countSlider.addEventListener('input', function () {
+    state.count = parseInt(el.countSlider.value, 10) || 1;
+    el.countVal.textContent = String(state.count);
+    saveCounts();
+    renderMixLabel();
+    regenerate(false);
+  });
+  el.mixSlider.addEventListener('input', function () {
+    state.exprRatio = (parseInt(el.mixSlider.value, 10) || 0) / 100;
+    saveCounts();
+    renderMixLabel();
+    regenerate(false);
+  });
   el.includeKnownBtn.addEventListener('click', function () {
     track.__settings.includeKnown = !track.__settings.includeKnown;
     saveTrack();
@@ -736,7 +717,10 @@
   el.ghBtn.addEventListener('click', function () { openGhModal(); });
 
   /* ---------- init ---------- */
-  renderSteppers();
+  el.countSlider.value = String(state.count);
+  el.countVal.textContent = String(state.count);
+  el.mixSlider.value = String(Math.round(state.exprRatio * 100));
+  renderMixLabel();
   regenerate(true);
   renderWriteCount();
   renderTrackStats();

@@ -48,15 +48,14 @@
     .settings-panel[open] summary::before { content: '▾ '; }
     .settings-panel summary:hover { color: var(--text); }
     .settings-body { margin-top: 14px; }
-    .steppers { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 8px 24px; }
-    .stepper-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0; }
-    .stepper-label { font-size: 14px; color: var(--text); }
-    .stepper-pool { color: var(--muted); font-size: 12px; }
-    .stepper-ctrl { display: flex; align-items: center; gap: 10px; }
-    .step-btn { width: 34px; height: 34px; padding: 0; border-radius: 10px; font-size: 18px; line-height: 1; }
-    .step-btn:disabled { opacity: .35; cursor: default; }
-    .step-val { font-size: 18px; font-weight: 700; min-width: 22px; text-align: center; }
-    .total-note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+    .controls-row { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-end; }
+    .control { flex: 1 1 240px; }
+    .slider-row { display: flex; align-items: center; gap: 12px; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .slider-row input[type="range"] { flex: 1; width: auto; }
+    .count-val { font-size: 22px; font-weight: 700; min-width: 28px; text-align: center; }
+    .mix-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .08em; }
+    .mix-label { font-size: 13px; color: var(--muted); margin-top: 6px; }
     .no-words { color: var(--muted); font-size: 14px; }
 
     .prompt-card {
@@ -194,9 +193,21 @@
     <details class="panel settings-panel">
       <summary>Word settings &amp; progress</summary>
       <div class="settings-body">
-        <label class="label">Words per prompt — by category</label>
-        <div class="steppers" id="catSteppers"></div>
-        <div class="total-note" id="totalNote"></div>
+        <div class="controls-row">
+          <div class="control">
+            <label class="label">Words per prompt</label>
+            <div class="slider-row">
+              <input type="range" id="countSlider" min="1" max="10" value="4" />
+              <span class="count-val" id="countVal">4</span>
+            </div>
+          </div>
+          <div class="control">
+            <label class="label">Mix</label>
+            <input type="range" id="mixSlider" min="0" max="100" step="10" value="60" />
+            <div class="mix-ends"><span>All everyday</span><span>All expressive</span></div>
+            <div class="mix-label" id="mixLabel"></div>
+          </div>
+        </div>
         <div class="track-row">
           <span class="track-stats" id="trackStats"></span>
           <span class="track-btns">
