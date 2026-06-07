@@ -92,7 +92,7 @@
     for (var i = 0; i <= 5; i++) {
       btns += '<button class="lvl' + i + (i === r ? ' active' : '') + '" data-gr="' + escapeHtml(w.gr) + '" data-r="' + i + '">' + i + '</button>';
     }
-    return '<div class="wrow ' + w.register + '" style="--chip:' + color + '">' +
+    return '<div class="wrow ' + w.register + '" style="--chip:' + color + '" data-gr="' + escapeHtml(w.gr) + '">' +
       '<div class="w-main">' +
         '<div class="w-gr">' + (w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '') + escapeHtml(w.gr) +
           (w.custom ? '<span class="custom-tag">custom</span>' : '') + '</div>' +
@@ -119,14 +119,34 @@
       ' words (' + track.__custom.length + ' custom) · ' + mastered + ' mastered · ' + learning + ' learning · ' + unrated + ' unrated';
   }
 
-  // Event delegation: ratings + deletes.
+  function applyRating(gr, rating) {
+    if (!track[gr]) track[gr] = { rating: 0, seen: 0, used: 0, last: null };
+    track[gr].rating = rating;
+    save();
+    // Bridge to verb practice: seed unrated drill cards for linked verbs.
+    var word = ALL.filter(function (w) { return w.gr === gr; })[0];
+    if (word && word.pos === 'verb' && window.GVShared) {
+      var entry = GVShared.findVerbAppEntry(gr);
+      if (entry) GVShared.seedVerbRatings(entry, rating);
+    }
+  }
+
+  // Shared word-detail modal (conjugations, grammar, related words).
+  if (window.GVShared) {
+    GVShared.init({
+      modalEl: document.getElementById('wordModal'),
+      vocab: ALL,
+      themes: THEMES,
+      statsOf: function (gr) { var r = track[gr] || {}; return { rating: r.rating || 0, seen: r.seen || 0, used: r.used || 0 }; },
+      onRate: function (gr, rating) { applyRating(gr, rating); render(); }
+    });
+  }
+
+  // Event delegation: ratings, deletes, and opening word details.
   el.wlist.addEventListener('click', function (e) {
     var t = e.target;
     if (t.hasAttribute && t.hasAttribute('data-r')) {
-      var gr = t.getAttribute('data-gr');
-      if (!track[gr]) track[gr] = { rating: 0, seen: 0, used: 0, last: null };
-      track[gr].rating = parseInt(t.getAttribute('data-r'), 10);
-      save();
+      applyRating(t.getAttribute('data-gr'), parseInt(t.getAttribute('data-r'), 10));
       render();
     } else if (t.hasAttribute && t.hasAttribute('data-del')) {
       var g = t.getAttribute('data-del');
@@ -136,6 +156,14 @@
         save();
         ALL = buildAll();
         render();
+      }
+    } else {
+      var main = t.closest && t.closest('.w-main');
+      if (main && window.GVShared) {
+        var row = main.parentElement;
+        var gr2 = row.getAttribute('data-gr');
+        var found = ALL.filter(function (w) { return w.gr === gr2; })[0];
+        if (found) GVShared.openDetail(found);
       }
     }
   });

@@ -122,7 +122,7 @@
   // rating, the rarer the word — at 5 it is retired (unless "include mastered" is on).
   function weightOf(w) {
     var r = track[w.gr];
-    var rating = r ? (r.rating || 0) : 0;
+    var rating = Math.max(r ? (r.rating || 0) : 0, drillBoost[w.gr] || 0);
     if (rating >= 5 && !track.__settings.includeKnown) return 0;
     var seen = r ? r.seen : 0, used = r ? r.used : 0;
     var base = 1 / (1 + seen * 0.5 + used * 1.5);
@@ -144,6 +144,7 @@
   }
 
   function buildWords(rng) {
+    refreshDrillBoost();
     var n = state.count;
     var nExpr = Math.round(n * state.exprRatio);
     var picked = weightedTake(expressivePool, nExpr, rng)
@@ -184,275 +185,33 @@
     });
   }
 
-  /* ---------- grammar engine (rule-based, approximate) ---------- */
-  var INVARIABLE_NOUNS = ['ασανσέρ', 'ρεπό', 'μαγιό', 'ραντεβού', 'καλοριφέρ', 'μπουφάν', 'στυλό', 'κλισέ', 'ρούμι', 'τσάι', 'σινεμά'];
-
-  var GR_VOWELS = 'αεηιουωάέήίόύώϊϋΐΰ';
-  var GR_ACCENTED = 'άέήίόύώΐΰ';
-  function shiftStressRight(s) {
-    var DE = { 'ά': 'α', 'έ': 'ε', 'ή': 'η', 'ί': 'ι', 'ό': 'ο', 'ύ': 'υ', 'ώ': 'ω', 'ΐ': 'ϊ', 'ΰ': 'ϋ' };
-    var AC = { 'α': 'ά', 'ε': 'έ', 'η': 'ή', 'ι': 'ί', 'ο': 'ό', 'υ': 'ύ', 'ω': 'ώ' };
-    var arr = s.split('');
-    var i = -1;
-    for (var x = 0; x < arr.length; x++) if (GR_ACCENTED.indexOf(arr[x]) !== -1) { i = x; break; }
-    if (i < 0) return s;
-    arr[i] = DE[arr[i]];
-    var j = i + 1;
-    while (j < arr.length && GR_VOWELS.indexOf(arr[j]) !== -1) j++;
-    while (j < arr.length && GR_VOWELS.indexOf(arr[j]) === -1) j++;
-    if (j >= arr.length) return s;
-    var k = j;
-    while (k + 1 < arr.length && GR_VOWELS.indexOf(arr[k + 1]) !== -1) k++;
-    arr[k] = AC[arr[k]] || arr[k];
-    return arr.join('');
-  }
-  function groupsAfterAccent(s) {
-    var i = -1;
-    for (var x = 0; x < s.length; x++) if (GR_ACCENTED.indexOf(s[x]) !== -1) { i = x; break; }
-    if (i < 0) return 0;
-    var n = 0, inGroup = true;
-    for (var y = i + 1; y < s.length; y++) {
-      var isV = GR_VOWELS.indexOf(s[y]) !== -1;
-      if (isV && !inGroup) n++;
-      inGroup = isV;
-    }
-    return n;
-  }
-
-  function nounPlural(w) {
-    var g = w.gr;
-    if (INVARIABLE_NOUNS.indexOf(g) !== -1) return null;
-    if (w.art === 'τα' || w.art === 'οι') return '(plural-only word)';
-    function endsWith(e) { return g.length > e.length && g.slice(-e.length) === e; }
-    var proparox = groupsAfterAccent(g) >= 2;
-    if (w.art === 'ο') {
-      if (endsWith('ος')) return g.slice(0, -2) + 'οι';
-      if (endsWith('άς')) return g.slice(0, -2) + 'άδες';
-      if (endsWith('ας')) return g.slice(0, -2) + 'ες';
-      if (endsWith('ής')) return g.slice(0, -2) + 'ές';
-      if (endsWith('ης')) return g.slice(0, -2) + 'ες';
-    }
-    if (w.art === 'η') {
-      if (endsWith('ση') || endsWith('ξη') || endsWith('ψη')) {
-        var pl = g.slice(0, -1) + 'εις';
-        return proparox ? shiftStressRight(pl) : pl;
-      }
-      if (endsWith('α')) return g.slice(0, -1) + 'ες';
-      if (endsWith('ά')) return g.slice(0, -1) + 'άδες';
-      if (endsWith('η')) return g.slice(0, -1) + 'ες';
-      if (endsWith('ή')) return g.slice(0, -1) + 'ές';
-    }
-    if (w.art === 'το') {
-      if (endsWith('μα')) {
-        var plm = g + 'τα';
-        return proparox ? shiftStressRight(plm) : plm;
-      }
-      if (endsWith('ος')) return g.slice(0, -2) + 'η';
-      if (endsWith('ί'))  return g.slice(0, -1) + 'ιά';
-      if (endsWith('ι'))  return g + 'α';
-      if (endsWith('ο'))  return g.slice(0, -1) + 'α';
-      if (endsWith('ό'))  return g.slice(0, -1) + 'ά';
-    }
-    return null;
-  }
-
-  var VOWELS = 'αεηιουωάέήίόύώ';
-  function adjForms(w) {
-    var g = w.gr;
-    function ew(e) { return g.length > e.length && g.slice(-e.length) === e; }
-    if (ew('ος') || ew('ός')) {
-      var acc = ew('ός');
-      var stem = g.slice(0, -2);
-      var femEnd = VOWELS.indexOf(stem.slice(-1)) !== -1 ? (acc ? 'ά' : 'α') : (acc ? 'ή' : 'η');
-      return { fem: stem + femEnd, neut: stem + (acc ? 'ό' : 'ο'), adv: stem + (acc ? 'ά' : 'α'), note: 'Adverb in -α (more formal: -ως).' };
-    }
-    if (ew('ής')) {
-      return { fem: g, neut: g.slice(0, -2) + 'ές', adv: g.slice(0, -2) + 'ώς', note: 'Same form for masculine and feminine.' };
-    }
-    if (ew('ης')) {
-      return { fem: g.slice(0, -2) + 'α', neut: g.slice(0, -2) + 'ικο', adv: null, note: 'Colloquial -ης / -α / -ικο pattern (τεμπέλης → τεμπέλα → τεμπέλικο).' };
-    }
-    if (ew('ύς')) {
-      return { fem: g.slice(0, -2) + 'ιά', neut: g.slice(0, -2) + 'ύ', adv: g.slice(0, -2) + 'ιά', note: 'The -ύς / -ιά / -ύ pattern (βαρύς, βαριά, βαρύ).' };
-    }
-    if (ew('ων')) {
-      return { fem: g.slice(0, -2) + 'ουσα', neut: g.slice(0, -2) + 'ον', adv: null, note: 'Participle-style -ων / -ουσα / -ον pattern.' };
-    }
-    return null;
-  }
-
-  function verbPresentTable(g) {
-    function ew(e) { return g.length > e.length && g.slice(-e.length) === e; }
-    var s;
-    if (ew('άω'))   { s = g.slice(0, -2); return [g, s + 'άς', s + 'άει', s + 'άμε', s + 'άτε', s + 'άνε']; }
-    if (ew('ιέμαι')){ s = g.slice(0, -5); return [g, s + 'ιέσαι', s + 'ιέται', s + 'ιόμαστε', s + 'ιέστε', s + 'ιούνται']; }
-    if (ew('ούμαι')){ s = g.slice(0, -5); return [g, s + 'είσαι', s + 'είται', s + 'ούμαστε', s + 'είστε', s + 'ούνται']; }
-    if (ew('άμαι')) { s = g.slice(0, -4); return [g, s + 'άσαι', s + 'άται', s + 'όμαστε', s + 'άστε', s + 'ούνται']; }
-    if (ew('ομαι')) { s = g.slice(0, -4); return [g, s + 'εσαι', s + 'εται', s + 'όμαστε', s + 'εστε', s + 'ονται']; }
-    if (ew('ώ'))    { s = g.slice(0, -1); return [g, s + 'είς', s + 'εί', s + 'ούμε', s + 'είτε', s + 'ούν']; }
-    if (ew('ω'))    { s = g.slice(0, -1); return [g, s + 'εις', s + 'ει', s + 'ουμε', s + 'ετε', s + 'ουν']; }
-    return null;
-  }
-
-  function findVerbAppEntry(gr) {
-    var n = normGr(gr);
-    for (var i = 0; i < VERB_APP.verbs.length; i++) {
-      var v = VERB_APP.verbs[i];
-      if (normGr(v.present) === n) return v;
-      if (v.presentAlt && v.presentAlt.some(function (a) { return normGr(a) === n; })) return v;
-    }
-    return null;
-  }
-
-  var CURATED_RELATED = [
-    ['θυμός', 'θυμωμένος'], ['φοβάμαι', 'φοβισμένος'], ['ντρέπομαι', 'ντροπιασμένος'],
-    ['άγχος', 'αγχωμένος'], ['γελάω', 'γελαστός'], ['όνειρο', 'ονειρεύομαι'], ['όνειρο', 'ονειρικός']
-  ];
-  function commonPrefixLen(a, b) {
-    var n = 0;
-    while (n < a.length && n < b.length && a[n] === b[n]) n++;
-    return n;
-  }
-  function relatedWords(word) {
-    var base = normGr(word.gr).replace(/σ$/, '');
-    var rel = VOCAB.filter(function (w) {
-      if (w.gr === word.gr || w.pos === 'phrase') return false;
-      var b = normGr(w.gr).replace(/σ$/, '');
-      var n = commonPrefixLen(base, b);
-      var m = Math.min(base.length, b.length);
-      return n >= 4 && n >= m - 3;
+  /* ---------- word detail & verb-practice bridge (greekvocab.shared.js) ---------- */
+  // Cached "drill boost": rounded average of each linked verb's ratings in the
+  // Verb Memoriser ('gvm_ratings'). Raises the effective rating used for sampling,
+  // so verbs you have already drilled well appear less in writing prompts.
+  var drillBoost = {};
+  function refreshDrillBoost() {
+    drillBoost = {};
+    var ratings;
+    try { ratings = JSON.parse(localStorage.getItem('gvm_ratings') || '{}'); } catch (e) { ratings = {}; }
+    var sums = {};
+    Object.keys(ratings).forEach(function (k) {
+      var parts = k.split('__');
+      if (parts.length < 4) return;
+      var eng = parts[1];
+      if (!sums[eng]) sums[eng] = { s: 0, c: 0 };
+      sums[eng].s += Number(ratings[k]) || 0;
+      sums[eng].c++;
     });
-    CURATED_RELATED.forEach(function (pair) {
-      var other = pair[0] === word.gr ? pair[1] : (pair[1] === word.gr ? pair[0] : null);
-      if (other && !rel.some(function (w) { return w.gr === other; })) {
-        var found = VOCAB.filter(function (w) { return w.gr === other; })[0];
-        if (found) rel.push(found);
+    VOCAB.forEach(function (w) {
+      if (w.pos !== 'verb') return;
+      var entry = GVShared.findVerbAppEntry(w.gr);
+      if (entry && sums[entry.english] && sums[entry.english].c) {
+        drillBoost[w.gr] = Math.round(sums[entry.english].s / sums[entry.english].c);
       }
     });
-    return rel.slice(0, 8);
   }
-
-  /* ---------- word detail modal ---------- */
-  var POS_LABEL = { noun: 'noun', adj: 'adjective', verb: 'verb', adv: 'adverb / connector', phrase: 'phrase' };
-
-  function detailHtml(w) {
-    var color = (THEMES[w.theme] && THEMES[w.theme].color) || 'var(--accent)';
-    var r = track[w.gr] || { rating: 0, seen: 0, used: 0 };
-    var rating = r.rating || 0;
-    var h = '<div class="wd-head" style="--chip:' + color + '">' +
-      '<div class="wd-gr">' + (w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '') + escapeHtml(w.gr) + '</div>' +
-      '<div class="wd-en">' + escapeHtml(w.en) + '</div>' +
-      '<div class="wd-meta">' + escapeHtml(POS_LABEL[w.pos] || w.pos) + ' · ' + escapeHtml(w.register) +
-        (THEMES[w.theme] ? ' · ' + escapeHtml(THEMES[w.theme].label) : '') + '</div>' +
-      '</div>';
-
-    var rateBtns = '';
-    for (var ri = 0; ri <= 5; ri++) {
-      rateBtns += '<button class="wd-rate lvl' + ri + (ri === rating ? ' active' : '') + '" data-gr="' + escapeHtml(w.gr) + '" data-r="' + ri + '">' + ri + '</button>';
-    }
-    h += '<div class="wd-track">' +
-      '<div class="wd-rate-row"><span class="wd-rate-label">Known:</span>' + rateBtns + '</div>' +
-      '<span class="wd-track-stats">0 = not at all · 5 = known (retired) · drawn ' + (r.seen || 0) + '× · used ' + (r.used || 0) + '× · keys 0–5 work</span>' +
-      '</div>';
-
-    if (w.note) h += '<p class="wd-note">' + escapeHtml(w.note) + '</p>';
-
-    var persons = ['εγώ', 'εσύ', 'αυτός/ή', 'εμείς', 'εσείς', 'αυτοί'];
-
-    if (w.pos === 'verb') {
-      var v = findVerbAppEntry(w.gr);
-      if (v) {
-        h += '<div class="wd-section"><div class="wd-title">Principal parts (from the Verb Memoriser)</div><div class="wd-grid">' +
-          [['Present', v.present], ['Simple past', v.past], ['Past continuous', v.pastCont], ['Future simple', v.future], ['Future continuous', v.futureCont]]
-            .map(function (row) { return '<div class="wd-k">' + row[0] + '</div><div class="wd-v">' + escapeHtml(row[1] || '—') + '</div>'; }).join('') +
-          '</div></div>';
-        var ov = VERB_APP.conj[v.english];
-        var pres = (ov && ov.present) || verbPresentTable(w.gr);
-        var past = ov && ov.pastCont;
-        if (pres) {
-          h += '<div class="wd-section"><div class="wd-title">Present' + (past ? ' & imperfect' : '') + '</div><div class="wd-grid wd-grid-' + (past ? '3' : '2') + '">' +
-            persons.map(function (p, i) {
-              return '<div class="wd-k">' + p + '</div><div class="wd-v">' + escapeHtml(pres[i] || '') + '</div>' +
-                (past ? '<div class="wd-v muted">' + escapeHtml(past[i] || '') + '</div>' : '');
-            }).join('') + '</div></div>';
-        }
-        h += '<p class="wd-link"><a href="index.html">Drill this verb in the Verb Memoriser →</a></p>';
-      } else {
-        var t = verbPresentTable(w.gr);
-        if (t) {
-          h += '<div class="wd-section"><div class="wd-title">Present tense (rule-based)</div><div class="wd-grid wd-grid-2">' +
-            persons.map(function (p, i) { return '<div class="wd-k">' + p + '</div><div class="wd-v">' + escapeHtml(t[i]) + '</div>'; }).join('') +
-            '</div><p class="wd-approx">Generated from the ending pattern — irregular verbs may differ.</p></div>';
-        }
-      }
-    }
-
-    if (w.pos === 'noun') {
-      var gender = { 'ο': 'masculine (ο)', 'η': 'feminine (η)', 'το': 'neuter (το)', 'οι': 'plural', 'τα': 'plural' }[w.art] || '';
-      var pl = nounPlural(w);
-      h += '<div class="wd-section"><div class="wd-title">Grammar</div><div class="wd-grid">' +
-        '<div class="wd-k">Gender</div><div class="wd-v">' + gender + '</div>' +
-        (pl ? '<div class="wd-k">Plural ≈</div><div class="wd-v">' + escapeHtml(pl) + '</div>' : '') +
-        '</div>' + (pl ? '<p class="wd-approx">Plural is rule-based — a few nouns are irregular.</p>' : '') + '</div>';
-    }
-
-    if (w.pos === 'adj') {
-      var f = adjForms(w);
-      if (f) {
-        h += '<div class="wd-section"><div class="wd-title">Forms ≈</div><div class="wd-grid">' +
-          '<div class="wd-k">Masculine</div><div class="wd-v">' + escapeHtml(w.gr) + '</div>' +
-          '<div class="wd-k">Feminine</div><div class="wd-v">' + escapeHtml(f.fem) + '</div>' +
-          '<div class="wd-k">Neuter</div><div class="wd-v">' + escapeHtml(f.neut) + '</div>' +
-          (f.adv ? '<div class="wd-k">Adverb</div><div class="wd-v">' + escapeHtml(f.adv) + '</div>' : '') +
-          '</div><p class="wd-approx">' + escapeHtml(f.note) + '</p></div>';
-      }
-    }
-
-    var rel = relatedWords(w);
-    if (rel.length) {
-      h += '<div class="wd-section"><div class="wd-title">Related words</div><div class="wd-rel">' +
-        rel.map(function (x) {
-          return '<button class="wd-rel-chip" data-gr="' + escapeHtml(x.gr) + '">' +
-            (x.art ? x.art + ' ' : '') + escapeHtml(x.gr) + ' <span class="wd-rel-en">' + escapeHtml(x.en) + '</span></button>';
-        }).join('') + '</div></div>';
-    }
-    return h;
-  }
-
-  var currentDetailWord = null;
-  function openDetail(w) {
-    currentDetailWord = w;
-    el.wordModal.innerHTML =
-      '<div class="modal-backdrop"></div>' +
-      '<div class="modal-panel"><button class="modal-close" aria-label="Close">×</button>' + detailHtml(w) + '</div>';
-    el.wordModal.style.display = 'block';
-    el.wordModal.querySelector('.modal-backdrop').addEventListener('click', closeDetail);
-    el.wordModal.querySelector('.modal-close').addEventListener('click', closeDetail);
-    el.wordModal.querySelectorAll('.wd-rate').forEach(function (b) {
-      b.addEventListener('click', function () {
-        setRating(b.getAttribute('data-gr'), parseInt(b.getAttribute('data-r'), 10));
-        openDetail(w); // re-render with new state
-        renderChips(); // refresh chip dots
-      });
-    });
-    el.wordModal.querySelectorAll('.wd-rel-chip').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var found = VOCAB.filter(function (x) { return x.gr === b.getAttribute('data-gr'); })[0];
-        if (found) openDetail(found);
-      });
-    });
-  }
-  function closeDetail() { el.wordModal.style.display = 'none'; el.wordModal.innerHTML = ''; currentDetailWord = null; }
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { closeDetail(); return; }
-    // 0–5 rates the word while its detail panel is open (and you are not typing somewhere).
-    if (currentDetailWord && /^[0-5]$/.test(e.key) &&
-        !(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA'))) {
-      setRating(currentDetailWord.gr, parseInt(e.key, 10));
-      openDetail(currentDetailWord);
-      renderChips();
-    }
-  });
+  function openDetail(w) { GVShared.openDetail(w); }
 
   /* ---------- rendering ---------- */
   function renderScenario() {
@@ -729,6 +488,13 @@
   el.ghBtn.addEventListener('click', function () { openGhModal(); });
 
   /* ---------- init ---------- */
+  GVShared.init({
+    modalEl: el.wordModal,
+    vocab: VOCAB,
+    themes: THEMES,
+    statsOf: function (gr) { var r = track[gr] || {}; return { rating: r.rating || 0, seen: r.seen || 0, used: r.used || 0 }; },
+    onRate: function (gr, n) { setRating(gr, n); renderChips(); }
+  });
   el.countSlider.value = String(state.count);
   el.countVal.textContent = String(state.count);
   el.mixSlider.value = String(Math.round(state.exprRatio * 100));

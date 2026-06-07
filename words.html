@@ -72,6 +72,51 @@
     .add-msg { font-size: 13px; color: var(--good); }
     .add-msg.err { color: var(--bad); }
     .foot { color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+    /* word detail modal (shared with vocab page) */
+    #wordModal { position: fixed; inset: 0; z-index: 50; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.62); }
+    .modal-panel {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: min(560px, calc(100vw - 32px)); max-height: 84vh; overflow-y: auto;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+      box-shadow: var(--shadow); padding: 22px;
+    }
+    .modal-close { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; padding: 0; border-radius: 10px; font-size: 18px; line-height: 1; }
+    .wd-head { border-left: 4px solid var(--chip); padding-left: 14px; margin-bottom: 12px; }
+    .wd-gr { font-size: 30px; font-weight: 700; letter-spacing: -.02em; }
+    .wd-gr .art { font-size: 18px; color: var(--muted); font-weight: 500; }
+    .wd-en { font-size: 16px; margin-top: 2px; }
+    .wd-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .wd-note { font-size: 14px; color: var(--text); background: rgba(255,255,255,.04); border: 1px dashed var(--border); border-radius: 12px; padding: 10px 12px; }
+    .wd-section { margin-top: 16px; }
+    .wd-title { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+    .wd-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 15px; }
+    .wd-grid-3 { grid-template-columns: auto 1fr 1fr; }
+    .wd-k { color: var(--muted); }
+    .wd-v.muted { color: var(--muted); }
+    .wd-approx { font-size: 12px; color: var(--muted); margin: 8px 0 0; font-style: italic; }
+    .wd-link { margin-top: 14px; font-size: 14px; }
+    .wd-link a { color: var(--accent); }
+    .wd-drill { font-size: 13px; color: var(--muted); margin: 12px 0 0; }
+    .wd-drill strong { color: var(--text); }
+    .wd-custom { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; vertical-align: middle; }
+    .wd-rel { display: flex; flex-wrap: wrap; gap: 8px; }
+    .wd-rel-chip { border-radius: 999px; font-size: 14px; padding: 7px 12px; }
+    .wd-rel-en { color: var(--muted); font-size: 12px; }
+    .wd-track { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 2px; }
+    .wd-track-stats { font-size: 12px; color: var(--muted); }
+    .wd-rate-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .wd-rate-label { font-size: 13px; color: var(--muted); margin-right: 4px; }
+    .wd-rate { width: 36px; height: 36px; padding: 0; border-radius: 10px; font-size: 15px; font-weight: 600; opacity: .65; }
+    .wd-rate:hover { opacity: 1; }
+    .wd-rate.active { opacity: 1; outline: 2px solid rgba(255,255,255,.25); }
+    .wd-rate.lvl0.active { border-color: var(--bad); color: var(--bad); }
+    .wd-rate.lvl1.active, .wd-rate.lvl2.active { border-color: var(--accent); color: var(--accent); }
+    .wd-rate.lvl3.active, .wd-rate.lvl4.active { border-color: var(--warn); color: var(--warn); }
+    .wd-rate.lvl5.active { border-color: var(--good); color: var(--good); }
+    .w-main { cursor: pointer; }
+    .w-main:hover .w-gr { color: var(--accent); }
     details.add-panel summary { cursor: pointer; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; list-style: none; user-select: none; }
     details.add-panel summary::-webkit-details-marker { display: none; }
     details.add-panel summary::before { content: '▸ '; }
@@ -154,7 +199,11 @@
     <button class="show-more" id="showMore" style="display:none;">Show more</button>
   </div>
 
+  <div id="wordModal" style="display:none;"></div>
+
+  <script src="greekverbprac.data.js"></script>
   <script src="greekvocab.data.js"></script>
+  <script src="greekvocab.shared.js"></script>
   <script src="greekvocab.words.js"></script>
 </body>
 </html>
