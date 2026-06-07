@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greek Vocabulary — Word List</title>
+  <style>
+    :root {
+      --bg: #111315;
+      --panel: #1b1f24;
+      --panel2: #232a31;
+      --text: #eef2f7;
+      --muted: #aab4c0;
+      --border: #36404a;
+      --accent: #ff9f43;
+      --good: #8ee28e;
+      --warn: #ffd84d;
+      --bad: #ff8f8f;
+      --shadow: 0 12px 34px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top, rgba(255,159,67,.08), transparent 28%), linear-gradient(180deg, #0f1114 0%, #171a1f 100%);
+      color: var(--text);
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .nav { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; font-size: 14px; flex-wrap: wrap; }
+    .nav a { color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 7px 12px; border-radius: 999px; background: var(--panel2); }
+    .nav a:hover { color: var(--text); }
+    h1 { font-size: clamp(24px, 4vw, 34px); margin: 0 0 16px; letter-spacing: -.03em; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px; }
+    .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .08em; }
+    button, select, input[type="text"] {
+      border: 1px solid var(--border); background: var(--panel2); color: var(--text);
+      border-radius: 10px; font-size: 14px; padding: 9px 12px;
+    }
+    button { cursor: pointer; }
+    button:hover { border-color: var(--accent); }
+    .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .filters input[type="text"] { flex: 1 1 200px; }
+    .summary { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+    .wlist { display: flex; flex-direction: column; gap: 6px; }
+    .wrow {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      border: 1px solid var(--border); border-left: 4px solid var(--chip, var(--border));
+      border-radius: 12px; background: rgba(255,255,255,.025); padding: 8px 12px;
+    }
+    .wrow.everyday { border-style: solid; border-left-style: solid; opacity: .96; }
+    .w-main { flex: 1 1 260px; min-width: 200px; }
+    .w-gr { font-size: 17px; font-weight: 700; }
+    .w-gr .art { color: var(--muted); font-weight: 500; font-size: 13px; }
+    .w-gr .custom-tag { font-size: 10px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 6px; margin-left: 8px; vertical-align: middle; letter-spacing: .05em; }
+    .w-en { font-size: 13px; color: var(--muted); }
+    .w-meta { font-size: 11px; color: var(--muted); min-width: 90px; }
+    .w-rate { display: flex; gap: 4px; }
+    .w-rate button { width: 28px; height: 28px; padding: 0; font-size: 13px; border-radius: 8px; opacity: .55; }
+    .w-rate button:hover { opacity: 1; }
+    .w-rate button.active { opacity: 1; outline: 2px solid rgba(255,255,255,.22); }
+    .w-rate button.lvl0.active { border-color: var(--bad); color: var(--bad); }
+    .w-rate button.lvl1.active, .w-rate button.lvl2.active { border-color: var(--accent); color: var(--accent); }
+    .w-rate button.lvl3.active, .w-rate button.lvl4.active { border-color: var(--warn); color: var(--warn); }
+    .w-rate button.lvl5.active { border-color: var(--good); color: var(--good); }
+    .w-del { color: var(--bad); border-color: rgba(255,143,143,.4); font-size: 12px; padding: 6px 10px; }
+    .show-more { margin: 14px auto; display: block; }
+
+    .add-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .add-grid .full { grid-column: 1 / -1; }
+    .add-actions { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .add-msg { font-size: 13px; color: var(--good); }
+    .add-msg.err { color: var(--bad); }
+    .foot { color: var(--muted); font-size: 13px; margin-top: 8px; }
+    details.add-panel summary { cursor: pointer; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; list-style: none; user-select: none; }
+    details.add-panel summary::-webkit-details-marker { display: none; }
+    details.add-panel summary::before { content: '▸ '; }
+    details.add-panel[open] summary::before { content: '▾ '; }
+    details.add-panel summary:hover { color: var(--text); }
+    .add-body { margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="index.html">← Verb practice</a>
+      <a href="vocab.html">✎ Writing prompts</a>
+      <span style="color:var(--muted)">Word list</span>
+    </div>
+
+    <h1>Word List</h1>
+
+    <div class="panel">
+      <div class="filters">
+        <input type="text" id="search" placeholder="Search Greek or English… (accents optional)" />
+        <select id="regFilter">
+          <option value="all">All registers</option>
+          <option value="everyday">Everyday</option>
+          <option value="expressive">Expressive</option>
+        </select>
+        <select id="posFilter">
+          <option value="all">All types</option>
+          <option value="noun">Nouns</option>
+          <option value="adj">Adjectives</option>
+          <option value="verb">Verbs</option>
+          <option value="adv">Adverbs</option>
+          <option value="phrase">Phrases</option>
+        </select>
+        <select id="ratingFilter">
+          <option value="all">Any rating</option>
+          <option value="unrated">Unrated (0)</option>
+          <option value="learning">Learning (1–4)</option>
+          <option value="mastered">Mastered (5)</option>
+        </select>
+        <select id="sortBy">
+          <option value="alpha">A–Ω</option>
+          <option value="rating">By rating</option>
+          <option value="seen">Most drawn</option>
+          <option value="custom">Custom first</option>
+        </select>
+      </div>
+      <div class="summary" id="summary"></div>
+    </div>
+
+    <details class="panel add-panel">
+      <summary>Add your own word</summary>
+      <div class="add-body">
+        <div class="add-grid">
+          <div><span class="label">Greek *</span><input type="text" id="addGr" placeholder="π.χ. ζαλάδα" /></div>
+          <div><span class="label">English *</span><input type="text" id="addEn" placeholder="e.g. dizziness" /></div>
+          <div><span class="label">Article</span>
+            <select id="addArt"><option value="">— (not a noun)</option><option>ο</option><option>η</option><option>το</option><option>οι</option><option>τα</option></select>
+          </div>
+          <div><span class="label">Type</span>
+            <select id="addPos"><option value="noun">noun</option><option value="adj">adjective</option><option value="verb">verb</option><option value="adv">adverb</option><option value="phrase">phrase</option></select>
+          </div>
+          <div><span class="label">Register</span>
+            <select id="addReg"><option value="everyday">everyday</option><option value="expressive">expressive</option></select>
+          </div>
+          <div><span class="label">Theme</span>
+            <select id="addTheme"></select>
+          </div>
+          <div class="full"><span class="label">Note (optional)</span><input type="text" id="addNote" placeholder="usage note, shown in the word detail" /></div>
+        </div>
+        <div class="add-actions">
+          <button id="addBtn">+ Add word</button>
+          <span class="add-msg" id="addMsg"></span>
+        </div>
+        <div class="foot">Custom words live in your browser with your progress (and ride along in gist backups). They appear in writing prompts immediately.</div>
+      </div>
+    </details>
+
+    <div class="wlist" id="wlist"></div>
+    <button class="show-more" id="showMore" style="display:none;">Show more</button>
+  </div>
+
+  <script src="greekvocab.data.js"></script>
+  <script src="greekvocab.words.js"></script>
+</body>
+</html>

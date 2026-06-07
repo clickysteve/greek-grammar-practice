@@ -18,6 +18,18 @@
   var THEMES = window.THEMES || {};
   var VERB_APP = { verbs: window.VERBS || [], conj: window.CONJUGATIONS || {} };
 
+  // Merge user-added custom words (managed on the Word List page, stored with progress).
+  try {
+    var __t = JSON.parse(localStorage.getItem('gvm_vocab_track') || '{}');
+    if (__t && Array.isArray(__t.__custom)) {
+      var __have = {};
+      VOCAB.forEach(function (w) { __have[w.gr] = 1; });
+      __t.__custom.forEach(function (w) {
+        if (w && w.gr && w.en && !__have[w.gr]) { VOCAB = VOCAB.concat([w]); __have[w.gr] = 1; }
+      });
+    }
+  } catch (e) {}
+
   var everydayPool = VOCAB.filter(function (w) { return w.register === 'everyday'; });
   var expressivePool = VOCAB.filter(function (w) { return w.register === 'expressive'; });
 
@@ -53,7 +65,7 @@
   function migrateTrack(t) {
     if (!t || typeof t !== 'object') t = {};
     Object.keys(t).forEach(function (k) {
-      if (k === '__settings') return;
+      if (k.indexOf('__') === 0) return; // reserved keys: __settings, __custom
       var r = t[k];
       if (r && typeof r.rating !== 'number') r.rating = r.known ? 5 : 0;
     });
