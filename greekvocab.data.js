@@ -875,7 +875,46 @@ window.VOCAB = [
   { gr: 'είμαι κομμάτια', art: '', en: 'I am shattered (slang)', pos: 'phrase', theme: 'social', register: 'expressive' },
   { gr: 'στην τσίτα',  art: '', en: 'wound up, on edge (slang)', pos: 'phrase', theme: 'feeling', register: 'expressive' },
   { gr: 'είμαι σε φάση', art: '', en: 'to be in the mood / in a phase (slang)', pos: 'phrase', theme: 'social', register: 'expressive' },
-  { gr: 'για τον πούτσο', art: '', en: 'useless, crap (vulgar slang)', pos: 'phrase', theme: 'social', register: 'expressive', note: 'Genuinely vulgar — friends only.' }
+  { gr: 'για τον πούτσο', art: '', en: 'useless, crap (vulgar slang)', pos: 'phrase', theme: 'social', register: 'expressive', note: 'Genuinely vulgar — friends only.' },
+
+  /* =========================================================
+   *  EXPRESSIVE BATCH 2 — sound, atmosphere, feeling
+   * ========================================================= */
+  // Sound & music
+  { gr: 'βουητό',      art: 'το', en: 'hum, drone, buzz',        pos: 'noun', theme: 'sense', register: 'expressive', note: 'The sound of a city, a crowd, a drone note.' },
+  { gr: 'παλμός',      art: 'ο',  en: 'pulse, beat',             pos: 'noun', theme: 'sense', register: 'expressive', note: 'Heartbeat or musical pulse.' },
+  { gr: 'δόνηση',      art: 'η',  en: 'vibration',               pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'αντήχηση',    art: 'η',  en: 'resonance, reverberation',pos: 'noun', theme: 'sense', register: 'expressive', note: 'Reverb, essentially.' },
+  { gr: 'απόηχος',     art: 'ο',  en: 'after-sound; aftermath',  pos: 'noun', theme: 'sense', register: 'expressive', note: 'The echo something leaves behind — literal or figurative.' },
+  { gr: 'μελωδικός',   art: '',   en: 'melodic',                 pos: 'adj',  theme: 'art',   register: 'expressive' },
+  { gr: 'παράφωνος',   art: '',   en: 'out of tune, discordant', pos: 'adj',  theme: 'art',   register: 'expressive', note: 'Also of opinions/moments that clash.' },
+  // Light & atmosphere
+  { gr: 'μισόφωτο',    art: 'το', en: 'half-light, dim light',   pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'λυκόφως',     art: 'το', en: 'twilight (poetic)',       pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'λαμπύρισμα',  art: 'το', en: 'twinkling, shimmer',      pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'αναλαμπή',    art: 'η',  en: 'flicker, brief flash',    pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'σπινθήρας',   art: 'ο',  en: 'spark',                   pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'απόχρωση',    art: 'η',  en: 'shade, hue, nuance',      pos: 'noun', theme: 'art',   register: 'expressive', note: 'Of colours and of meanings.' },
+  { gr: 'αστραπή',     art: 'η',  en: 'lightning',               pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'βροντή',      art: 'η',  en: 'thunder',                 pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'δροσιά',      art: 'η',  en: 'coolness, dew',           pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'λιακάδα',     art: 'η',  en: 'bright sunshine',         pos: 'noun', theme: 'sense', register: 'expressive' },
+  { gr: 'θαλπωρή',     art: 'η',  en: 'warmth, coziness',        pos: 'noun', theme: 'sense', register: 'expressive', note: 'Emotional warmth of a place or person.' },
+  { gr: 'ψιθύρισμα',   art: 'το', en: 'whispering, murmur',      pos: 'noun', theme: 'sense', register: 'expressive' },
+  // Feeling & character
+  { gr: 'γλυκόπικρος', art: '',   en: 'bittersweet',             pos: 'adj',  theme: 'feeling', register: 'expressive' },
+  { gr: 'φευγαλέος',   art: '',   en: 'fleeting, fugitive',      pos: 'adj',  theme: 'feeling', register: 'expressive' },
+  { gr: 'ανείπωτος',   art: '',   en: 'unspeakable, inexpressible', pos: 'adj', theme: 'feeling', register: 'expressive' },
+  { gr: 'μεθυστικός',  art: '',   en: 'intoxicating, heady',     pos: 'adj',  theme: 'sense',   register: 'expressive' },
+  { gr: 'σαγηνευτικός',art: '',   en: 'captivating, alluring',   pos: 'adj',  theme: 'feeling', register: 'expressive' },
+  { gr: 'αινιγματικός',art: '',   en: 'enigmatic',               pos: 'adj',  theme: 'mind',    register: 'expressive' },
+  { gr: 'μυστηριώδης', art: '',   en: 'mysterious',              pos: 'adj',  theme: 'mind',    register: 'expressive' },
+  { gr: 'ονειροπόλος', art: '',   en: 'dreamy; a daydreamer',    pos: 'adj',  theme: 'mind',    register: 'expressive' },
+  { gr: 'ταξιδιάρικος',art: '',   en: 'wandering, wanderlust-filled', pos: 'adj', theme: 'feeling', register: 'expressive', note: 'Ταξιδιάρικη μουσική = music that takes you somewhere.' },
+  { gr: 'ξεροκέφαλος', art: '',   en: 'stubborn, pig-headed',    pos: 'adj',  theme: 'social',  register: 'expressive' },
+  { gr: 'ανεμελιά',    art: 'η',  en: 'carefreeness',            pos: 'noun', theme: 'feeling', register: 'expressive' },
+  { gr: 'ευγνωμοσύνη', art: 'η',  en: 'gratitude',               pos: 'noun', theme: 'feeling', register: 'expressive' },
+  { gr: 'ανακούφιση',  art: 'η',  en: 'relief',                  pos: 'noun', theme: 'feeling', register: 'expressive' }
 ];
 
 // Varied framings for the writing prompt. {n} is replaced with the word count.
