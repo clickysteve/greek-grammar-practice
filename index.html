@@ -83,18 +83,18 @@
     document.getElementById('streakN').textContent = st.days || 0;
 
     var v = S.verbs(), g = S.grammar(), o = S.vocab();
-    var total = v.due + g.due + o.srsDue;
+    var total = g.due + o.srsDue; // verbs are conjugation practice, not a learning-SRS — excluded here
     document.getElementById('dueNum').textContent = total;
     function pill(href, n, label) {
       return '<a class="due-pill' + (n ? '' : ' zero') + '" href="' + href + '"><b>' + n + '</b> ' + label + '</a>';
     }
     document.getElementById('dueBreak').innerHTML =
-      pill('verbs.html', v.due, 'verbs') + pill('grammar.html', g.due, 'grammar') + pill('flashcards.html', o.srsDue, 'vocab');
+      pill('grammar.html', g.due, 'grammar') + pill('flashcards.html', o.srsDue, 'vocab');
 
     // Tool cards
     var grammarPts = (window.GRAMMAR || []).length;
     var tools = [
-      { href: 'verbs.html', icon: '🔤', title: 'Verb practice', desc: 'Conjugation drills with spaced repetition.', stat: v.rated ? (v.rated + ' cards rated · avg ' + (v.avg != null ? v.avg : '–') + '/5') : 'Start drilling verbs' },
+      { href: 'verbs.html', icon: '🔤', title: 'Verb practice', desc: 'Conjugation & tense drills across persons.', stat: v.rated ? (v.rated + ' cards rated · avg ' + (v.avg != null ? v.avg : '–') + '/5') : 'Start drilling verbs' },
       { href: 'grammar.html', icon: '🧩', title: 'Grammar', desc: grammarPts + ' lessons, A1–B2, with SRS reviews.', stat: g.lessonsRead ? (g.lessonsRead + ' lessons read · ' + g.mastered + ' mastered') : 'Begin the course' },
       { href: 'flashcards.html', icon: '🃏', title: 'Vocab flashcards', desc: 'Spaced-repetition recall for vocabulary.', stat: o.srsCount ? (o.srsCount + ' in SRS · ' + o.srsDue + ' due') : 'Build your deck' },
       { href: 'vocab.html', icon: '✎', title: 'Writing prompts', desc: 'Write using expressive + everyday words.', stat: 'Daily prompt inside' },

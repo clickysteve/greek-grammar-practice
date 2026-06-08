@@ -356,7 +356,6 @@ function scheduleCard(level) {
   s.lastSeenAt = now;
   s.dueAt = now + interval * 60 * 60 * 1000;
   s.lastRating = level;
-  delete s.seeded; // a real drill makes this card authoritative (word-list re-rating won't overwrite it)
   state.schedule[id] = s;
   state.ratings[id] = level;
   state.history[id] = { rating: level, updatedAt: new Date().toISOString(), english: state.current.english, tense: state.currentTense, direction: state.direction, personIdx: state.currentPerson, drillType: state.drillType };

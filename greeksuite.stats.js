@@ -79,7 +79,7 @@ window.GSStats = (function () {
     return { rated: rated, mastered: mastered, learning: learning, srsDue: due, srsCount: inSrs, track: t, srs: srs };
   }
 
-  function totalDue() { var v = verbs(), g = grammar(), o = vocab(); return v.due + g.due + o.srsDue; }
+  function totalDue() { var g = grammar(), o = vocab(); return g.due + o.srsDue; } // verbs excluded: conjugation practice, not learning-SRS
 
   /* ---- trouble spots (weakest items across systems) ----
    * Returns up to `limit` items: { type, label, sub, score, href }.
