@@ -200,10 +200,11 @@
         var acc = practiceAcc(p.id);
         var accCls = acc == null ? '' : (acc >= 80 ? 'good' : acc >= 60 ? 'warn' : 'bad');
         var accChip = acc != null ? '<span class="g-acc ' + accCls + '" title="practice accuracy">' + acc + '%</span>' : '';
+        var practiceBtn = lessonRead(p.id) ? '<button class="g-point-go" data-practice="' + p.id + '" title="practice without opening the lesson">▶ Practice</button>' : '';
         html += '<div class="g-point st-' + st + '" data-point="' + p.id + '">' +
           '<div class="g-point-main"><div class="g-point-title">' + escapeHtml(p.title) + '</div>' +
           '<div class="g-point-short">' + escapeHtml(p.short) + '</div></div>' +
-          accChip +
+          accChip + practiceBtn +
           '<span class="g-badge st-' + st + '">' + badge + '</span></div>';
       });
       html += '</div></div>';
@@ -220,6 +221,9 @@
     });
     root.querySelectorAll('.g-practice').forEach(function (b) {
       b.addEventListener('click', function (e) { e.stopPropagation(); startPractice(levelQuestions(b.getAttribute('data-level'))); });
+    });
+    root.querySelectorAll('.g-point-go').forEach(function (b) {
+      b.addEventListener('click', function (e) { e.stopPropagation(); startPractice(pointQuestions(byId[b.getAttribute('data-practice')])); });
     });
     root.querySelectorAll('.g-point').forEach(function (d) {
       d.addEventListener('click', function () { openPoint(byId[d.getAttribute('data-point')]); });
@@ -290,17 +294,20 @@
   }
 
   /* ---------- lesson content (shared by full view + in-session reference) ---------- */
-  function lessonBodyHtml(p) {
+  function lessonHeaderHtml(p) {
+    return '<div class="g-md-kicker">LESSON · ' + escapeHtml(p.level) + '</div>' +
+      '<h1 class="g-lesson-title">' + escapeHtml(p.title) + '</h1>' +
+      '<p class="g-lesson-intro">' + escapeHtml(p.short) + '</p>';
+  }
+  function lessonDetailHtml(p) {
     var ex = (p.examples || []).map(function (e) {
       return '<div class="g-ex"><span class="g-ex-gr">' + escapeHtml(e.gr) + '</span><span class="g-ex-en">' + escapeHtml(e.en) + '</span></div>';
     }).join('');
-    return '<div class="g-md-kicker">LESSON · ' + escapeHtml(p.level) + '</div>' +
-      '<h1 class="g-lesson-title">' + escapeHtml(p.title) + '</h1>' +
-      '<p class="g-lesson-intro">' + escapeHtml(p.short) + '</p>' +
-      '<div class="g-md-body">' + p.explanation + '</div>' +
+    return '<div class="g-md-body">' + p.explanation + '</div>' +
       (ex ? '<div class="g-md-ex"><div class="g-md-exh">Examples</div>' + ex + '</div>' : '') +
       (p.more ? '<div class="g-md-more"><div class="g-md-exh">Notes &amp; common mistakes</div>' + p.more + '</div>' : '');
   }
+  function lessonBodyHtml(p) { return lessonHeaderHtml(p) + lessonDetailHtml(p); } // for the in-session "Why?" popup
 
   // Open a point: go to the full lesson page (remembering where we came from).
   function openPoint(p) {
@@ -314,8 +321,7 @@
     var lenTxt = store.__settings.sessionLength === 0 ? 'free run' : store.__settings.sessionLength + ' questions';
     root.innerHTML =
       '<button class="g-back" id="gBack">← Back to lessons</button>' +
-      '<div class="g-lesson">' + lessonBodyHtml(p) +
-      '<div class="g-md-divider"></div>' +
+      '<div class="g-lesson">' + lessonHeaderHtml(p) +
       '<div class="g-lesson-cta">' +
         '<div class="g-cta-box"><div class="g-cta-h">Practice</div>' +
           '<p class="g-cta-p">Drill sentences for this point (' + lenTxt + '). Doesn’t affect your review schedule.</p>' +
@@ -325,11 +331,38 @@
             ? '<p class="g-cta-p">In your SRS reviews — next ' + whenLabel(p.id) + '.</p><button id="gAddReviews" disabled>In reviews ✓</button>'
             : '<p class="g-cta-p">Add this point to spaced repetition so it comes back for review over time.</p><button id="gAddReviews">+ Add to reviews</button>') +
         '</div>' +
-      '</div></div>';
+      '</div>' +
+      '<div class="g-md-divider"></div>' +
+      lessonDetailHtml(p) + '</div>';
     el('gBack').addEventListener('click', function () { state.view = state.lessonBack || 'lessons'; state.lessonPoint = null; render(); });
     el('gPractice').addEventListener('click', function () { startPractice(pointQuestions(p)); });
     var add = el('gAddReviews');
     if (add && !srs) add.addEventListener('click', function () { addToSrs(p.id); render(); });
+  }
+
+  /* ---------- verb conjugation dropdown (reuses the Verb Memoriser data) ---------- */
+  function verbTableHtml(lemma) {
+    if (!window.GVShared || !lemma) return '';
+    var v = GVShared.findVerbAppEntry(lemma);
+    if (!v) return '';
+    var persons = ['εγώ', 'εσύ', 'αυτός/ή', 'εμείς', 'εσείς', 'αυτοί'];
+    var ov = (window.CONJUGATIONS || {})[v.english];
+    var pres = (ov && ov.present) || GVShared.verbPresentTable(v.present);
+    var past = ov && ov.pastCont;
+    var pp = [['Present', v.present], ['Simple past', v.past], ['Future', v.future], ['Past cont.', v.pastCont], ['Future cont.', v.futureCont]]
+      .map(function (r) { return '<div class="g-vk">' + r[0] + '</div><div class="g-vv">' + escapeHtml(r[1] || '—') + '</div>'; }).join('');
+    var table = '';
+    if (pres) {
+      table = '<div class="g-vtitle">Present' + (past ? ' &amp; imperfect' : '') + '</div>' +
+        '<div class="g-vgrid' + (past ? ' three' : '') + '">' +
+        persons.map(function (pn, i) {
+          return '<div class="g-vk">' + pn + '</div><div class="g-vv">' + escapeHtml(pres[i] || '') + '</div>' +
+            (past ? '<div class="g-vv muted">' + escapeHtml(past[i] || '') + '</div>' : '');
+        }).join('') + '</div>';
+    }
+    return '<details class="g-verbdrop"><summary>Conjugation of <strong>' + escapeHtml(v.present) + '</strong> (' + escapeHtml(v.english) + ')</summary>' +
+      '<div class="g-vp"><div class="g-vtitle">Principal parts</div><div class="g-vgrid">' + pp + '</div>' + table +
+      '<a class="g-vlink" href="index.html">Drill this verb in the Verb Memoriser →</a></div></details>';
   }
 
   // Compact reference popup (used by "Why?" during a session).
@@ -420,8 +453,15 @@
 
   function renderSession() {
     var s = state.session, cur = s.current, item = cur.item, mode = store.__settings.answerMode;
-    var parts = item.text.split('{b}');
+    // Pull any trailing "(cue)" out of the sentence so it isn't styled like the sentence itself.
+    var raw = item.text, cue = '';
+    var pm = raw.match(/\s*\(([^)]+)\)\s*$/);
+    if (pm) { cue = pm[1]; raw = raw.slice(0, pm.index); }
+    var parts = raw.split('{b}');
     var pre = escapeHtml(parts[0] || ''), post = escapeHtml(parts[1] || '');
+    var verbLemma = cue ? (cue.match(/[α-ωάέήίόύώϊϋΐΰ]{2,}/i) || [''])[0] : '';
+    var cueHtml = cue ? '<div class="g-cue">→ ' + escapeHtml(cue) + '</div>' : '';
+    var verbHtml = verbLemma ? verbTableHtml(verbLemma) : '';
     var blankHtml;
     if (!s.answered) {
       blankHtml = mode === 'type'
@@ -439,8 +479,10 @@
       '<span class="g-progress">' + progress + '</span></div>' +
       '<div class="g-prompt-point">' + escapeHtml(cur.point.title) + '</div>' +
       '<div class="g-sentence">' + pre + blankHtml + post + '</div>' +
+      cueHtml +
       '<div class="g-en">' + escapeHtml(item.en) + '</div>' +
-      (item.hint ? '<div class="g-hint">' + escapeHtml(item.hint) + '</div>' : '');
+      (item.hint ? '<div class="g-hint">' + escapeHtml(item.hint) + '</div>' : '') +
+      verbHtml;
     if (!s.answered) {
       if (mode === 'choice') {
         html += '<div class="g-choices">' + cur.choices.map(function (c, i) {

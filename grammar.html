@@ -135,8 +135,24 @@
     .g-blank-filled { padding: 0 8px; border-radius: 8px; }
     .g-blank-filled.ok { background: rgba(142,226,142,.18); color: var(--good); }
     .g-blank-filled.bad { background: rgba(255,143,143,.18); color: var(--bad); }
+    .g-cue { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--accent); border: 1px solid rgba(255,159,67,.4); border-radius: 999px; padding: 3px 12px; }
     .g-en { color: var(--muted); font-size: 15px; margin-top: 14px; }
     .g-hint { color: var(--muted); font-size: 13px; margin-top: 6px; font-style: italic; }
+    /* verb conjugation dropdown */
+    .g-verbdrop { margin-top: 16px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.02); }
+    .g-verbdrop summary { cursor: pointer; padding: 10px 14px; font-size: 14px; color: var(--muted); list-style: none; }
+    .g-verbdrop summary::-webkit-details-marker { display: none; }
+    .g-verbdrop summary::before { content: '▸ '; }
+    .g-verbdrop[open] summary::before { content: '▾ '; }
+    .g-verbdrop summary strong { color: var(--text); }
+    .g-vp { padding: 0 14px 14px; }
+    .g-vtitle { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 10px 0 6px; }
+    .g-vgrid { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: 14px; text-align: left; }
+    .g-vgrid.three { grid-template-columns: auto 1fr 1fr; }
+    .g-vk { color: var(--muted); }
+    .g-vv.muted { color: var(--muted); }
+    .g-vlink { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--accent); }
+    .g-point-go { font-size: 12px; padding: 6px 11px; white-space: nowrap; }
     .g-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
     .g-choice { text-align: left; font-size: 17px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
     .g-choice-n { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px;
@@ -200,6 +216,8 @@
 
   <div id="grammarModal" style="display:none;"></div>
 
+  <script src="greekverbprac.data.js"></script>
+  <script src="greekvocab.shared.js"></script>
   <script src="greekvocab.backup.js"></script>
   <script src="greekgrammar.data.js"></script>
   <script src="greekgrammar.app.js"></script>
