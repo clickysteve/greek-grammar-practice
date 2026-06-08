@@ -153,6 +153,7 @@ window.VOCAB = [
   { gr: 'περιγράφω',   art: '',   en: 'to describe',        pos: 'verb', theme: 'everyday', register: 'everyday' },
   { gr: 'καίω',        art: '',   en: 'to burn',            pos: 'verb', theme: 'everyday', register: 'everyday' },
   { gr: 'ξεχνάω',      art: '',   en: 'to forget',          pos: 'verb', theme: 'everyday', register: 'everyday' },
+  { gr: 'κολλάω',      art: '',   en: 'to stick',           pos: 'verb', theme: 'everyday', register: 'everyday' },
   { gr: 'ψάχνω',       art: '',   en: 'to look for, search',pos: 'verb', theme: 'everyday', register: 'everyday' },
   { gr: 'δοκιμάζω',    art: '',   en: 'to try, taste',      pos: 'verb', theme: 'everyday', register: 'everyday' },
   { gr: 'διαλέγω',     art: '',   en: 'to choose, pick',    pos: 'verb', theme: 'everyday', register: 'everyday' },
