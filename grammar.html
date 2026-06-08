@@ -114,6 +114,10 @@
     .g-point.st-due { border-left-color: var(--warn); }
     .g-point.st-learning { border-left-color: var(--read); }
     .g-point.st-mastered { border-left-color: var(--good); }
+    /* once practised, the side bar reflects accuracy (overrides status colour) */
+    .g-point.acc-good { border-left-color: var(--read); }
+    .g-point.acc-warn { border-left-color: var(--warn); }
+    .g-point.acc-bad { border-left-color: var(--bad); }
     .g-point-main { flex: 1; }
     .g-point-title { font-weight: 600; }
     .g-point-short { font-size: 13px; color: var(--muted); margin-top: 2px; }

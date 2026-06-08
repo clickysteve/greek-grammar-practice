@@ -222,8 +222,9 @@
         var acc = practiceAcc(p.id);
         var accCls = acc == null ? '' : (acc >= 80 ? 'good' : acc >= 60 ? 'warn' : 'bad');
         var accChip = acc != null ? '<span class="g-acc ' + accCls + '" title="practice accuracy">' + acc + '%</span>' : '';
+        var sideCls = acc != null ? ' acc-' + accCls : ''; // left border reflects accuracy when practised
         var practiceBtn = lessonRead(p.id) ? '<button class="g-point-go" data-practice="' + p.id + '" title="practice without opening the lesson">▶ Practice</button>' : '';
-        html += '<div class="g-point st-' + st + '" data-point="' + p.id + '">' +
+        html += '<div class="g-point st-' + st + sideCls + '" data-point="' + p.id + '">' +
           '<div class="g-point-main"><div class="g-point-title">' + escapeHtml(p.title) + '</div>' +
           '<div class="g-point-short">' + escapeHtml(p.short) + '</div></div>' +
           practiceBtn + accChip +
