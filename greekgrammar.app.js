@@ -184,20 +184,26 @@
       var lr = pts.filter(function (p) { return lessonRead(p.id); }).length;
       var insrs = pts.filter(function (p) { return inSrs(p.id); }).length;
       var lm = pts.filter(function (p) { return isMastered(p.id); }).length;
+      var ps = 0, pc = 0;
+      pts.forEach(function (p) { var pr = store.__practice[p.id]; if (pr) { ps += pr.seen; pc += pr.correct; } });
+      var lvAcc = ps ? ' · ' + Math.round(100 * pc / ps) + '% acc' : '';
       var collapsed = !!store.__open[lv.key + '_collapsed'];
       html += '<div class="g-level' + (collapsed ? ' collapsed' : '') + '">' +
         '<div class="g-level-head" data-toggle="' + lv.key + '">' +
         '<span class="g-level-title"><span class="g-caret">' + (collapsed ? '▸' : '▾') + '</span> ' + escapeHtml(lv.label) + '</span>' +
-        '<span class="g-level-prog">' + lr + '/' + pts.length + ' lessons · ' + insrs + ' in SRS · ' + lm + ' mastered ' +
+        '<span class="g-level-prog">' + lr + '/' + pts.length + ' lessons · ' + insrs + ' in SRS · ' + lm + ' mastered' + lvAcc + ' ' +
         '<button class="g-practice" data-level="' + lv.key + '">Practice level</button></span></div>' +
         '<div class="g-points"' + (collapsed ? ' style="display:none;"' : '') + '>';
       pts.forEach(function (p) {
         var st = pointStatus(p.id);
         var badge = st === 'learning' ? whenLabel(p.id) : (STATUS_BADGE[st] || st);
         var acc = practiceAcc(p.id);
+        var accCls = acc == null ? '' : (acc >= 80 ? 'good' : acc >= 60 ? 'warn' : 'bad');
+        var accChip = acc != null ? '<span class="g-acc ' + accCls + '" title="practice accuracy">' + acc + '%</span>' : '';
         html += '<div class="g-point st-' + st + '" data-point="' + p.id + '">' +
           '<div class="g-point-main"><div class="g-point-title">' + escapeHtml(p.title) + '</div>' +
-          '<div class="g-point-short">' + escapeHtml(p.short) + (acc != null ? ' · practice ' + acc + '%' : '') + '</div></div>' +
+          '<div class="g-point-short">' + escapeHtml(p.short) + '</div></div>' +
+          accChip +
           '<span class="g-badge st-' + st + '">' + badge + '</span></div>';
       });
       html += '</div></div>';
@@ -394,11 +400,15 @@
       else recordPractice(pid, r.right, r.total);
     });
     save();
+    var kind = s.kind;
     state.session = null;
+    state.lessonPoint = null;
+    state.view = (kind === 'review') ? 'reviews' : 'lessons'; // return to the list, not the single lesson
     root.innerHTML = '<div class="g-done"><div class="g-done-tick">✓</div>' +
-      '<div class="g-done-title">' + (s.kind === 'review' ? 'Review complete' : 'Practice complete') + '</div>' +
+      '<div class="g-done-title">' + (kind === 'review' ? 'Review complete' : 'Practice complete') + '</div>' +
       '<div class="g-done-sub">' + qRight + ' / ' + qTotal + ' correct first try</div>' +
-      '<button class="btn-primary" id="gBackDash">Back to grammar</button></div>';
+      '<button class="btn-primary" id="gBackDash">Back to grammar</button>' +
+      '<div class="g-done-hint">press Enter</div></div>';
     el('gBackDash').addEventListener('click', render);
   }
 
@@ -469,7 +479,12 @@
   /* ---------- keyboard ---------- */
   document.addEventListener('keydown', function (e) {
     if (el('grammarModal') && el('grammarModal').style.display === 'block') { if (e.key === 'Escape') closeModal(); return; }
-    var s = state.session; if (!s) return;
+    var s = state.session;
+    if (!s) {
+      // On the "Practice/Review complete" screen, Enter (or Space) goes back to grammar.
+      if (el('gBackDash') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el('gBackDash').click(); }
+      return;
+    }
     if (!s.answered) {
       if (store.__settings.answerMode === 'choice' && /^[1-4]$/.test(e.key)) { var idx = parseInt(e.key, 10) - 1; if (s.current.choices[idx]) answer(s.current.choices[idx]); }
       else if (store.__settings.answerMode === 'type' && e.key === 'Enter') { var inp = el('gAnswerInput'); if (inp) answer(inp.value); }

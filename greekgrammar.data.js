@@ -15,7 +15,8 @@
 window.GRAMMAR_LEVELS = [
   { key: 'A1', label: 'A1 — Beginner' },
   { key: 'A2', label: 'A2 — Elementary' },
-  { key: 'B1', label: 'B1 — Intermediate' }
+  { key: 'B1', label: 'B1 — Intermediate' },
+  { key: 'B2', label: 'B2 — Upper intermediate' }
 ];
 
 window.GRAMMAR = [
