@@ -211,7 +211,7 @@
             else if (isMastered(p.id)) { cls = 'good'; lab = 'mastered'; }
             else if (lessonRead(p.id)) { cls = 'read'; lab = 'read, not practised yet'; }
             else { cls = 'empty'; lab = 'not started'; }
-            return '<span class="g-lvcell ' + cls + '" title="' + escapeHtml(p.title) + ' — ' + lab + '"></span>';
+            return '<span class="g-lvcell ' + cls + '" data-cell="' + p.id + '" title="' + escapeHtml(p.title) + ' — ' + lab + ' · click to practise"></span>';
           }).join('');
           return '<div class="g-lvbar">' + cells + '</div>';
         })() +
@@ -255,6 +255,13 @@
     });
     root.querySelectorAll('.g-point').forEach(function (d) {
       d.addEventListener('click', function () { openPoint(byId[d.getAttribute('data-point')]); });
+    });
+    root.querySelectorAll('.g-lvcell[data-cell]').forEach(function (c) {
+      c.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var p = byId[c.getAttribute('data-cell')];
+        if (lessonRead(p.id)) startPractice(pointQuestions(p)); else openPoint(p);
+      });
     });
   }
 

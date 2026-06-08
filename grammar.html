@@ -167,7 +167,8 @@
     .g-vlink { display: inline-block; margin: 10px 14px 14px; font-size: 13px; color: var(--accent); }
     /* level accuracy bar — one cell per lesson, coloured by practice accuracy */
     .g-lvbar { display: flex; gap: 2px; height: 9px; margin: 0 2px 12px; }
-    .g-lvcell { flex: 1; height: 100%; border-radius: 2px; background: rgba(255,255,255,.06); }
+    .g-lvcell { flex: 1; height: 100%; border-radius: 2px; background: rgba(255,255,255,.06); cursor: pointer; transition: transform .08s, filter .08s; }
+    .g-lvcell:hover { transform: scaleY(1.5); filter: brightness(1.25); }
     .g-lvcell.read { background: rgba(255,255,255,.20); }
     .g-lvcell.bad { background: var(--bad); }
     .g-lvcell.warn { background: var(--warn); }

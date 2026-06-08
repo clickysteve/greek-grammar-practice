@@ -25,7 +25,14 @@
     .barrow-top .v { color:var(--muted); }
     .bar { height:10px; border-radius:999px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
     .seg { height:100%; }
-    .seg.m { background:var(--good); } .seg.s { background:var(--accent); } .seg.r { background:#45c46a; } .seg.w { background:var(--bad); }
+    .seg.m { background:#45c46a; } .seg.s { background:var(--warn); } .seg.r { background:rgba(255,255,255,.28); } .seg.w { background:var(--bad); }
+    /* per-lesson accuracy heatmap */
+    .hbar { display:flex; gap:2px; height:9px; margin-top:6px; }
+    .hcell { flex:1; height:100%; border-radius:2px; background:rgba(255,255,255,.06); }
+    .hcell.read { background:rgba(255,255,255,.20); }
+    .hcell.bad { background:var(--bad); }
+    .hcell.warn { background:var(--warn); }
+    .hcell.good { background:#45c46a; }
     .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-top:10px; }
     .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:middle; }
   </style>
@@ -36,9 +43,11 @@
     <h1>Your progress</h1>
     <div class="kpis" id="kpis"></div>
     <div class="panel"><h2>Mastery by area</h2><div class="stack" id="areas"></div>
-      <div class="legend"><span><span class="dot" style="background:var(--good)"></span>mastered</span><span><span class="dot" style="background:var(--accent)"></span>learning</span><span><span class="dot" style="background:#45c46a"></span>started</span></div>
+      <div class="legend"><span><span class="dot" style="background:#45c46a"></span>mastered</span><span><span class="dot" style="background:var(--warn)"></span>learning</span><span><span class="dot" style="background:rgba(255,255,255,.28)"></span>started</span></div>
     </div>
-    <div class="panel"><h2>Grammar by level</h2><div class="stack" id="levels"></div></div>
+    <div class="panel"><h2>Grammar by level — accuracy</h2><div class="stack" id="levels"></div>
+      <div class="legend"><span><span class="dot" style="background:#45c46a"></span>good ≥80%</span><span><span class="dot" style="background:var(--warn)"></span>60–79%</span><span><span class="dot" style="background:var(--bad)"></span>&lt;60%</span><span><span class="dot" style="background:rgba(255,255,255,.20)"></span>read</span></div>
+    </div>
   </div>
 
   <script src="greekgrammar.data.js"></script>
@@ -67,19 +76,27 @@
     ];
     document.getElementById('areas').innerHTML = areas.join('') || '<div style="color:var(--muted)">No data yet.</div>';
 
-    // grammar by level
+    // grammar by level — per-lesson accuracy heatmap (one cell per lesson)
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    var gstore = {}; try { gstore = JSON.parse(localStorage.getItem('gvm_grammar') || '{}'); } catch (e) {}
+    var practice = gstore.__practice || {}, lessons = gstore.__lessons || {};
+    function cell(p) {
+      var pr = practice[p.id], a = pr && pr.seen ? Math.round(100 * pr.correct / pr.seen) : null, rec = g.srs[p.id], cls, lab;
+      if (a != null) { cls = a >= 80 ? 'good' : a >= 60 ? 'warn' : 'bad'; lab = a + '% accuracy'; }
+      else if (rec && rec.stage >= S.MASTER) { cls = 'good'; lab = 'mastered'; }
+      else if (lessons[p.id]) { cls = 'read'; lab = 'read, not practised'; }
+      else { cls = 'empty'; lab = 'not started'; }
+      return '<span class="hcell ' + cls + '" title="' + esc(p.title) + ' — ' + lab + '"></span>';
+    }
     var levels = (window.GRAMMAR_LEVELS || []);
     var rows = levels.map(function (lv) {
       var pts = (window.GRAMMAR || []).filter(function (p) { return p.level === lv.key; });
       if (!pts.length) return '';
-      var m = 0, s = 0, r = 0;
-      pts.forEach(function (p) {
-        var rec = g.srs[p.id], read = false;
-        try { read = !!(JSON.parse(localStorage.getItem('gvm_grammar') || '{}').__lessons || {})[p.id]; } catch (e) {}
-        if (rec && rec.stage >= S.MASTER) m++; else if (rec) s++; else if (read) r++;
-      });
-      var n = pts.length;
-      return bar(lv.label, [{ n: m, c: 'm', w: 100 * m / n }, { n: s, c: 's', w: 100 * s / n }, { n: r, c: 'r', w: 100 * r / n }], m + ' / ' + n + ' mastered');
+      var ps = 0, pc = 0;
+      pts.forEach(function (p) { var pr = practice[p.id]; if (pr) { ps += pr.seen; pc += pr.correct; } });
+      var accLabel = ps ? Math.round(100 * pc / ps) + '% acc' : 'no practice yet';
+      return '<div class="barrow"><div class="barrow-top"><span>' + lv.label + '</span><span class="v">' + accLabel + '</span></div>' +
+        '<div class="hbar">' + pts.map(cell).join('') + '</div></div>';
     });
     document.getElementById('levels').innerHTML = rows.join('') || '<div style="color:var(--muted)">No data yet.</div>';
   })();
