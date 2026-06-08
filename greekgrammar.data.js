@@ -658,3 +658,150 @@ window.GRAMMAR = [
     ]
   }
 ];
+
+/* Extra, more varied sentences appended to each grammar point (keeps the basics, adds interest). */
+(function () {
+  var EXTRA = {
+    'a1-pronouns-subject': [
+      { text: 'Ποιος θέλει τον τελευταίο μπακλαβά; {b}!', answer: 'Εγώ', choices: ['Εγώ', 'Εσύ', 'Αυτός', 'Εμείς'], en: 'Who wants the last baklava? Me!', hint: 'I (emphatic)' },
+      { text: '{b} προτιμάς θάλασσα ή βουνό για διακοπές;', answer: 'Εσύ', choices: ['Εγώ', 'Εσύ', 'Αυτή', 'Εσείς'], en: 'Do you prefer sea or mountains for holidays?', hint: 'you (emphatic)' },
+      { text: 'Δεν ήρθαν οι άλλοι· στο τέλος μείναμε μόνο {b}.', answer: 'εμείς', choices: ['εγώ', 'εμείς', 'εσείς', 'αυτοί'], en: 'The others didn’t come; in the end only we stayed.', hint: 'we' },
+      { text: '{b} δεν καταλαβαίνει γιατί όλοι γελάνε.', answer: 'Αυτός', choices: ['Αυτός', 'Εγώ', 'Εμείς', 'Εσύ'], en: 'He doesn’t understand why everyone is laughing.', hint: 'he' }
+    ],
+    'a1-present-a': [
+      { text: 'Κάθε βράδυ {b} λίγο πριν κοιμηθώ. (διαβάζω)', answer: 'διαβάζω', choices: ['διαβάζω', 'διαβάζεις', 'διαβάζουμε', 'διάβασα'], en: 'Every night I read a little before I sleep.', hint: 'read · εγώ' },
+      { text: 'Τα Σαββατοκύριακα εμείς {b} στο χωριό της γιαγιάς. (μένω)', answer: 'μένουμε', choices: ['μένω', 'μένεις', 'μένουμε', 'μένουν'], en: 'At weekends we stay in grandma’s village.', hint: 'stay · εμείς' },
+      { text: 'Γιατί {b} τόσο γρήγορα; Έχουμε ώρα ακόμα! (τρέχω)', answer: 'τρέχεις', choices: ['τρέχω', 'τρέχεις', 'τρέχει', 'τρέχετε'], en: 'Why are you running so fast? We still have time!', hint: 'run · εσύ' },
+      { text: 'Οι γείτονες {b} δυνατά μουσική κάθε νύχτα. (παίζω)', answer: 'παίζουν', choices: ['παίζει', 'παίζουμε', 'παίζετε', 'παίζουν'], en: 'The neighbours play loud music every night.', hint: 'play · they' }
+    ],
+    'a1-present-b1': [
+      { text: 'Η γιαγιά μου {b} πέντε γλώσσες, το πιστεύεις; (μιλάω)', answer: 'μιλάει', accept: ['μιλά'], choices: ['μιλάω', 'μιλάς', 'μιλάει', 'μιλάμε'], en: 'My grandma speaks five languages, can you believe it?', hint: 'speak · she' },
+      { text: 'Πάντα {b} αριστερά και δεξιά πριν περάσω τον δρόμο. (κοιτάω)', answer: 'κοιτάω', accept: ['κοιτώ'], choices: ['κοιτάω', 'κοιτάς', 'κοιτάμε', 'κοιτάνε'], en: 'I always look left and right before crossing.', hint: 'look · εγώ' },
+      { text: 'Εσείς {b} πολύ καλά ελληνικά για ξένοι! (μιλάω)', answer: 'μιλάτε', choices: ['μιλάω', 'μιλάς', 'μιλάμε', 'μιλάτε'], en: 'You speak Greek very well for foreigners!', hint: 'speak · εσείς' },
+      { text: 'Τα παιδιά {b} συνέχεια πότε θα φτάσουμε. (ρωτάω)', answer: 'ρωτάνε', accept: ['ρωτούν'], choices: ['ρωτάει', 'ρωτάμε', 'ρωτάτε', 'ρωτάνε'], en: 'The children keep asking when we’ll arrive.', hint: 'ask · they' }
+    ],
+    'a1-present-b2': [
+      { text: 'Συγγνώμη, {b} να ανοίξω λίγο το παράθυρο; (μπορώ)', answer: 'μπορώ', choices: ['μπορώ', 'μπορείς', 'μπορεί', 'μπορούμε'], en: 'Excuse me, may I open the window a bit?', hint: 'can · εγώ' },
+      { text: 'Ο πατέρας μου {b} φορτηγά εδώ και είκοσι χρόνια. (οδηγώ)', answer: 'οδηγεί', choices: ['οδηγώ', 'οδηγείς', 'οδηγεί', 'οδηγούν'], en: 'My father has driven trucks for twenty years.', hint: 'drive · he' },
+      { text: 'Κάθε Κυριακή {b} στη μητέρα μου για μισή ώρα. (τηλεφωνώ)', answer: 'τηλεφωνώ', choices: ['τηλεφωνώ', 'τηλεφωνείς', 'τηλεφωνεί', 'τηλεφωνούν'], en: 'Every Sunday I phone my mother for half an hour.', hint: 'phone · εγώ' },
+      { text: 'Εμείς {b} σε ένα μικρό διαμέρισμα στο κέντρο. (ζω)', answer: 'ζούμε', choices: ['ζω', 'ζεις', 'ζούμε', 'ζείτε'], en: 'We live in a small flat in the centre.', hint: 'live · εμείς' }
+    ],
+    'a1-articles-gender': [
+      { text: '{b} καφές μου κρύωσε όσο μιλούσαμε.', answer: 'Ο', choices: ['Ο', 'Η', 'Το', 'Οι'], en: 'My coffee got cold while we were talking.', hint: 'masculine' },
+      { text: 'Μου αρέσει πολύ {b} μουσική που ακούς.', answer: 'η', choices: ['ο', 'η', 'το', 'τα'], en: 'I really like the music you listen to.', hint: 'feminine' },
+      { text: '{b} αυτοκίνητα στην πόλη είναι πάρα πολλά.', answer: 'Τα', choices: ['Ο', 'Οι', 'Τα', 'Η'], en: 'There are far too many cars in the city.', hint: 'neuter plural' },
+      { text: 'Πού έβαλα {b} κλειδιά μου πάλι;', answer: 'τα', choices: ['το', 'τα', 'οι', 'η'], en: 'Where did I put my keys again?', hint: 'neuter plural' }
+    ],
+    'a1-weak-object': [
+      { text: 'Αν δεις τη Μαρία, {b} χαιρετάς από μένα. (her)', answer: 'την', choices: ['με', 'σε', 'τον', 'την'], en: 'If you see Maria, say hi to her from me.', hint: 'object: her' },
+      { text: 'Πού είναι τα γυαλιά μου; Δεν {b} βρίσκω πουθενά. (them, neuter)', answer: 'τα', choices: ['τον', 'τη', 'τους', 'τα'], en: 'Where are my glasses? I can’t find them anywhere.', hint: 'object: them (neuter)' },
+      { text: 'Σ’ ευχαριστώ πολύ που {b} βοήθησες χθες. (me)', answer: 'με', choices: ['με', 'σε', 'μας', 'τον'], en: 'Thank you so much for helping me yesterday.', hint: 'object: me' },
+      { text: 'Οι γονείς μου {b} καλούν για φαγητό κάθε Κυριακή. (us)', answer: 'μας', choices: ['με', 'σε', 'μας', 'τους'], en: 'My parents invite us for lunch every Sunday.', hint: 'object: us' }
+    ],
+    'a1-possessive': [
+      { text: 'Έχασα το κινητό {b} στο τρένο σήμερα. (my)', answer: 'μου', choices: ['μου', 'σου', 'του', 'μας'], en: 'I lost my phone on the train today.', hint: 'my' },
+      { text: 'Η αδερφή {b} σπουδάζει ιατρική στο Λονδίνο. (his)', answer: 'του', choices: ['μου', 'του', 'της', 'τους'], en: 'His sister studies medicine in London.', hint: 'his' },
+      { text: 'Τα παιχνίδια {b} είναι σκορπισμένα σε όλο το σπίτι. (their)', answer: 'τους', choices: ['μου', 'μας', 'σας', 'τους'], en: 'Their toys are scattered all over the house.', hint: 'their' },
+      { text: 'Ποια είναι η αγαπημένη {b} ταινία όλων των εποχών; (your)', answer: 'σου', choices: ['μου', 'σου', 'της', 'σας'], en: 'What’s your favourite film of all time?', hint: 'your' }
+    ],
+    'a1-oti-pos-pou': [
+      { text: 'Είμαι σίγουρος {b} θα τα καταφέρεις στις εξετάσεις.', answer: 'ότι', accept: ['πως'], choices: ['ότι', 'που', 'πού', 'γιατί'], en: 'I’m sure (that) you’ll do well in the exams.', hint: 'reported · after “sure”' },
+      { text: 'Η ταινία {b} είδαμε χθες ήταν βαρετή.', answer: 'που', choices: ['ότι', 'που', 'πως', 'ποια'], en: 'The film (that) we saw yesterday was boring.', hint: 'after a noun = which' },
+      { text: 'Στενοχωριέμαι {b} φεύγεις τόσο νωρίς.', answer: 'που', choices: ['ότι', 'που', 'πως', 'γιατί'], en: 'I’m sad that you’re leaving so early.', hint: 'after an emotion verb' },
+      { text: 'Όλοι πιστεύουν {b} αύριο θα κάνει καλό καιρό.', answer: 'ότι', accept: ['πως'], choices: ['ότι', 'που', 'πού', 'αν'], en: 'Everyone believes the weather will be good tomorrow.', hint: 'reported · after “believe”' }
+    ],
+    'a2-accusative': [
+      { text: 'Συναντήσαμε {b} καθηγητή μας τυχαία στην αγορά. (the teacher, masc)', answer: 'τον', choices: ['ο', 'τον', 'του', 'την'], en: 'We ran into our teacher by chance at the market.', hint: 'object · masculine' },
+      { text: 'Δώσε μου {b} αλάτι, σε παρακαλώ. (the salt, neuter)', answer: 'το', choices: ['το', 'τον', 'του', 'τα'], en: 'Pass me the salt, please.', hint: 'object · neuter' },
+      { text: 'Περιμένω {b} φίλους μου εδώ και μισή ώρα. (my friends)', answer: 'τους', choices: ['οι', 'τους', 'των', 'τις'], en: 'I’ve been waiting for my friends for half an hour.', hint: 'object · masc plural' },
+      { text: 'Αγόρασα ένα μικρό δώρο για {b} μητέρα μου. (my mother)', answer: 'τη', accept: ['την'], choices: ['τη', 'της', 'τον', 'το'], en: 'I bought a small gift for my mother.', hint: 'after για · feminine' }
+    ],
+    'a2-genitive': [
+      { text: 'Το χρώμα {b} ουρανού το ηλιοβασίλεμα ήταν απίστευτο. (the sky)', answer: 'του', choices: ['ο', 'τον', 'του', 'των'], en: 'The colour of the sky at sunset was incredible.', hint: 'owner · masculine' },
+      { text: 'Δεν θυμάμαι το όνομα {b} γυναίκας που γνωρίσαμε. (the woman)', answer: 'της', choices: ['η', 'την', 'της', 'των'], en: 'I don’t remember the name of the woman we met.', hint: 'owner · feminine' },
+      { text: 'Τα προβλήματα {b} κόσμου δεν λύνονται εύκολα. (the world)', answer: 'του', choices: ['το', 'του', 'των', 'της'], en: 'The world’s problems aren’t solved easily.', hint: 'owner · neuter' },
+      { text: 'Η τιμή {b} βιβλίων ανέβηκε φέτος. (the books)', answer: 'των', choices: ['οι', 'τους', 'των', 'τις'], en: 'The price of books went up this year.', hint: 'owner · plural' }
+    ],
+    'a2-aorist': [
+      { text: 'Χθες {b} όλη μέρα και κουράστηκα πολύ. (δουλεύω)', answer: 'δούλεψα', choices: ['δούλεψα', 'δούλεψες', 'δουλέψαμε', 'δούλευα'], en: 'Yesterday I worked all day and got very tired.', hint: 'work · past · εγώ' },
+      { text: 'Ο Γιώργος {b} καινούριο αυτοκίνητο τον περασμένο μήνα. (αγοράζω)', answer: 'αγόρασε', choices: ['αγόρασα', 'αγόρασες', 'αγόρασε', 'αγόρασαν'], en: 'George bought a new car last month.', hint: 'buy · past · he' },
+      { text: 'Πότε {b} πρώτη φορά στην Ελλάδα; (έρχομαι → ήρθα)', answer: 'ήρθες', choices: ['ήρθα', 'ήρθες', 'ήρθαμε', 'ήρθαν'], en: 'When did you first come to Greece?', hint: 'come · past · εσύ' },
+      { text: 'Τα παιδιά {b} τα δώρα τους με ενθουσιασμό. (ανοίγω)', answer: 'άνοιξαν', choices: ['άνοιξα', 'ανοίξαμε', 'άνοιξαν', 'άνοιγαν'], en: 'The children opened their presents excitedly.', hint: 'open · past · they' }
+    ],
+    'a2-future-simple': [
+      { text: 'Το Σαββατοκύριακο {b} τους παλιούς μου φίλους. (βλέπω → είδα)', answer: 'θα δω', accept: ['θα δω'], choices: ['θα δω', 'θα βλέπω', 'είδα', 'θα δεις'], en: 'At the weekend I’ll see my old friends.', hint: 'future simple · εγώ' },
+      { text: 'Αύριο {b} νωρίς γιατί έχω δουλειά. (ξυπνάω → ξύπνησα)', answer: 'θα ξυπνήσω', accept: ['θα ξυπνησω'], choices: ['θα ξυπνήσω', 'θα ξυπνάω', 'ξύπνησα', 'θα ξυπνήσεις'], en: 'Tomorrow I’ll wake up early because I have work.', hint: 'future simple · εγώ' },
+      { text: 'Μην ανησυχείς, {b} μόλις φτάσω. (τηλεφωνώ)', answer: 'θα τηλεφωνήσω', accept: ['θα τηλεφωνησω'], choices: ['θα τηλεφωνήσω', 'θα τηλεφωνώ', 'τηλεφώνησα', 'θα τηλεφωνήσεις'], en: 'Don’t worry, I’ll call as soon as I arrive.', hint: 'future simple · εγώ' },
+      { text: 'Τι {b} για τα γενέθλιά σου φέτος; (κάνω)', answer: 'θα κάνεις', accept: ['θα κανεις'], choices: ['θα κάνεις', 'θα κάνω', 'έκανες', 'θα κάνει'], en: 'What will you do for your birthday this year?', hint: 'future simple · εσύ' }
+    ],
+    'a2-negation': [
+      { text: '{b} μου αρέσει καθόλου αυτή η ιδέα.', answer: 'Δεν', choices: ['Δεν', 'Μην', 'Όχι', 'Ούτε'], en: 'I don’t like this idea at all.', hint: 'negate a normal verb' },
+      { text: 'Σε παρακαλώ, {b} το πεις σε κανέναν. (command)', answer: 'μην', choices: ['δεν', 'μην', 'όχι', 'να'], en: 'Please, don’t tell anyone.', hint: 'negative command' },
+      { text: '{b} ήρθε κανείς στο πάρτι μέχρι τις δέκα.', answer: 'Δεν', choices: ['Δεν', 'Μην', 'Όχι', 'Ποτέ'], en: 'Nobody came to the party until ten.', hint: 'negate (double negative)' },
+      { text: 'Προτιμώ να {b} οδηγώ τη νύχτα.', answer: 'μην', choices: ['δεν', 'μην', 'όχι', 'ούτε'], en: 'I prefer not to drive at night.', hint: 'negative after να' }
+    ],
+    'b1-subjunctive': [
+      { text: 'Πρέπει να {b} περισσότερο νερό μέσα στη μέρα. (πίνω)', answer: 'πίνω', choices: ['πίνω', 'πιω', 'ήπια', 'πίνεις'], en: 'I should drink more water during the day.', hint: 'after να · ongoing · εγώ' },
+      { text: 'Θα ήθελα να {b} ένα τραπέζι για δύο, παρακαλώ. (κλείνω → έκλεισα)', answer: 'κλείσω', choices: ['κλείσω', 'κλείνω', 'έκλεισα', 'κλείσεις'], en: 'I’d like to book a table for two, please.', hint: 'after να · one-off · εγώ' },
+      { text: 'Μπορείς να {b} πιο σιγά; Δεν προλαβαίνω. (μιλάω)', answer: 'μιλάς', choices: ['μιλάς', 'μιλάω', 'μίλησα', 'μιλήσεις'], en: 'Can you speak more slowly? I can’t keep up.', hint: 'after να · ongoing · εσύ' },
+      { text: 'Ας {b} έξω για φαγητό απόψε, βαρέθηκα το σπίτι! (πηγαίνω → πάω)', answer: 'πάμε', choices: ['πάμε', 'πάω', 'πήγα', 'πας'], en: 'Let’s go out for dinner tonight, I’m bored of home!', hint: 'ας + εμείς' }
+    ],
+    'b1-imperative': [
+      { text: '{b} μου ένα ποτήρι νερό, σε παρακαλώ. (φέρνω → έφερα, singular)', answer: 'Φέρε', choices: ['Φέρε', 'Φέρτε', 'Φέρνε', 'Φέρεις'], en: 'Bring me a glass of water, please.', hint: 'command · singular' },
+      { text: '{b} με προσεκτικά, είναι σημαντικό. (ακούω, singular)', answer: 'Άκουσε', choices: ['Άκουσε', 'Ακούστε', 'Άκουγε', 'Άκουσες'], en: 'Listen to me carefully, it’s important.', hint: 'command · singular' },
+      { text: '{b} γρήγορα, θα χάσουμε το τρένο! (τρέχω, plural)', answer: 'Τρέξτε', choices: ['Τρέξε', 'Τρέξτε', 'Τρέχετε', 'Τρέξετε'], en: 'Run, we’ll miss the train!', hint: 'command · plural' },
+      { text: '{b} ένα μπισκότο, μόλις τα έφτιαξα! (παίρνω → πήρα, singular)', answer: 'Πάρε', choices: ['Πάρε', 'Πάρτε', 'Παίρνε', 'Πάρεις'], en: 'Have a biscuit, I just made them!', hint: 'command · singular' }
+    ],
+    'b1-past-continuous': [
+      { text: 'Όταν ήμασταν μικροί, {b} στον δρόμο μέχρι να σκοτεινιάσει. (παίζω)', answer: 'παίζαμε', choices: ['παίζαμε', 'παίξαμε', 'παίζουμε', 'έπαιξαν'], en: 'When we were little, we played in the street until dark.', hint: 'past continuous · εμείς' },
+      { text: 'Η γιαγιά μου {b} υπέροχες ιστορίες κάθε βράδυ. (λέω → έλεγα)', answer: 'έλεγε', choices: ['έλεγε', 'είπε', 'λέει', 'έλεγα'], en: 'My grandma used to tell wonderful stories every night.', hint: 'past continuous · she' },
+      { text: 'Ενώ {b}, άκουσα ξαφνικά έναν περίεργο θόρυβο. (διαβάζω)', answer: 'διάβαζα', choices: ['διάβαζα', 'διάβασα', 'διαβάζω', 'διάβαζες'], en: 'While I was reading, I suddenly heard a strange noise.', hint: 'past continuous · εγώ' },
+      { text: 'Παλιά {b} σε ένα μικρό χωριό στα βουνά. (ζω → ζούσα)', answer: 'ζούσαμε', choices: ['ζούσαμε', 'ζήσαμε', 'ζούμε', 'ζούσαν'], en: 'We used to live in a small mountain village.', hint: 'past continuous · εμείς' }
+    ],
+    'b1-comparatives': [
+      { text: 'Το καλοκαίρι στην Ελλάδα είναι {b} ζεστό απ’ ό,τι στην Αγγλία.', answer: 'πιο', choices: ['πιο', 'πολύ', 'από', 'τόσο'], en: 'Summer in Greece is hotter than in England.', hint: '“more”' },
+      { text: 'Αυτό το εστιατόριο είναι {b} από εκείνο στη γωνία. (better)', answer: 'καλύτερο', choices: ['καλύτερο', 'πιο καλό', 'καλό', 'χειρότερο'], en: 'This restaurant is better than the one on the corner.', hint: 'irregular: better (neuter)' },
+      { text: 'Ο μικρός μου αδερφός έγινε πιο ψηλός {b} εμένα.', answer: 'από', choices: ['από', 'που', 'σαν', 'και'], en: 'My little brother became taller than me.', hint: '“than”' },
+      { text: 'Σήμερα ένιωσα {b} απ’ ό,τι χθες, δυστυχώς. (worse)', answer: 'χειρότερα', choices: ['χειρότερα', 'καλύτερα', 'πιο κακά', 'πολύ'], en: 'Today I felt worse than yesterday, unfortunately.', hint: 'irregular: worse (adverb)' }
+    ],
+    'b1-conjunctions': [
+      { text: '{b} τελειώσω τη δουλειά, θα σε πάρω τηλέφωνο. (as soon as)', answer: 'Μόλις', choices: ['Μόλις', 'Αν', 'Γιατί', 'Ενώ'], en: 'As soon as I finish work, I’ll call you.', hint: 'as soon as' },
+      { text: 'Δεν βγήκαμε έξω {b} έβρεχε όλη μέρα.', answer: 'γιατί', accept: ['επειδή'], choices: ['γιατί', 'αν', 'όταν', 'αλλά'], en: 'We didn’t go out because it rained all day.', hint: 'because' },
+      { text: 'Θα έρθω στο πάρτι, {b} δεν θα μείνω πολύ.', answer: 'αλλά', accept: ['όμως'], choices: ['αλλά', 'και', 'γιατί', 'όταν'], en: 'I’ll come to the party, but I won’t stay long.', hint: 'but' },
+      { text: '{b} εκείνη μαγείρευε, αυτός έστρωνε το τραπέζι.', answer: 'Ενώ', choices: ['Ενώ', 'Αν', 'Γιατί', 'Μόλις'], en: 'While she was cooking, he was setting the table.', hint: 'while' }
+    ],
+    'b2-mediopassive': [
+      { text: 'Συνήθως {b} γύρω στις έντεκα το βράδυ. (κοιμάμαι)', answer: 'κοιμάμαι', choices: ['κοιμάμαι', 'κοιμάσαι', 'κοιμάται', 'κοιμούνται'], en: 'I usually go to sleep around eleven at night.', hint: 'sleep · εγώ' },
+      { text: 'Πώς {b} σήμερα; Καλύτερα από χθες; (αισθάνομαι)', answer: 'αισθάνεσαι', choices: ['αισθάνομαι', 'αισθάνεσαι', 'αισθάνεται', 'αισθανόμαστε'], en: 'How do you feel today? Better than yesterday?', hint: 'feel · εσύ' },
+      { text: 'Τα παιδιά {b} όταν μένουν μόνα στο σκοτάδι. (φοβάμαι)', answer: 'φοβούνται', choices: ['φοβάμαι', 'φοβάται', 'φοβόμαστε', 'φοβούνται'], en: 'The children get scared when they’re left alone in the dark.', hint: 'fear · they' },
+      { text: 'Δεν {b} σχεδόν τίποτα από εκείνη τη νύχτα. (θυμάμαι)', answer: 'θυμάμαι', choices: ['θυμάμαι', 'θυμάσαι', 'θυμάται', 'θυμούνται'], en: 'I remember almost nothing from that night.', hint: 'remember · εγώ' }
+    ],
+    'b2-conditional': [
+      { text: 'Αν {b} περισσότερο χρόνο, θα μάθαινα πιάνο. (έχω, unreal)', answer: 'είχα', choices: ['είχα', 'έχω', 'θα έχω', 'είχες'], en: 'If I had more time, I would learn the piano.', hint: 'if-clause · past continuous' },
+      { text: 'Αν ήξερα ότι θα ερχόσουν, {b} κάτι ωραίο. (μαγειρεύω)', answer: 'θα μαγείρευα', accept: ['θα μαγειρευα'], choices: ['θα μαγείρευα', 'μαγειρεύω', 'θα μαγειρέψω', 'μαγείρεψα'], en: 'If I’d known you were coming, I would have cooked something nice.', hint: 'result · θα + past continuous' },
+      { text: 'Τι {b} αν μπορούσες να ζήσεις οπουδήποτε στον κόσμο; (κάνω)', answer: 'θα έκανες', accept: ['θα εκανες'], choices: ['θα έκανες', 'κάνεις', 'θα κάνεις', 'έκανες'], en: 'What would you do if you could live anywhere in the world?', hint: 'result · εσύ' },
+      { text: 'Αν {b} εσύ στη θέση μου, τι θα έλεγες; (είμαι)', answer: 'ήσουν', choices: ['ήσουν', 'είσαι', 'θα είσαι', 'ήμουν'], en: 'If you were in my place, what would you say?', hint: 'if-clause · “were” · εσύ' }
+    ],
+    'b2-gerund': [
+      { text: 'Πέρασε όλο το απόγευμα {b} τηλεόραση στον καναπέ. (βλέπω)', answer: 'βλέποντας', choices: ['βλέποντας', 'βλέπω', 'είδε', 'βλέπωντας'], en: 'He spent the whole afternoon watching TV on the sofa.', hint: 'gerund · -οντας' },
+      { text: 'Μπήκε στο δωμάτιο {b} δυνατά με τα νέα. (γελάω)', answer: 'γελώντας', choices: ['γελώντας', 'γελάει', 'γέλασε', 'γελόντας'], en: 'She came into the room laughing loudly with the news.', hint: 'gerund · -ώντας' },
+      { text: 'Μαθαίνεις πιο γρήγορα {b} με ντόπιους κάθε μέρα. (μιλάω)', answer: 'μιλώντας', choices: ['μιλώντας', 'μιλάω', 'μίλησα', 'μιλόντας'], en: 'You learn faster by speaking with locals every day.', hint: 'gerund · -ώντας' },
+      { text: '{b} προσεκτικά τους άλλους, καταλαβαίνεις πολλά. (ακούω)', answer: 'Ακούγοντας', choices: ['Ακούγοντας', 'Ακούω', 'Άκουσα', 'Ακούοντας'], en: 'By listening to others carefully, you understand a lot.', hint: 'gerund of ακούω' }
+    ],
+    'b2-relative-oopoios': [
+      { text: 'Ο καθηγητής {b} μας δίδαξε ιστορία ήταν εξαιρετικός.', answer: 'ο οποίος', choices: ['ο οποίος', 'η οποία', 'το οποίο', 'οι οποίοι'], en: 'The professor who taught us history was excellent.', hint: 'masculine singular' },
+      { text: 'Η ταινία {b} κέρδισε το βραβείο ήταν ελληνική.', answer: 'η οποία', choices: ['ο οποίος', 'η οποία', 'το οποίο', 'οι οποίες'], en: 'The film which won the award was Greek.', hint: 'feminine singular' },
+      { text: 'Τα θέματα {b} συζητήσαμε στη συνάντηση ήταν δύσκολα.', answer: 'τα οποία', choices: ['ο οποίος', 'η οποία', 'το οποίο', 'τα οποία'], en: 'The topics which we discussed at the meeting were difficult.', hint: 'neuter plural' },
+      { text: 'Ο φίλος {b} το σπίτι επισκεφτήκαμε μένει στην Κρήτη.', answer: 'του οποίου', choices: ['του οποίου', 'ο οποίος', 'που', 'των οποίων'], en: 'The friend whose house we visited lives in Crete.', hint: 'genitive: whose' }
+    ],
+    'b2-purpose': [
+      { text: 'Σηκώθηκα νωρίς {b} προλάβω το πρώτο τρένο.', answer: 'για να', choices: ['για να', 'ώστε να', 'επειδή', 'αν'], en: 'I got up early in order to catch the first train.', hint: 'purpose: in order to' },
+      { text: 'Μιλάει αργά και καθαρά {b} τον καταλαβαίνουν όλοι.', answer: 'ώστε να', choices: ['ώστε να', 'για να', 'επειδή', 'αλλά'], en: 'He speaks slowly and clearly so that everyone understands him.', hint: 'result: so that' },
+      { text: 'Πήγα στην τράπεζα {b} βγάλω λίγα χρήματα.', answer: 'για να', choices: ['για να', 'ώστε να', 'αν', 'ενώ'], en: 'I went to the bank to take out some money.', hint: 'purpose' },
+      { text: 'Έκλεισε σιγά την πόρτα {b} μην ξυπνήσει το μωρό.', answer: 'για να', accept: ['ώστε να'], choices: ['για να', 'επειδή', 'γιατί', 'όταν'], en: 'He closed the door quietly so as not to wake the baby.', hint: 'purpose / so that' }
+    ]
+  };
+  (window.GRAMMAR || []).forEach(function (p) {
+    if (EXTRA[p.id]) p.items = p.items.concat(EXTRA[p.id]);
+  });
+})();

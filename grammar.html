@@ -9,6 +9,8 @@
       --bg: #111315; --panel: #1b1f24; --panel2: #232a31; --text: #eef2f7;
       --muted: #aab4c0; --border: #36404a; --accent: #ff9f43;
       --good: #8ee28e; --warn: #ffd84d; --bad: #ff8f8f; --shadow: 0 12px 34px rgba(0,0,0,.28);
+      --present: #4ea1ff; --past: #ffd84d; --future: #7fdcff; --pastc: #ff9f43; --futurec: #b78cff;
+      --panel2: #232a31;
     }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: Inter, system-ui, sans-serif;
@@ -93,7 +95,8 @@
     .g-modebar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; font-size: 13px; color: var(--muted); }
     .g-modebar button { font-size: 12px; padding: 7px 11px; }
     .g-modelabel { color: var(--muted); }
-    .g-mode.active, .g-len.active { outline: 2px solid rgba(255,159,67,.4); color: var(--text); }
+    .g-mode.active, .g-len.active, .g-eng.active { outline: 2px solid rgba(255,159,67,.4); color: var(--text); }
+    .g-eng { font-size: 12px; }
     .g-spacer { flex: 1; }
 
     .g-level { margin-bottom: 18px; }
@@ -138,7 +141,7 @@
     .g-blank-filled { padding: 0 8px; border-radius: 8px; }
     .g-blank-filled.ok { background: rgba(142,226,142,.18); color: var(--good); }
     .g-blank-filled.bad { background: rgba(255,143,143,.18); color: var(--bad); }
-    .g-cue { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--accent); border: 1px solid rgba(255,159,67,.4); border-radius: 999px; padding: 3px 12px; }
+    .g-cue { display: inline-block; margin-top: 14px; font-size: 19px; font-weight: 700; color: var(--accent); background: rgba(255,159,67,.10); border: 1px solid rgba(255,159,67,.45); border-radius: 12px; padding: 8px 16px; letter-spacing: -.01em; }
     .g-en { color: var(--muted); font-size: 15px; margin-top: 14px; }
     .g-hint { color: var(--muted); font-size: 13px; margin-top: 6px; font-style: italic; }
     /* verb conjugation dropdown */
@@ -148,13 +151,26 @@
     .g-verbdrop summary::before { content: '▸ '; }
     .g-verbdrop[open] summary::before { content: '▾ '; }
     .g-verbdrop summary strong { color: var(--text); }
-    .g-vp { padding: 0 14px 14px; }
-    .g-vtitle { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 10px 0 6px; }
-    .g-vgrid { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: 14px; text-align: left; }
-    .g-vgrid.three { grid-template-columns: auto 1fr 1fr; }
-    .g-vk { color: var(--muted); }
-    .g-vv.muted { color: var(--muted); }
-    .g-vlink { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--accent); }
+    /* conjugation cards, styled like the Verb Memoriser */
+    .vm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; padding: 4px 14px 4px; }
+    .vm-card { border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
+    .vm-card.present { background: color-mix(in srgb, var(--present) 16%, transparent); border-color: color-mix(in srgb, var(--present) 50%, var(--border)); }
+    .vm-card.past { background: color-mix(in srgb, var(--past) 16%, transparent); border-color: color-mix(in srgb, var(--past) 50%, var(--border)); }
+    .vm-card.future { background: color-mix(in srgb, var(--future) 16%, transparent); border-color: color-mix(in srgb, var(--future) 50%, var(--border)); }
+    .vm-card.pastCont { background: color-mix(in srgb, var(--pastc) 16%, transparent); border-color: color-mix(in srgb, var(--pastc) 50%, var(--border)); }
+    .vm-card.futureCont { background: color-mix(in srgb, var(--futurec) 16%, transparent); border-color: color-mix(in srgb, var(--futurec) 50%, var(--border)); }
+    .vm-k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .vm-row { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 3px 0; border-bottom: 1px dashed rgba(255,255,255,.08); text-align: left; }
+    .vm-row:last-child { border-bottom: 0; }
+    .vm-per { color: var(--muted); font-size: 12px; min-width: 56px; }
+    .vm-form { font-weight: 600; }
+    .g-vlink { display: inline-block; margin: 10px 14px 14px; font-size: 13px; color: var(--accent); }
+    /* level progress bar */
+    .g-lvbar { display: flex; height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; margin: 0 2px 12px; }
+    .g-lvseg { height: 100%; }
+    .g-lvseg.m { background: var(--good); }
+    .g-lvseg.s { background: var(--accent); }
+    .g-lvseg.r { background: #7fdcff; }
     .g-point-go { font-size: 12px; padding: 6px 11px; white-space: nowrap; }
     .g-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
     .g-choice { text-align: left; font-size: 17px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }

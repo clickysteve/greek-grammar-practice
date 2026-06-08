@@ -109,9 +109,12 @@
     var len = store.__settings.sessionLength;
     var free = len === 0;
     var sliderVal = free ? prevLen : len;
+    var hideEng = !!store.__settings.hideEnglish;
     var html = '<div class="g-modebar"><span class="g-modelabel">Answer:</span>' +
       '<button class="g-mode' + (mode === 'choice' ? ' active' : '') + '" data-mode="choice">Multiple choice</button>' +
-      '<button class="g-mode' + (mode === 'type' ? ' active' : '') + '" data-mode="type">Type</button>';
+      '<button class="g-mode' + (mode === 'type' ? ' active' : '') + '" data-mode="type">Type</button>' +
+      '<span class="g-spacer-sm"></span>' +
+      '<button class="g-eng' + (hideEng ? ' active' : '') + '" id="gEng">English: ' + (hideEng ? 'hidden' : 'shown') + '</button>';
     if (state.view === 'lessons') {
       html += '<span class="g-spacer-sm"></span><span class="g-modelabel">Practice length:</span>' +
         '<input type="range" id="gLenRange" class="g-lenrange" min="' + LEN_MIN + '" max="' + LEN_MAX + '" value="' + sliderVal + '"' + (free ? ' disabled' : '') + ' />' +
@@ -155,6 +158,8 @@
       var n = parseInt(rng.value, 10); prevLen = n; store.__settings.sessionLength = n; save();
       var lv = el('gLenVal'); if (lv) lv.textContent = String(n);
     });
+    var en = el('gEng');
+    if (en) en.addEventListener('click', function () { store.__settings.hideEnglish = !store.__settings.hideEnglish; save(); render(); });
     var fr = el('gFree');
     if (fr) fr.addEventListener('click', function () {
       if (store.__settings.sessionLength === 0) { store.__settings.sessionLength = prevLen; }
@@ -198,6 +203,11 @@
         '<span class="g-level-title"><span class="g-caret">' + (collapsed ? '▸' : '▾') + '</span> ' + escapeHtml(lv.label) + '</span>' +
         '<span class="g-level-prog">' + lr + '/' + pts.length + ' lessons · ' + insrs + ' in SRS · ' + lm + ' mastered' + lvAcc + ' ' +
         '<button class="g-practice" data-level="' + lv.key + '">Practice level</button></span></div>' +
+        (function () {
+          var seg = function (n, cls) { return n > 0 ? '<span class="g-lvseg ' + cls + '" style="width:' + (100 * n / pts.length) + '%"></span>' : ''; };
+          return '<div class="g-lvbar" title="' + lm + ' mastered · ' + (insrs - lm) + ' in review · ' + Math.max(0, lr - insrs) + ' read only">' +
+            seg(lm, 'm') + seg(insrs - lm, 's') + seg(Math.max(0, lr - insrs), 'r') + '</div>';
+        })() +
         '<div class="g-points"' + (collapsed ? ' style="display:none;"' : '') + '>';
       pts.forEach(function (p) {
         var st = pointStatus(p.id);
@@ -209,7 +219,7 @@
         html += '<div class="g-point st-' + st + '" data-point="' + p.id + '">' +
           '<div class="g-point-main"><div class="g-point-title">' + escapeHtml(p.title) + '</div>' +
           '<div class="g-point-short">' + escapeHtml(p.short) + '</div></div>' +
-          accChip + practiceBtn +
+          practiceBtn + accChip +
           '<span class="g-badge st-' + st + '">' + badge + '</span></div>';
       });
       html += '</div></div>';
@@ -345,6 +355,7 @@
       '</div>' +
       '<div class="g-md-divider"></div>' +
       lessonDetailHtml(p) + '</div>';
+    if (window.scrollTo) window.scrollTo(0, 0); // open lessons at the top, not mid-page
     el('gBack').addEventListener('click', function () { state.view = state.lessonBack || 'lessons'; state.lessonPoint = null; render(); });
     el('gPractice').addEventListener('click', function () { startPractice(pointQuestions(p)); });
     var add = el('gAddReviews');
@@ -357,23 +368,28 @@
     var v = GVShared.findVerbAppEntry(lemma);
     if (!v) return '';
     var persons = ['εγώ', 'εσύ', 'αυτός/ή', 'εμείς', 'εσείς', 'αυτοί'];
-    var ov = (window.CONJUGATIONS || {})[v.english];
-    var pres = (ov && ov.present) || GVShared.verbPresentTable(v.present);
-    var past = ov && ov.pastCont;
-    var pp = [['Present', v.present], ['Simple past', v.past], ['Future', v.future], ['Past cont.', v.pastCont], ['Future cont.', v.futureCont]]
-      .map(function (r) { return '<div class="g-vk">' + r[0] + '</div><div class="g-vv">' + escapeHtml(r[1] || '—') + '</div>'; }).join('');
-    var table = '';
-    if (pres) {
-      table = '<div class="g-vtitle">Present' + (past ? ' &amp; imperfect' : '') + '</div>' +
-        '<div class="g-vgrid' + (past ? ' three' : '') + '">' +
-        persons.map(function (pn, i) {
-          return '<div class="g-vk">' + pn + '</div><div class="g-vv">' + escapeHtml(pres[i] || '') + '</div>' +
-            (past ? '<div class="g-vv muted">' + escapeHtml(past[i] || '') + '</div>' : '');
-        }).join('') + '</div>';
-    }
+    var ov = (window.CONJUGATIONS || {})[v.english] || {};
+    var tenses = [
+      { key: 'present', label: 'Present', arr: ov.present || GVShared.verbPresentTable(v.present), one: v.present },
+      { key: 'past', label: 'Simple past', arr: ov.past, one: v.past },
+      { key: 'future', label: 'Future', arr: ov.future, one: v.future },
+      { key: 'pastCont', label: 'Past continuous', arr: ov.pastCont, one: v.pastCont },
+      { key: 'futureCont', label: 'Future continuous', arr: ov.futureCont, one: v.futureCont }
+    ];
+    var cards = tenses.map(function (t) {
+      var body;
+      if (t.arr && t.arr.length === 6) {
+        body = persons.map(function (pn, i) {
+          return '<div class="vm-row"><span class="vm-per">' + pn + '</span><span class="vm-form">' + escapeHtml(t.arr[i] || '') + '</span></div>';
+        }).join('');
+      } else if (t.one) {
+        body = '<div class="vm-row"><span class="vm-per">εγώ</span><span class="vm-form">' + escapeHtml(t.one) + '</span></div>';
+      } else { return ''; }
+      return '<div class="vm-card ' + t.key + '"><div class="vm-k">' + t.label + '</div>' + body + '</div>';
+    }).join('');
     return '<details class="g-verbdrop"><summary>Conjugation of <strong>' + escapeHtml(v.present) + '</strong> (' + escapeHtml(v.english) + ')</summary>' +
-      '<div class="g-vp"><div class="g-vtitle">Principal parts</div><div class="g-vgrid">' + pp + '</div>' + table +
-      '<a class="g-vlink" href="index.html">Drill this verb in the Verb Memoriser →</a></div></details>';
+      '<div class="vm-grid">' + cards + '</div>' +
+      '<a class="g-vlink" href="index.html">Drill this verb in the Verb Memoriser →</a></details>';
   }
 
   // Compact reference popup (used by "Why?" during a session).
@@ -491,7 +507,7 @@
       '<div class="g-prompt-point">' + escapeHtml(cur.point.title) + '</div>' +
       '<div class="g-sentence">' + pre + blankHtml + post + '</div>' +
       cueHtml +
-      '<div class="g-en">' + escapeHtml(item.en) + '</div>' +
+      (store.__settings.hideEnglish ? '' : '<div class="g-en">' + escapeHtml(item.en) + '</div>') +
       (item.hint ? '<div class="g-hint">' + escapeHtml(item.hint) + '</div>' : '') +
       verbHtml;
     if (!s.answered) {
