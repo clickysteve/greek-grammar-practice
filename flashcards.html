@@ -65,7 +65,8 @@
     var KEY = 'gvm_vocab_srs';
     var store = {};
     try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { store = {}; }
-    if (!store.__settings) store.__settings = { dir: 'gr2en', newPerSession: 10 };
+    if (!store.__settings) store.__settings = { dir: 'gr2en', newPerSession: 5 };
+    store.__settings.newPerSession = 5; // learn 5 new per session
     function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
 
     // Deck = built-in vocab + user custom words (from the word-list page)
