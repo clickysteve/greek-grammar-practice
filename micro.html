@@ -22,6 +22,7 @@
     .q-label { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; }
     .q-main { font-size:clamp(40px,9vw,72px); font-weight:800; letter-spacing:-.03em; margin:10px 0 6px; }
     .q-sub { font-size:14px; color:var(--muted); }
+    .swatch { display:inline-block; width:120px; height:120px; border-radius:18px; border:2px solid var(--border); box-shadow:inset 0 0 0 1px rgba(0,0,0,.2); }
     .choices { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px; }
     .choice { font-size:18px; padding:14px; }
     .choice.correct { border-color:var(--good); color:var(--good); }
@@ -59,6 +60,50 @@
     var days = [['Monday', 'Δευτέρα'], ['Tuesday', 'Τρίτη'], ['Wednesday', 'Τετάρτη'], ['Thursday', 'Πέμπτη'], ['Friday', 'Παρασκευή'], ['Saturday', 'Σάββατο'], ['Sunday', 'Κυριακή']];
     var months = [['January', 'Ιανουάριος'], ['February', 'Φεβρουάριος'], ['March', 'Μάρτιος'], ['April', 'Απρίλιος'], ['May', 'Μάιος'], ['June', 'Ιούνιος'], ['July', 'Ιούλιος'], ['August', 'Αύγουστος'], ['September', 'Σεπτέμβριος'], ['October', 'Οκτώβριος'], ['November', 'Νοέμβριος'], ['December', 'Δεκέμβριος']];
 
+    // [noun, article] — singular nouns with their gender (ο masc, η fem, το neut)
+    var NOUNS = [
+      ['άντρας', 'ο'], ['φίλος', 'ο'], ['καφές', 'ο'], ['δρόμος', 'ο'], ['ουρανός', 'ο'], ['ήλιος', 'ο'], ['καιρός', 'ο'], ['δάσκαλος', 'ο'], ['γιατρός', 'ο'], ['σκύλος', 'ο'], ['κήπος', 'ο'], ['χρόνος', 'ο'], ['μήνας', 'ο'], ['άνθρωπος', 'ο'],
+      ['γυναίκα', 'η'], ['φίλη', 'η'], ['θάλασσα', 'η'], ['πόλη', 'η'], ['καρδιά', 'η'], ['μέρα', 'η'], ['νύχτα', 'η'], ['ώρα', 'η'], ['δουλειά', 'η'], ['αγάπη', 'η'], ['μητέρα', 'η'], ['γλώσσα', 'η'], ['χώρα', 'η'], ['πόρτα', 'η'],
+      ['σπίτι', 'το'], ['παιδί', 'το'], ['νερό', 'το'], ['βιβλίο', 'το'], ['αυτοκίνητο', 'το'], ['τραπέζι', 'το'], ['δέντρο', 'το'], ['ψωμί', 'το'], ['κρασί', 'το'], ['γάλα', 'το'], ['φαγητό', 'το'], ['παράθυρο', 'το'], ['λουλούδι', 'το'], ['βουνό', 'το']
+    ];
+    var GENDER = { 'ο': 'm', 'η': 'f', 'το': 'n' };
+    // [name, hex]
+    var COLOURS = [
+      ['κόκκινο', '#e53935'], ['μπλε', '#1e88e5'], ['πράσινο', '#43a047'], ['κίτρινο', '#fdd835'], ['πορτοκαλί', '#fb8c00'],
+      ['μωβ', '#8e24aa'], ['ροζ', '#ec407a'], ['καφέ', '#6d4c41'], ['μαύρο', '#212121'], ['άσπρο', '#fafafa'], ['γκρι', '#9e9e9e'], ['γαλάζιο', '#4fc3f7']
+    ];
+    // [singular, plural, [3 plausible-but-wrong forms]]
+    var PLURALS = [
+      ['ο φίλος', 'οι φίλοι', ['οι φίλες', 'τα φίλα', 'οι φίλους']],
+      ['το βιβλίο', 'τα βιβλία', ['τα βιβλίοι', 'οι βιβλίες', 'τα βιβλιά']],
+      ['η γυναίκα', 'οι γυναίκες', ['οι γυναίκα', 'οι γυναίκοι', 'τα γυναίκα']],
+      ['το παιδί', 'τα παιδιά', ['τα παιδία', 'οι παιδές', 'τα παιδί']],
+      ['το πρόβλημα', 'τα προβλήματα', ['τα προβλήμα', 'οι προβλήμες', 'τα προβλήματ']],
+      ['ο άντρας', 'οι άντρες', ['οι άντροι', 'οι άντρας', 'τα άντρα']],
+      ['η πόλη', 'οι πόλεις', ['οι πόλες', 'οι πόλοι', 'τα πόλη']],
+      ['ο μαθητής', 'οι μαθητές', ['οι μαθητοί', 'οι μαθητάδες', 'οι μαθητής']],
+      ['το τραπέζι', 'τα τραπέζια', ['τα τραπέζα', 'οι τραπέζες', 'τα τραπέζι']],
+      ['η μέρα', 'οι μέρες', ['οι μέρα', 'οι μέροι', 'τα μέρα']],
+      ['ο δρόμος', 'οι δρόμοι', ['οι δρόμες', 'τα δρόμα', 'οι δρόμους']],
+      ['η καρδιά', 'οι καρδιές', ['οι καρδιά', 'οι καρδιοί', 'τα καρδιά']],
+      ['το σπίτι', 'τα σπίτια', ['τα σπίτα', 'οι σπίτες', 'τα σπίτι']],
+      ['ο καφές', 'οι καφέδες', ['οι καφές', 'οι καφέ', 'τα καφέδα']],
+      ['η εφημερίδα', 'οι εφημερίδες', ['οι εφημερίδα', 'οι εφημερίδοι', 'τα εφημερίδα']],
+      ['το μάθημα', 'τα μαθήματα', ['τα μάθημα', 'οι μαθήματες', 'τα μαθήματ']],
+      ['ο άνθρωπος', 'οι άνθρωποι', ['οι άνθρωπες', 'τα άνθρωπα', 'οι ανθρώπους']],
+      ['η γλώσσα', 'οι γλώσσες', ['οι γλώσσα', 'οι γλώσσοι', 'τα γλώσσα']]
+    ];
+    // pronoun/adjective that agrees in gender: {m, f, n, en}
+    var AGREE = [
+      { m: 'τέτοιος', f: 'τέτοια', n: 'τέτοιο', en: 'such (a)' },
+      { m: 'κάποιος', f: 'κάποια', n: 'κάποιο', en: 'some / a certain' },
+      { m: 'άλλος', f: 'άλλη', n: 'άλλο', en: 'other / another' },
+      { m: 'ίδιος', f: 'ίδια', n: 'ίδιο', en: 'the same' },
+      { m: 'όποιος', f: 'όποια', n: 'όποιο', en: 'whichever' },
+      { m: 'πόσος', f: 'πόση', n: 'πόσο', en: 'how much' },
+      { m: 'όλος', f: 'όλη', n: 'όλο', en: 'all / whole' }
+    ];
+
     function rint(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
     function shuffle(a) { var c = a.slice(); for (var i = c.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = c[i]; c[i] = c[j]; c[j] = t; } return c; }
     function pickDistinct(genAnswer, correct, n) { var s = [correct]; var guard = 0; while (s.length < n && guard++ < 100) { var x = genAnswer(); if (s.indexOf(x) === -1) s.push(x); } return shuffle(s); }
@@ -94,9 +139,26 @@
         var disp = '€' + e + (c ? '.50' : '.00');
         var ans = grNum(e) + ' ευρώ' + (c ? ' και πενήντα' : '');
         return { label: 'how much?', main: disp, sub: '', answer: ans, choices: pickDistinct(function () { var ee = rint(1, 40), cc = Math.random() < 0.5 ? 50 : 0; return grNum(ee) + ' ευρώ' + (cc ? ' και πενήντα' : ''); }, ans, 4) };
+      },
+      gender: function () {
+        var w = NOUNS[rint(0, NOUNS.length - 1)];
+        return { label: 'which article?', main: w[0], sub: 'ο / η / το', answer: w[1], choices: shuffle(['ο', 'η', 'το']) };
+      },
+      colours: function () {
+        var c = COLOURS[rint(0, COLOURS.length - 1)];
+        return { label: 'which colour?', main: '', swatch: c[1], sub: '', answer: c[0], choices: pickDistinct(function () { return COLOURS[rint(0, COLOURS.length - 1)][0]; }, c[0], 4) };
+      },
+      plurals: function () {
+        var p = PLURALS[rint(0, PLURALS.length - 1)];
+        return { label: 'plural of…', main: p[0], sub: '', answer: p[1], choices: shuffle([p[1]].concat(p[2])) };
+      },
+      agree: function () {
+        var w = NOUNS[rint(0, NOUNS.length - 1)], base = AGREE[rint(0, AGREE.length - 1)];
+        var g = GENDER[w[1]], gLabel = { m: 'masculine', f: 'feminine', n: 'neuter' }[g];
+        return { label: base.en, main: '___ ' + w[0], sub: gLabel + ' (' + w[1] + ')', answer: base[g], choices: shuffle([base.m, base.f, base.n]) };
       }
     };
-    var MODE_LABELS = { numbers: 'Numbers', time: 'Time', days: 'Days & months', prices: 'Prices' };
+    var MODE_LABELS = { numbers: 'Numbers', time: 'Time', days: 'Days & months', prices: 'Prices', gender: 'Gender ο/η/το', colours: 'Colours', plurals: 'Plurals', agree: 'τέτοιος/κάποιος' };
 
     var mode = 'numbers', q = null, answered = false, chosen = null, score = 0, n = 0;
     var root = document.getElementById('root');
@@ -120,7 +182,7 @@
     }
     function render() {
       var html = '<div class="card"><div class="q-label">' + q.label + '</div>' +
-        '<div class="q-main">' + esc(q.main) + '</div>' + (q.sub ? '<div class="q-sub">' + esc(q.sub) + '</div>' : '') +
+        '<div class="q-main">' + (q.swatch ? '<span class="swatch" style="background:' + q.swatch + '"></span>' : esc(q.main)) + '</div>' + (q.sub ? '<div class="q-sub">' + esc(q.sub) + '</div>' : '') +
         '<div class="choices">' + q.choices.map(function (c, i) {
           var cls = ''; if (answered) { if (c === q.answer) cls = ' correct'; else if (c === chosen) cls = ' wrong'; }
           return '<button class="choice' + cls + '" data-c="' + esc(c) + '"><span class="ck">' + (i + 1) + '</span>' + esc(c) + '</button>';
