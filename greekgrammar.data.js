@@ -1290,3 +1290,175 @@ window.GRAMMAR.push(
     ]
   }
 );
+
+/* ===== From the coursebooks’ syllabi: dates, ordinals, πολύς, conditionals,
+   superlatives, equality, diminutives, future/perfect subjunctive, politeness ===== */
+window.GRAMMAR.push(
+  {
+    id: 'a1-dates-days', level: 'A1', title: 'Days, months & dates',
+    short: 'τη Δευτέρα, τον Μάιο, 25 Δεκεμβρίου.',
+    explanation: '<p>For “when”, Greek often uses the bare <strong>accusative article</strong> with no preposition:</p>' +
+      '<div class="g-grid"><div class="g-k">on Monday</div><div class="g-v">τη Δευτέρα</div><div class="g-k">in May</div><div class="g-v">τον Μάιο</div><div class="g-k">in summer</div><div class="g-v">το καλοκαίρι</div><div class="g-k">at the weekend</div><div class="g-v">το Σαββατοκύριακο</div></div>' +
+      '<p>Dates use the <strong>genitive</strong> of the month: <em>5 Μαΐου, 25 Δεκεμβρίου</em>.</p>',
+    examples: [ { gr: 'Έχω μάθημα τη Δευτέρα.', en: 'I have a lesson on Monday.' }, { gr: 'Γεννήθηκα τον Μάιο.', en: 'I was born in May.' }, { gr: 'Σήμερα είναι 25 Δεκεμβρίου.', en: 'Today is the 25th of December.' } ],
+    more: '<p>“When” often takes just the accusative article (τη Δευτέρα, τον Μάιο) — no σε. Dates put the month in the genitive (Μαΐου, Δεκεμβρίου). For a clock time use σε: <em>στις πέντε</em>.</p>',
+    items: [
+      { text: 'Έχω μάθημα {b} Δευτέρα. (on Monday)', answer: 'τη', choices: ['τη', 'την', 'στη', 'ο'], en: 'I have a lesson on Monday.', hint: 'on + day = accusative article' },
+      { text: 'Γεννήθηκα {b} Μάιο. (in May)', answer: 'τον', choices: ['τον', 'στον', 'το', 'τη'], en: 'I was born in May.', hint: 'in + month = τον' },
+      { text: 'Η γιορτή είναι στις 25 {b}. (December — genitive)', answer: 'Δεκεμβρίου', choices: ['Δεκεμβρίου', 'Δεκέμβριος', 'Δεκέμβριο', 'Δεκεμβρίους'], en: 'The celebration is on the 25th of December.', hint: 'date: genitive of the month' },
+      { text: 'Δουλεύω {b} Σαββατοκύριακο. (at the weekend)', answer: 'το', choices: ['το', 'τη', 'στο', 'τον'], en: 'I work at the weekend.', hint: 'time: το Σαββατοκύριακο' },
+      { text: 'Πάμε διακοπές {b} καλοκαίρι. (in summer)', answer: 'το', choices: ['το', 'τον', 'στο', 'τη'], en: 'We go on holiday in summer.', hint: 'το καλοκαίρι' }
+    ]
+  },
+  {
+    id: 'a2-ordinals', level: 'A2', title: 'Ordinal numbers (πρώτος, δεύτερος…)',
+    short: 'They agree like adjectives: ο πρώτος, η δεύτερη.',
+    explanation: '<p>Ordinals are adjectives in -ος/-η/-ο and agree with their noun:</p>' +
+      '<div class="g-grid"><div class="g-k">1st–3rd</div><div class="g-v">πρώτος, δεύτερος, τρίτος</div><div class="g-k">4th–6th</div><div class="g-v">τέταρτος, πέμπτος, έκτος</div><div class="g-k">7th–10th</div><div class="g-v">έβδομος, όγδοος, ένατος, δέκατος</div></div>',
+    examples: [ { gr: 'Μένω στον πρώτο όροφο.', en: 'I live on the first floor.' }, { gr: 'Είναι η δεύτερη φορά.', en: 'It’s the second time.' }, { gr: 'Κάθισε στην τρίτη σειρά.', en: 'Sit in the third row.' } ],
+    more: '<p>Ordinals decline like -ος/-η/-ο adjectives, so they change for gender and case (στον πρώτο, στην πρώτη, του πρώτου). Don’t confuse with the cardinal numbers (ένα, δύο, τρία).</p>',
+    items: [
+      { text: 'Μένω στον {b} όροφο. (first · masc)', answer: 'πρώτο', choices: ['πρώτο', 'πρώτος', 'πρώτη', 'ένα'], en: 'I live on the first floor.', hint: 'first · masc accusative' },
+      { text: 'Είναι η {b} φορά που έρχομαι. (second · fem)', answer: 'δεύτερη', choices: ['δεύτερη', 'δεύτερος', 'δεύτερο', 'δύο'], en: 'It’s the second time I’ve come.', hint: 'second · feminine' },
+      { text: 'Κάθισε στην {b} σειρά. (third · fem)', answer: 'τρίτη', choices: ['τρίτη', 'τρίτος', 'τρίτο', 'τρεις'], en: 'Sit in the third row.', hint: 'third · feminine' },
+      { text: 'Αυτό είναι το {b} μου βιβλίο. (fifth · neut)', answer: 'πέμπτο', choices: ['πέμπτο', 'πέμπτος', 'πέμπτη', 'πέντε'], en: 'This is my fifth book.', hint: 'fifth · neuter' }
+    ]
+  },
+  {
+    id: 'a2-quantity-polys', level: 'A2', title: 'πολύς / πολλή / πολύ (much, many)',
+    short: 'Irregular quantifier; “very” is the invariable πολύ.',
+    explanation: '<p>πολύς is irregular:</p>' +
+      '<div class="g-grid"><div class="g-k">singular</div><div class="g-v">πολύς / πολλή / πολύ</div><div class="g-k">plural</div><div class="g-v">πολλοί / πολλές / πολλά</div></div>' +
+      '<p>But as the adverb “very / much” it never changes: <em>πολύ ωραίο, πολύ καλά</em>.</p>',
+    examples: [ { gr: 'Έχω πολλή δουλειά.', en: 'I have a lot of work.' }, { gr: 'Ήρθαν πολλοί άνθρωποι.', en: 'Many people came.' }, { gr: 'Είναι πολύ ωραίο!', en: 'It’s very nice!' } ],
+    more: '<p>As a quantifier πολύς agrees (πολλή δουλειά, πολλοί φίλοι). As “very” it’s the invariable adverb πολύ. Classic trap: <em>πολύ</em> (very) vs <em>πολλοί</em> (many). λίγος (little/few) declines normally.</p>',
+    items: [
+      { text: 'Έχω {b} δουλειά σήμερα. (much · fem)', answer: 'πολλή', choices: ['πολλή', 'πολύ', 'πολύς', 'πολλά'], en: 'I have a lot of work today.', hint: 'much · feminine (η δουλειά)' },
+      { text: 'Ήρθαν {b} άνθρωποι. (many · masc)', answer: 'πολλοί', choices: ['πολλοί', 'πολλές', 'πολλά', 'πολύ'], en: 'Many people came.', hint: 'many · masculine plural' },
+      { text: 'Είναι {b} ωραίο! (very — adverb)', answer: 'πολύ', choices: ['πολύ', 'πολλή', 'πολλά', 'πολλοί'], en: 'It’s very nice!', hint: 'very (adverb, invariable)' },
+      { text: 'Έχω {b} φίλους εδώ. (many · masc acc)', answer: 'πολλούς', choices: ['πολλούς', 'πολλοί', 'πολλές', 'πολύ'], en: 'I have many friends here.', hint: 'many · masc accusative' },
+      { text: 'Έφαγα {b} γλυκά. (many · neut)', answer: 'πολλά', choices: ['πολλά', 'πολλοί', 'πολλές', 'πολύ'], en: 'I ate a lot of sweets.', hint: 'many · neuter plural' }
+    ]
+  },
+  {
+    id: 'a2-real-conditional', level: 'A2', title: 'Real conditions (αν + present)',
+    short: 'Likely “if”: Αν έχω χρόνο, θα έρθω.',
+    explanation: '<p>For a real or likely condition: <strong>αν + present</strong> (or perfective) in the if-clause, and <strong>θα + future</strong> in the result:</p>' +
+      '<p><em>Αν έχω χρόνο, θα έρθω.</em> = If I have time, I’ll come.</p>' +
+      '<p>Contrast the unreal type (αν + παρατατικός, θα + παρατατικός).</p>',
+    examples: [ { gr: 'Αν βρέξει, θα μείνουμε σπίτι.', en: 'If it rains, we’ll stay home.' }, { gr: 'Θα σου πω αν μάθω νέα.', en: 'I’ll tell you if I hear news.' }, { gr: 'Αν τελειώσω νωρίς, θα έρθω.', en: 'If I finish early, I’ll come.' } ],
+    more: '<p>Real/open condition: <strong>αν + present</strong> (or perfective subjunctive without θα), result <strong>θα + future</strong>. The if-clause never takes θα. For something sure to happen, use <em>όταν</em>.</p>',
+    items: [
+      { text: 'Αν {b} καιρό, θα πάμε παραλία. (have → present)', answer: 'έχουμε', choices: ['έχουμε', 'είχαμε', 'θα έχουμε', 'έχαμε'], en: 'If we have time, we’ll go to the beach.', hint: 'real condition · present' },
+      { text: 'Αν βρέξει, {b} σπίτι. (will stay)', answer: 'θα μείνουμε', accept: ['θα μεινουμε'], choices: ['θα μείνουμε', 'μείναμε', 'μένουμε', 'θα μέναμε'], en: 'If it rains, we’ll stay home.', hint: 'result · θα + future' },
+      { text: 'Θα σου πω αν {b} νέα. (hear → perfective)', answer: 'μάθω', choices: ['μάθω', 'έμαθα', 'θα μάθω', 'μαθαίνω'], en: 'I’ll tell you if I hear news.', hint: 'after αν · perfective' },
+      { text: '{b} τελειώσω νωρίς, θα έρθω. (if)', answer: 'Αν', choices: ['Αν', 'Ότι', 'Που', 'Ενώ'], en: 'If I finish early, I’ll come.', hint: 'if' }
+    ]
+  },
+  {
+    id: 'a2-politeness-conditional', level: 'A2', title: 'Politeness: θα ήθελα, θα μπορούσα',
+    short: 'θα + παρατατικός softens requests.',
+    explanation: '<p>To be polite, use <strong>θα + παρατατικός</strong> instead of the plain present:</p>' +
+      '<div class="g-grid"><div class="g-k">I’d like</div><div class="g-v">θα ήθελα</div><div class="g-k">could you?</div><div class="g-v">θα μπορούσες;</div><div class="g-k">I’d prefer</div><div class="g-v">θα προτιμούσα</div></div>' +
+      '<p>Softer and more courteous than θέλω / μπορείς.</p>',
+    examples: [ { gr: 'Θα ήθελα έναν καφέ.', en: 'I’d like a coffee.' }, { gr: 'Θα μπορούσες να με βοηθήσεις;', en: 'Could you help me?' }, { gr: 'Θα προτιμούσα τσάι.', en: 'I’d prefer tea.' } ],
+    more: '<p>This is the conditional/polite mood: θα + παρατατικός (θα ήθελα, θα μπορούσα, θα προτιμούσα). Use it for requests, offers and opinions to sound courteous.</p>',
+    items: [
+      { text: '{b} έναν καφέ, παρακαλώ. (I’d like)', answer: 'Θα ήθελα', choices: ['Θα ήθελα', 'Θέλω', 'Ήθελα', 'Θα θέλω'], en: 'I’d like a coffee, please.', hint: 'polite “I would like”' },
+      { text: '{b} να με βοηθήσεις; (could you?)', answer: 'Θα μπορούσες', choices: ['Θα μπορούσες', 'Μπορείς', 'Μπόρεσες', 'Θα μπορείς'], en: 'Could you help me?', hint: 'polite “could you”' },
+      { text: '{b} να καθίσω εδώ; (could I?)', answer: 'Θα μπορούσα', choices: ['Θα μπορούσα', 'Μπορώ', 'Μπόρεσα', 'Θα μπορώ'], en: 'Could I sit here?', hint: 'polite “could I”' },
+      { text: '{b} λίγο νερό, αν δεν σας πειράζει. (I’d like)', answer: 'Θα ήθελα', choices: ['Θα ήθελα', 'Θέλω', 'Ήθελα', 'Θα θέλω'], en: 'I’d like some water, if you don’t mind.', hint: 'polite request' }
+    ]
+  },
+  {
+    id: 'b1-superlatives', level: 'B1', title: 'Superlatives (ο πιο…, -ότατος)',
+    short: 'the most: ο πιο…/ο -ότερος; absolute -ότατος.',
+    explanation: '<p><strong>Relative superlative</strong> (“the most”): the article + πιο + adjective, or the one-word -ότερος form:</p>' +
+      '<p><em>ο πιο ψηλός / ο ψηλότερος</em> = the tallest. Irregulars: καλός → <strong>καλύτερος</strong>, μεγάλος → <strong>μεγαλύτερος</strong>.</p>' +
+      '<p><strong>Absolute superlative</strong> (“extremely”): the ending <strong>-ότατος / -ότατη / -ότατο</strong>: <em>ωραιότατος</em> = absolutely lovely.</p>',
+    examples: [ { gr: 'Είναι ο καλύτερος μαθητής.', en: 'He is the best student.' }, { gr: 'Η μεγαλύτερη πόλη της Ελλάδας.', en: 'The biggest city in Greece.' }, { gr: 'Η θέα ήταν ωραιότατη!', en: 'The view was absolutely wonderful!' } ],
+    more: '<p>Relative superlative = article + πιο/-ότερος; absolute superlative -ότατος = “extremely”. Irregulars: καλός→άριστος, κακός→χείριστος, πολύς→πλείστος, λίγος→ελάχιστος.</p>',
+    items: [
+      { text: 'Είναι ο {b} μαθητής της τάξης. (best · masc)', answer: 'καλύτερος', choices: ['καλύτερος', 'πιο καλός', 'καλός', 'καλά'], en: 'He is the best student in the class.', hint: 'the best · masculine' },
+      { text: 'Αυτό είναι το πιο {b} εστιατόριο. (expensive)', answer: 'ακριβό', choices: ['ακριβό', 'ακριβός', 'ακριβά', 'ακριβότατο'], en: 'This is the most expensive restaurant.', hint: 'adjective after “το πιο”' },
+      { text: 'Η θέα ήταν {b}! (absolutely wonderful → -ότατη)', answer: 'ωραιότατη', choices: ['ωραιότατη', 'ωραία', 'πιο ωραία', 'ωραιότερη'], en: 'The view was absolutely wonderful!', hint: 'absolute superlative -ότατος' },
+      { text: 'Είναι η {b} πόλη της Ελλάδας. (biggest)', answer: 'μεγαλύτερη', choices: ['μεγαλύτερη', 'πιο μεγάλη', 'μεγάλη', 'μεγαλύτερος'], en: 'It’s the biggest city in Greece.', hint: 'the biggest · feminine' }
+    ]
+  },
+  {
+    id: 'b1-equality', level: 'B1', title: 'As … as (τόσο … όσο, σαν)',
+    short: 'τόσο … όσο = as … as; σαν / όπως = like.',
+    explanation: '<p>Comparison of <strong>equality</strong>:</p>' +
+      '<div class="g-grid"><div class="g-k">as … as</div><div class="g-v">τόσο + adj + όσο</div><div class="g-k">like / as</div><div class="g-v">σαν (+ accusative) / όπως</div><div class="g-k">the same (as)</div><div class="g-v">ο ίδιος (… με)</div></div>',
+    examples: [ { gr: 'Είναι τόσο ψηλός όσο εσύ.', en: 'He is as tall as you.' }, { gr: 'Τρέχει σαν τον άνεμο.', en: 'He runs like the wind.' }, { gr: 'Φοράει τα ίδια ρούχα με μένα.', en: 'She wears the same clothes as me.' } ],
+    more: '<p><em>τόσο … όσο</em> = as … as; <em>σαν / όπως</em> = like/as (σαν takes the accusative); <em>ο ίδιος … με</em> = the same … as.</p>',
+    items: [
+      { text: 'Είναι {b} ψηλός όσο εσύ. (as)', answer: 'τόσο', choices: ['τόσο', 'πιο', 'πολύ', 'όσο'], en: 'He is as tall as you.', hint: '“as …” (τόσο … όσο)' },
+      { text: 'Τρέχει {b} τον άνεμο! (like)', answer: 'σαν', choices: ['σαν', 'τόσο', 'πιο', 'από'], en: 'He runs like the wind!', hint: 'like + accusative' },
+      { text: 'Δεν είμαι {b} έξυπνος όσο νομίζεις. (as)', answer: 'τόσο', choices: ['τόσο', 'σαν', 'πιο', 'όσο'], en: 'I’m not as clever as you think.', hint: 'τόσο … όσο' },
+      { text: 'Φοράει τα {b} ρούχα με μένα. (same)', answer: 'ίδια', choices: ['ίδια', 'σαν', 'τόσα', 'όμοια'], en: 'She’s wearing the same clothes as me.', hint: 'the same (τα ίδια … με)' }
+    ]
+  },
+  {
+    id: 'b1-diminutives', level: 'B1', title: 'Diminutives (-άκι, -ούλα)',
+    short: 'Smallness & affection: σπιτάκι, καφεδάκι, Μαρούλα.',
+    explanation: '<p>Greek loves diminutives — for small size, but very often just for warmth/affection:</p>' +
+      '<div class="g-grid"><div class="g-k">neuter</div><div class="g-v">-άκι (σπίτι → σπιτάκι)</div><div class="g-k">feminine</div><div class="g-v">-ούλα / -ίτσα (Μαρία → Μαρούλα)</div><div class="g-k">masculine / names</div><div class="g-v">-άκης (Γιώργος → Γιωργάκης)</div></div>',
+    examples: [ { gr: 'Πάμε για ένα καφεδάκι;', en: 'Shall we go for a coffee?' }, { gr: 'Τι ωραίο σπιτάκι!', en: 'What a lovely little house!' }, { gr: 'Έλα εδώ, αγοράκι μου.', en: 'Come here, my little boy.' } ],
+    more: '<p>Diminutives soften the tone as much as they shrink the thing (καφεδάκι isn’t literally a tiny coffee). The opposite, the augmentative <strong>-άρα</strong>, means “huge”: σπιτάρα = a massive house.</p>',
+    items: [
+      { text: 'Πάμε για ένα {b}; (little coffee)', answer: 'καφεδάκι', choices: ['καφεδάκι', 'καφές', 'καφέ', 'καφέδες'], en: 'Shall we go for a (little) coffee?', hint: 'diminutive of καφές' },
+      { text: 'Τι ωραίο {b}! (little house)', answer: 'σπιτάκι', choices: ['σπιτάκι', 'σπίτι', 'σπιτάρα', 'σπίτια'], en: 'What a lovely little house!', hint: 'diminutive of σπίτι' },
+      { text: 'Έλα εδώ, {b} μου! (little child — affectionate)', answer: 'παιδάκι', choices: ['παιδάκι', 'παιδί', 'παιδιά', 'παιδάρα'], en: 'Come here, my little one!', hint: 'diminutive of παιδί' },
+      { text: 'Θα πιω ένα {b} κρασί. (a little wine)', answer: 'κρασάκι', choices: ['κρασάκι', 'κρασί', 'κρασιά', 'κρασάρα'], en: 'I’ll have a little wine.', hint: 'diminutive of κρασί' }
+    ]
+  },
+  {
+    id: 'b2-future-perfect', level: 'B2', title: 'Future perfect (θα έχω κάνει)',
+    short: '“Will have done”: θα έχω + perfect form.',
+    explanation: '<p>For an action completed <strong>before</strong> a point in the future: <strong>θα έχω</strong> + the invariable perfect form:</p>' +
+      '<p><em>Μέχρι αύριο θα έχω τελειώσει.</em> = By tomorrow I’ll have finished. Often with <em>μέχρι / ως τότε</em>.</p>',
+    examples: [ { gr: 'Σε μια ώρα θα έχω φύγει.', en: 'In an hour I’ll have left.' }, { gr: 'Θα έχουν φάει πριν έρθουμε.', en: 'They’ll have eaten before we come.' }, { gr: 'Ως τότε θα έχει τελειώσει.', en: 'By then it will have finished.' } ],
+    more: '<p>θα έχω + the same perfect form as the other perfect tenses. Completed by a future moment, usually marked with μέχρι/ως τότε.</p>',
+    items: [
+      { text: 'Μέχρι το βράδυ {b} τα πάντα. (finish → θα έχω τελειώσει)', answer: 'θα έχω τελειώσει', accept: ['θα εχω τελειωσει'], choices: ['θα έχω τελειώσει', 'τελείωσα', 'θα τελειώσω', 'έχω τελειώσει'], en: 'By tonight I’ll have finished everything.', hint: 'future perfect · εγώ' },
+      { text: 'Σε δύο χρόνια {b} το πανεπιστήμιο. (finish → θα έχεις τελειώσει)', answer: 'θα έχεις τελειώσει', accept: ['θα εχεις τελειωσει'], choices: ['θα έχεις τελειώσει', 'τελείωσες', 'θα τελειώσεις', 'έχεις τελειώσει'], en: 'In two years you’ll have finished university.', hint: 'future perfect · εσύ' },
+      { text: 'Όταν φτάσεις, {b} ήδη. (leave → θα έχουμε φύγει)', answer: 'θα έχουμε φύγει', choices: ['θα έχουμε φύγει', 'φύγαμε', 'θα φύγουμε', 'έχουμε φύγει'], en: 'By the time you arrive, we’ll have already left.', hint: 'future perfect · εμείς' },
+      { text: 'Ως τότε {b} την απόφαση. (take → θα έχουν πάρει)', answer: 'θα έχουν πάρει', choices: ['θα έχουν πάρει', 'πήραν', 'θα πάρουν', 'έχουν πάρει'], en: 'By then they’ll have made the decision.', hint: 'future perfect · they' }
+    ]
+  },
+  {
+    id: 'b2-subjunctive-perfect', level: 'B2', title: 'Perfect subjunctive (να έχω κάνει)',
+    short: '“To have done”: να έχω + perfect form.',
+    explanation: '<p><strong>να έχω</strong> + the perfect form = a completed action after να (especially after <em>πριν</em> or verbs of hoping/fearing):</p>' +
+      '<p><em>Πρέπει να έχω φύγει πριν τις πέντε.</em> = I must have left before five.</p>',
+    examples: [ { gr: 'Ελπίζω να έχεις τελειώσει ως τότε.', en: 'I hope you’ll have finished by then.' }, { gr: 'Φοβάμαι μην έχουμε χάσει το τρένο.', en: 'I’m afraid we may have missed the train.' }, { gr: 'Πρέπει να έχω γυρίσει πριν νυχτώσει.', en: 'I must be back before nightfall.' } ],
+    more: '<p>να έχω + perfect form marks completion by a point. Common after <em>πριν</em>, and after hoping/fearing (ελπίζω να έχω…, φοβάμαι μην έχω…).</p>',
+    items: [
+      { text: 'Πρέπει να {b} πριν έρθουν. (leave → έχω φύγει)', answer: 'έχω φύγει', choices: ['έχω φύγει', 'φύγω', 'έφυγα', 'φεύγω'], en: 'I must have left before they come.', hint: 'perfect subjunctive · εγώ' },
+      { text: 'Ελπίζω να {b} ως τότε. (finish → έχεις τελειώσει)', answer: 'έχεις τελειώσει', choices: ['έχεις τελειώσει', 'τελειώσεις', 'τελείωσες', 'τελειώνεις'], en: 'I hope you’ll have finished by then.', hint: 'perfect subjunctive · εσύ' },
+      { text: 'Φοβάμαι μην {b} ήδη το τρένο. (miss → έχουμε χάσει)', answer: 'έχουμε χάσει', choices: ['έχουμε χάσει', 'χάσουμε', 'χάσαμε', 'χάνουμε'], en: 'I’m afraid we may have already missed the train.', hint: 'perfect subjunctive · εμείς' },
+      { text: 'Πρέπει να {b} τα μαθήματά τους πριν παίξουν. (do → έχουν κάνει)', answer: 'έχουν κάνει', choices: ['έχουν κάνει', 'κάνουν', 'έκαναν', 'κάνανε'], en: 'They must have done their homework before playing.', hint: 'perfect subjunctive · they' }
+    ]
+  }
+);
+
+/* ===== From conversation_connectors_greek.pdf: discourse connectors ===== */
+window.GRAMMAR.push(
+  {
+    id: 'b1-discourse-connectors', level: 'B1', title: 'Discourse connectors',
+    short: 'κατά τη γνώμη μου, από την άλλη, παρ’ όλα αυτά…',
+    explanation: '<p>Phrases that organise a conversation and signal your stance:</p>' +
+      '<div class="g-grid"><div class="g-k">in my opinion</div><div class="g-v">κατά τη γνώμη μου</div><div class="g-k">on the other hand</div><div class="g-v">από την άλλη (μεριά)</div><div class="g-k">to be honest</div><div class="g-v">για να είμαι ειλικρινής</div><div class="g-k">in short / to sum up</div><div class="g-v">με λίγα λόγια</div><div class="g-k">nevertheless / even so</div><div class="g-v">παρ’ όλα αυτά</div><div class="g-k">by the way</div><div class="g-v">με την ευκαιρία</div></div>',
+    examples: [ { gr: 'Κατά τη γνώμη μου, έχεις δίκιο.', en: 'In my opinion, you’re right.' }, { gr: 'Είναι ακριβό· από την άλλη, αξίζει.', en: 'It’s expensive; on the other hand, it’s worth it.' }, { gr: 'Με λίγα λόγια, δεν πήγε.', en: 'In short, he didn’t go.' } ],
+    more: '<p>These usually sit at the start of a sentence, set off by a comma. Useful pairs: <em>κατά πρώτον … κατά δεύτερον</em> (firstly … secondly), <em>αφενός … αφετέρου</em> (on the one hand … on the other), <em>επιπλέον / εξάλλου</em> (moreover / besides).</p>',
+    items: [
+      { text: 'Δεν συμφωνώ. {b}, κάνεις λάθος. (in my opinion)', answer: 'Κατά τη γνώμη μου', choices: ['Κατά τη γνώμη μου', 'Με λίγα λόγια', 'Παρ’ όλα αυτά', 'Με την ευκαιρία'], en: 'I disagree. In my opinion, you’re wrong.', hint: 'in my opinion' },
+      { text: 'Είναι ακριβό. {b}, αξίζει τα λεφτά του. (on the other hand)', answer: 'Από την άλλη', choices: ['Από την άλλη', 'Κατά πρώτον', 'Δηλαδή', 'Επιπλέον'], en: 'It’s expensive. On the other hand, it’s worth the money.', hint: 'on the other hand' },
+      { text: '{b}, δεν είχα χρόνο να το τελειώσω. (to be honest)', answer: 'Για να είμαι ειλικρινής', choices: ['Για να είμαι ειλικρινής', 'Από την άλλη', 'Με λίγα λόγια', 'Τέλος πάντων'], en: 'To be honest, I didn’t have time to finish it.', hint: 'to be honest' },
+      { text: 'Ήταν κουρασμένος και αργοπορημένος. {b}, δεν πήγε καθόλου. (in short)', answer: 'Με λίγα λόγια', choices: ['Με λίγα λόγια', 'Επιπλέον', 'Δηλαδή', 'Με την ευκαιρία'], en: 'He was tired and late. In short, he didn’t go at all.', hint: 'in short / to sum up' },
+      { text: 'Δεν μου αρέσει. {b}, θα το πάρω για το παιδί. (nevertheless)', answer: 'Παρ’ όλα αυτά', choices: ['Παρ’ όλα αυτά', 'Κατά τη γνώμη μου', 'Πρώτον', 'Δηλαδή'], en: 'I don’t like it. Nevertheless, I’ll get it for the child.', hint: 'nevertheless / even so' },
+      { text: '{b}, ξέρεις τι έγινε με τη Μαρία; (by the way)', answer: 'Με την ευκαιρία', choices: ['Με την ευκαιρία', 'Με λίγα λόγια', 'Συνεπώς', 'Δηλαδή'], en: 'By the way, do you know what happened with Maria?', hint: 'by the way' }
+    ]
+  }
+);
