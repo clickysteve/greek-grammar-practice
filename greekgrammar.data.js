@@ -247,5 +247,264 @@ window.GRAMMAR = [
       { text: 'Ξέρω {b} έχεις δίκιο.', answer: 'ότι', accept: ['πως'], choices: ['ότι', 'που', 'πού', 'αν'], en: 'I know that you are right.', hint: 'after “I know” — reported' },
       { text: 'Λυπάμαι {b} δεν ήρθες.', answer: 'που', choices: ['ότι', 'που', 'πως', 'γιατί'], en: 'I’m sorry that you didn’t come.', hint: 'after an emotion verb' }
     ]
+  },
+
+  /* ===================== A2 ===================== */
+  {
+    id: 'a2-accusative',
+    level: 'A2',
+    title: 'The accusative (object)',
+    short: 'The object: τον / την / το, τους / τις / τα — masculine drops its -ς.',
+    explanation:
+      '<p>The <strong>object</strong> of a sentence (the “side character”, the one acted upon) goes in the accusative. The articles change:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">masculine</div><div class="g-v"><strong>τον</strong> άντρα → <strong>τους</strong> άντρες</div>' +
+      '<div class="g-k">feminine</div><div class="g-v"><strong>την</strong> γυναίκα → <strong>τις</strong> γυναίκες</div>' +
+      '<div class="g-k">neuter</div><div class="g-v"><strong>το</strong> παιδί → <strong>τα</strong> παιδιά</div>' +
+      '</div>' +
+      '<p>Feminine and neuter endings stay the same as the nominative. <strong>Masculine</strong> nouns drop their final <strong>-ς</strong> in the singular: ο φίλο<u>ς</u> → τον φίλο.</p>' +
+      '<p><em>Ο Νίκος αγαπάει την Μαρία.</em> = Nick loves Maria.</p>',
+    examples: [
+      { gr: 'Βλέπω τον φίλο μου.', en: 'I see my friend (m).' },
+      { gr: 'Ξέρω την αλήθεια.', en: 'I know the truth.' },
+      { gr: 'Αγαπάμε τα παιδιά.', en: 'We love the children.' }
+    ],
+    items: [
+      { text: 'Βλέπω {b} άντρα.', answer: 'τον', choices: ['ο', 'τον', 'του', 'την'], en: 'I see the man.', hint: 'object · masculine' },
+      { text: 'Ο Νίκος αγαπάει {b} Μαρία.', answer: 'την', choices: ['η', 'την', 'της', 'τον'], en: 'Nick loves Maria.', hint: 'object · feminine' },
+      { text: 'Διαβάζω {b} βιβλίο.', answer: 'το', choices: ['το', 'τον', 'του', 'τα'], en: 'I am reading the book.', hint: 'object · neuter' },
+      { text: 'Καλώ {b} φίλους μου.', answer: 'τους', choices: ['οι', 'τους', 'των', 'τις'], en: 'I am inviting my friends.', hint: 'object · masculine plural' },
+      { text: 'Ο φίλος → Βλέπω {b}.', answer: 'τον φίλο', accept: ['το φιλο', 'τον φιλο'], choices: ['τον φίλο', 'ο φίλος', 'του φίλου', 'τον φίλος'], en: 'the friend → I see the friend.', hint: 'make it accusative (drop the -ς)' },
+      { text: 'Αγαπάμε {b} γυναίκες.', answer: 'τις', choices: ['οι', 'τις', 'των', 'τους'], en: 'We love the women.', hint: 'object · feminine plural' }
+    ]
+  },
+  {
+    id: 'a2-genitive',
+    level: 'A2',
+    title: 'The genitive (possession)',
+    short: 'Who owns it: του / της / του, των. Possession first, owner second.',
+    explanation:
+      '<p>The <strong>genitive</strong> marks the owner — English “Maria’s…” or “…of Maria”. The article and the noun ending both change:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">masculine</div><div class="g-v"><strong>του</strong> άντρα → <strong>των</strong> ανδρών</div>' +
+      '<div class="g-k">feminine</div><div class="g-v"><strong>της</strong> γυναίκας → <strong>των</strong> γυναικών</div>' +
+      '<div class="g-k">neuter</div><div class="g-v"><strong>του</strong> παιδιού → <strong>των</strong> παιδιών</div>' +
+      '</div>' +
+      '<p>Word order: <strong>possession first, owner second</strong>: <em>η τσάντα της Μαρίας</em> = Maria’s bag (lit. “the bag of-Maria”). Proper names also change: ο Νίκος → του Νίκου, η Μαρία → της Μαρίας.</p>',
+    examples: [
+      { gr: 'το κινητό του Νίκου', en: 'Nick’s phone' },
+      { gr: 'η τσάντα της Μαρίας', en: 'Maria’s bag' },
+      { gr: 'το κλειδί της πόρτας', en: 'the door’s key' }
+    ],
+    items: [
+      { text: 'το αυτοκίνητο {b} άντρα', answer: 'του', choices: ['ο', 'τον', 'του', 'των'], en: 'the man’s car', hint: 'owner · masculine' },
+      { text: 'η τσάντα {b} Μαρίας', answer: 'της', choices: ['η', 'την', 'της', 'των'], en: 'Maria’s bag', hint: 'owner · feminine' },
+      { text: 'το κλειδί {b} σπιτιού', answer: 'του', choices: ['το', 'του', 'των', 'της'], en: 'the house’s key', hint: 'owner · neuter' },
+      { text: 'τα προβλήματα {b} ανθρώπων', answer: 'των', choices: ['οι', 'τους', 'των', 'τις'], en: 'people’s problems', hint: 'owner · plural' },
+      { text: 'το κινητό {b} (ο Νίκος)', answer: 'του Νίκου', accept: ['του νικου'], choices: ['του Νίκου', 'ο Νίκος', 'τον Νίκο', 'των Νίκων'], en: 'Nick’s phone', hint: 'make “ο Νίκος” genitive' }
+    ]
+  },
+  {
+    id: 'a2-aorist',
+    level: 'A2',
+    title: 'Simple past (αόριστος)',
+    short: 'One set of endings for all verbs: -α, -ες, -ε, -αμε, -ατε, -αν.',
+    explanation:
+      '<p>The simple past (αόριστος) describes a finished, one-off action. The good news: <strong>one set of endings for every verb</strong>:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">εγώ</div><div class="g-v">έγραψ<strong>α</strong></div>' +
+      '<div class="g-k">εσύ</div><div class="g-v">έγραψ<strong>ες</strong></div>' +
+      '<div class="g-k">αυτός/ή/ό</div><div class="g-v">έγραψ<strong>ε</strong></div>' +
+      '<div class="g-k">εμείς</div><div class="g-v">γράψ<strong>αμε</strong></div>' +
+      '<div class="g-k">εσείς</div><div class="g-v">γράψ<strong>ατε</strong></div>' +
+      '<div class="g-k">αυτοί/ές/ά</div><div class="g-v">έγραψ<strong>αν</strong></div>' +
+      '</div>' +
+      '<p>Forming the past stem from the present: the final consonant shifts —<br>' +
+      'β / φ / π / εύ → <strong>ψ</strong> (γράφω → έγραψα), κ / γ / χ / χν → <strong>ξ</strong> (τρέχω → έτρεξα), τ / δ / θ / ζ / σ → <strong>σ</strong> (διαβάζω → διάβασα).</p>' +
+      '<p>Add an augment <strong>έ-</strong> at the front when the word would be too short, so the stress can sit three syllables from the end: <em>έγραψα</em>, but <em>γράψαμε</em> (no augment, the ending already adds a syllable).</p>',
+    examples: [
+      { gr: 'Χθες έγραψα ένα γράμμα.', en: 'Yesterday I wrote a letter.' },
+      { gr: 'Διάβασες το βιβλίο;', en: 'Did you read the book?' },
+      { gr: 'Έτρεξαν στο σχολείο.', en: 'They ran to school.' }
+    ],
+    items: [
+      { text: 'Χθες εγώ {b} ένα γράμμα. (γράφω)', answer: 'έγραψα', choices: ['έγραψα', 'έγραψες', 'γράψαμε', 'έγραφα'], en: 'Yesterday I wrote a letter.', hint: 'write · past · εγώ' },
+      { text: 'Εσύ {b} το βιβλίο; (διαβάζω)', answer: 'διάβασες', choices: ['διάβασα', 'διάβασες', 'διαβάσαμε', 'διάβαζες'], en: 'Did you read the book?', hint: 'read · past · εσύ' },
+      { text: 'Η Άννα {b} ένα μήλο. (τρώω → έφαγα)', answer: 'έφαγε', choices: ['έφαγα', 'έφαγες', 'έφαγε', 'έφαγαν'], en: 'Anna ate an apple.', hint: 'eat · past · she' },
+      { text: 'Εμείς {b} στο σχολείο. (τρέχω)', answer: 'τρέξαμε', choices: ['έτρεξα', 'έτρεξες', 'τρέξαμε', 'έτρεξαν'], en: 'We ran to school.', hint: 'run · past · εμείς' },
+      { text: 'Τα παιδιά {b} όλη μέρα. (παίζω)', answer: 'έπαιξαν', choices: ['έπαιξα', 'παίξαμε', 'έπαιξαν', 'έπαιζαν'], en: 'The children played all day.', hint: 'play · past · they' }
+    ]
+  },
+  {
+    id: 'a2-future-simple',
+    level: 'A2',
+    title: 'Simple future (θα + past stem)',
+    short: 'θα + the past stem + present endings: θα γράψω.',
+    explanation:
+      '<p>For a one-off future action, take <strong>θα</strong> + the <strong>past (aorist) stem</strong> + the <strong>present endings</strong>:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">εγώ</div><div class="g-v">θα γράψ<strong>ω</strong></div>' +
+      '<div class="g-k">εσύ</div><div class="g-v">θα γράψ<strong>εις</strong></div>' +
+      '<div class="g-k">αυτός/ή/ό</div><div class="g-v">θα γράψ<strong>ει</strong></div>' +
+      '<div class="g-k">εμείς</div><div class="g-v">θα γράψ<strong>ουμε</strong></div>' +
+      '<div class="g-k">εσείς</div><div class="g-v">θα γράψ<strong>ετε</strong></div>' +
+      '<div class="g-k">αυτοί/ές/ά</div><div class="g-v">θα γράψ<strong>ουν</strong></div>' +
+      '</div>' +
+      '<p>So it’s the aorist stem (γραψ-, διαβασ-, τρεξ-) but with present endings, all after θα. Contrast: <em>θα γράφω</em> (continuous, “I’ll be writing”) vs <em>θα γράψω</em> (one-off, “I’ll write”).</p>',
+    examples: [
+      { gr: 'Αύριο θα γράψω ένα email.', en: 'Tomorrow I’ll write an email.' },
+      { gr: 'Θα διαβάσεις το βιβλίο;', en: 'Will you read the book?' },
+      { gr: 'Θα φάμε στις οκτώ.', en: 'We’ll eat at eight.' }
+    ],
+    items: [
+      { text: 'Αύριο {b} ένα γράμμα. (γράφω)', answer: 'θα γράψω', accept: ['θα γραψω'], choices: ['θα γράψω', 'θα γράφω', 'έγραψα', 'θα γράψεις'], en: 'Tomorrow I’ll write a letter.', hint: 'future simple · εγώ' },
+      { text: 'Εσύ {b} το βιβλίο; (διαβάζω)', answer: 'θα διαβάσεις', accept: ['θα διαβασεις'], choices: ['θα διαβάσεις', 'θα διαβάζεις', 'διάβασες', 'θα διαβάσω'], en: 'Will you read the book?', hint: 'future simple · εσύ' },
+      { text: 'Ο Γιώργος {b} αργότερα. (τηλεφωνώ → τηλεφώνησα)', answer: 'θα τηλεφωνήσει', accept: ['θα τηλεφωνησει'], choices: ['θα τηλεφωνήσει', 'θα τηλεφωνεί', 'τηλεφώνησε', 'θα τηλεφωνήσω'], en: 'George will phone later.', hint: 'future simple · he' },
+      { text: 'Εμείς {b} στις οκτώ. (τρώω → έφαγα)', answer: 'θα φάμε', accept: ['θα φαμε'], choices: ['θα φάμε', 'θα τρώμε', 'φάγαμε', 'θα φάει'], en: 'We’ll eat at eight.', hint: 'future simple · εμείς' }
+    ]
+  },
+  {
+    id: 'a2-negation',
+    level: 'A2',
+    title: 'Negation: δεν and μην',
+    short: 'δεν before normal verbs; μην in commands and after να.',
+    explanation:
+      '<p>To make a verb negative, put <strong>δεν</strong> right before it: <em>Δεν ξέρω.</em> = I don’t know.</p>' +
+      '<p>Use <strong>μην</strong> instead for negative commands and after <strong>να</strong>: <em>Μην το κάνεις!</em> = Don’t do it! · <em>Θέλω να μην αργήσεις.</em> = I want you not to be late.</p>' +
+      '<p>Greek happily uses double negatives: <em>Δεν ξέρω τίποτα.</em> = I don’t know anything (lit. “nothing”).</p>',
+    examples: [
+      { gr: 'Δεν μιλάω ιταλικά.', en: 'I don’t speak Italian.' },
+      { gr: 'Μην ανησυχείς.', en: 'Don’t worry.' },
+      { gr: 'Δεν ήρθε κανείς.', en: 'Nobody came.' }
+    ],
+    items: [
+      { text: '{b} ξέρω την απάντηση.', answer: 'Δεν', choices: ['Δεν', 'Μην', 'Όχι', 'Ούτε'], en: 'I don’t know the answer.', hint: 'negate a normal verb' },
+      { text: '{b} ανησυχείς! (command)', answer: 'Μην', choices: ['Δεν', 'Μην', 'Όχι', 'Να'], en: 'Don’t worry!', hint: 'negative command' },
+      { text: 'Θέλω να {b} αργήσεις.', answer: 'μην', choices: ['δεν', 'μην', 'όχι', 'να'], en: 'I want you not to be late.', hint: 'negative after να' },
+      { text: '{b} πειράζει.', answer: 'Δεν', choices: ['Δεν', 'Μην', 'Όχι', 'Ούτε'], en: 'It doesn’t matter.', hint: 'negate a normal verb' }
+    ]
+  },
+
+  /* ===================== B1 ===================== */
+  {
+    id: 'b1-subjunctive',
+    level: 'B1',
+    title: 'The subjunctive with να',
+    short: 'να links two verbs: θέλω να φύγω (I want to leave).',
+    explanation:
+      '<p>Greek has no infinitive (“to leave”). Instead it uses <strong>να + a conjugated verb</strong>, matching the subject. The verb after να takes the same simple/continuous distinction as the future:</p>' +
+      '<p><em>Θέλω <strong>να φύγω</strong>.</em> = I want to leave. · <em>Μπορείς <strong>να με βοηθήσεις</strong>;</em> = Can you help me?</p>' +
+      '<p>Both verbs agree with their own subject: <em>Θέλω να <strong>φας</strong>.</em> = I want <strong>you</strong> to eat (θέλω = I, φας = you).</p>' +
+      '<p>να also expresses “let’s / should”: <em>Να πάμε;</em> = Shall we go?</p>',
+    examples: [
+      { gr: 'Θέλω να μάθω ελληνικά.', en: 'I want to learn Greek.' },
+      { gr: 'Πρέπει να φύγω τώρα.', en: 'I have to leave now.' },
+      { gr: 'Μπορείς να με βοηθήσεις;', en: 'Can you help me?' }
+    ],
+    items: [
+      { text: 'Θέλω να {b} ελληνικά. (μαθαίνω → έμαθα)', answer: 'μάθω', choices: ['μάθω', 'μαθαίνω', 'έμαθα', 'μάθεις'], en: 'I want to learn Greek.', hint: 'after να · εγώ · one-off' },
+      { text: 'Πρέπει να {b} τώρα. (φεύγω → έφυγα)', answer: 'φύγω', choices: ['φύγω', 'φεύγω', 'έφυγα', 'φύγεις'], en: 'I have to leave now.', hint: 'after να · εγώ' },
+      { text: 'Μπορείς να με {b}; (βοηθάω → βοήθησα)', answer: 'βοηθήσεις', choices: ['βοηθήσεις', 'βοηθάς', 'βοήθησες', 'βοηθήσω'], en: 'Can you help me?', hint: 'after να · εσύ' },
+      { text: 'Θέλω να {b} κι εσύ. (τρώω → έφαγα)', answer: 'φας', choices: ['φας', 'φάω', 'τρως', 'έφαγες'], en: 'I want you to eat too.', hint: 'after να · subject is εσύ' }
+    ]
+  },
+  {
+    id: 'b1-imperative',
+    level: 'B1',
+    title: 'The imperative (commands)',
+    short: 'From the past stem: γράψε! (sing.), γράψτε! (pl.).',
+    explanation:
+      '<p>To give a command, build from the <strong>past (aorist) stem</strong> and add:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">singular</div><div class="g-v">γράψ<strong>ε</strong>! · διάβασ<strong>ε</strong>!</div>' +
+      '<div class="g-k">plural / polite</div><div class="g-v">γράψ<strong>τε</strong>! · διαβάσ<strong>τε</strong>!</div>' +
+      '</div>' +
+      '<p>For a negative command, use <strong>μην + the present or subjunctive</strong>, not the imperative form: <em>Μην τρέχεις!</em> = Don’t run!</p>' +
+      '<p>Common irregulars: έλα! (come!), πες! (say!), φάε! (eat!), πιες! (drink!).</p>',
+    examples: [
+      { gr: 'Γράψε το όνομά σου.', en: 'Write your name.' },
+      { gr: 'Διαβάστε την πρόταση.', en: 'Read the sentence. (pl.)' },
+      { gr: 'Μην το ξεχάσεις!', en: 'Don’t forget it!' }
+    ],
+    items: [
+      { text: '{b} το όνομά σου! (γράφω → έγραψα, singular)', answer: 'Γράψε', choices: ['Γράψε', 'Γράψτε', 'Γράφε', 'Γράψεις'], en: 'Write your name!', hint: 'command · singular' },
+      { text: '{b} την πρόταση! (διαβάζω, plural)', answer: 'Διαβάστε', choices: ['Διάβασε', 'Διαβάστε', 'Διαβάζετε', 'Διαβάσετε'], en: 'Read the sentence! (pl.)', hint: 'command · plural' },
+      { text: '{b} εδώ! (come, singular)', answer: 'Έλα', choices: ['Έλα', 'Ελάτε', 'Έρχεσαι', 'Ήρθες'], en: 'Come here!', hint: 'irregular command · singular' },
+      { text: '{b} τρέχεις στον δρόμο! (negative)', answer: 'Μην', choices: ['Μην', 'Δεν', 'Όχι', 'Να'], en: 'Don’t run in the street!', hint: 'negative command' }
+    ]
+  },
+  {
+    id: 'b1-past-continuous',
+    level: 'B1',
+    title: 'Past continuous (παρατατικός)',
+    short: 'Repeated/ongoing past: present stem + past endings — έγραφα.',
+    explanation:
+      '<p>The παρατατικός is the “used-to / was-doing” past — repeated or ongoing actions. Take the <strong>present stem</strong> and add the <strong>past endings</strong> (+ augment when needed):</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">Group A</div><div class="g-v">γράφω → <strong>έγραφα</strong> (I was writing)</div>' +
+      '<div class="g-k">Group B (-άω/-ώ)</div><div class="g-v">αγαπάω → <strong>αγαπούσα</strong></div>' +
+      '</div>' +
+      '<p>Key contrast with the simple past: <em>έγραψα</em> = I wrote (once), <em>έγραφα</em> = I was writing / used to write. Time cues for παρατατικός: κάθε μέρα, συνέχεια, όταν ήμουν παιδί, πάντα.</p>',
+    examples: [
+      { gr: 'Όταν ήμουν παιδί, έπαιζα κάθε μέρα.', en: 'When I was a child, I played every day.' },
+      { gr: 'Διάβαζε όταν χτύπησε το τηλέφωνο.', en: 'He was reading when the phone rang.' },
+      { gr: 'Κάθε καλοκαίρι πηγαίναμε στο χωριό.', en: 'Every summer we used to go to the village.' }
+    ],
+    items: [
+      { text: 'Όταν ήμουν παιδί, {b} κάθε μέρα. (παίζω)', answer: 'έπαιζα', choices: ['έπαιζα', 'έπαιξα', 'παίζω', 'έπαιζες'], en: 'When I was a child, I played every day.', hint: 'past continuous · εγώ' },
+      { text: 'Ο Νίκος {b} όταν χτύπησε το τηλέφωνο. (διαβάζω)', answer: 'διάβαζε', choices: ['διάβαζε', 'διάβασε', 'διαβάζει', 'διάβαζα'], en: 'Nick was reading when the phone rang.', hint: 'past continuous · he' },
+      { text: 'Κάθε καλοκαίρι {b} στο χωριό. (πηγαίνω → πήγαινα)', answer: 'πηγαίναμε', choices: ['πηγαίναμε', 'πήγαμε', 'πηγαίνουμε', 'πήγαιναν'], en: 'Every summer we used to go to the village.', hint: 'past continuous · εμείς' },
+      { text: 'Παλιά εγώ {b} πολύ. (αγαπάω → αγαπούσα)', answer: 'αγαπούσα', choices: ['αγαπούσα', 'αγάπησα', 'αγαπάω', 'αγαπούσες'], en: 'In the past I used to love a lot.', hint: 'past continuous · εγώ · B group' }
+    ]
+  },
+  {
+    id: 'b1-comparatives',
+    level: 'B1',
+    title: 'Comparatives & superlatives',
+    short: 'πιο + adjective + από; ο πιο… for the superlative.',
+    explanation:
+      '<p>The easy way to compare is <strong>πιο</strong> (“more”) + adjective, with <strong>από</strong> for “than”:</p>' +
+      '<p><em>Η Άννα είναι <strong>πιο ψηλή από</strong> τον Νίκο.</em> = Anna is taller than Nick.</p>' +
+      '<p>For the superlative, add the article: <strong>ο/η/το πιο</strong> + adjective: <em>ο πιο ψηλός</em> = the tallest. There’s also a one-word form in <strong>-τερος</strong> (μεγάλος → μεγαλύτερος = bigger), but πιο works everywhere.</p>' +
+      '<p>Irregular but very common: καλός → <strong>καλύτερος</strong> (better), κακός → <strong>χειρότερος</strong> (worse).</p>',
+    examples: [
+      { gr: 'Αυτό είναι πιο ακριβό από εκείνο.', en: 'This is more expensive than that.' },
+      { gr: 'Είναι ο πιο καλός μου φίλος.', en: 'He is my best friend.' },
+      { gr: 'Σήμερα κάνει χειρότερο καιρό.', en: 'Today the weather is worse.' }
+    ],
+    items: [
+      { text: 'Η Άννα είναι {b} ψηλή από τον Νίκο.', answer: 'πιο', choices: ['πιο', 'πολύ', 'από', 'το'], en: 'Anna is taller than Nick.', hint: '“more” for comparison' },
+      { text: 'Αυτό είναι πιο ακριβό {b} εκείνο.', answer: 'από', choices: ['από', 'που', 'σαν', 'και'], en: 'This is more expensive than that.', hint: '“than”' },
+      { text: 'Είναι ο πιο {b} μου φίλος.', answer: 'καλός', choices: ['καλός', 'καλά', 'καλύτερα', 'πολύ'], en: 'He is my best friend.', hint: 'adjective after “ο πιο”' },
+      { text: 'Το ελληνικό φαγητό είναι {b} από το αγγλικό. (better)', answer: 'καλύτερο', choices: ['καλύτερο', 'πιο καλό', 'καλό', 'χειρότερο'], en: 'Greek food is better than English.', hint: 'irregular: better (neuter)' }
+    ]
+  },
+  {
+    id: 'b1-conjunctions',
+    level: 'B1',
+    title: 'Linking words (όταν, αν, γιατί, ενώ)',
+    short: 'when / if / because / while — joining clauses.',
+    explanation:
+      '<p>Common conjunctions for joining ideas:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">όταν</div><div class="g-v">when</div>' +
+      '<div class="g-k">αν</div><div class="g-v">if</div>' +
+      '<div class="g-k">γιατί / επειδή</div><div class="g-v">because</div>' +
+      '<div class="g-k">ενώ</div><div class="g-v">while / whereas</div>' +
+      '<div class="g-k">αλλά / όμως</div><div class="g-v">but</div>' +
+      '<div class="g-k">ώστε / για να</div><div class="g-v">so that / in order to</div>' +
+      '</div>' +
+      '<p>Note: <strong>γιατί</strong> both asks “why?” and answers “because”. <strong>επειδή</strong> only means “because” and is safer at the start of a sentence.</p>',
+    examples: [
+      { gr: 'Θα έρθω αν έχω χρόνο.', en: 'I’ll come if I have time.' },
+      { gr: 'Έμεινα σπίτι γιατί έβρεχε.', en: 'I stayed home because it was raining.' },
+      { gr: 'Όταν ήρθες, κοιμόμουν.', en: 'When you came, I was sleeping.' }
+    ],
+    items: [
+      { text: 'Θα έρθω {b} έχω χρόνο.', answer: 'αν', choices: ['αν', 'όταν', 'γιατί', 'ενώ'], en: 'I’ll come if I have time.', hint: 'condition: if' },
+      { text: 'Έμεινα σπίτι {b} έβρεχε.', answer: 'γιατί', accept: ['επειδή'], choices: ['γιατί', 'αν', 'όταν', 'αλλά'], en: 'I stayed home because it was raining.', hint: 'reason: because' },
+      { text: '{b} ήρθες, κοιμόμουν.', answer: 'Όταν', choices: ['Όταν', 'Αν', 'Γιατί', 'Ενώ'], en: 'When you came, I was sleeping.', hint: 'time: when' },
+      { text: 'Θέλω να έρθω, {b} δεν μπορώ.', answer: 'αλλά', accept: ['όμως'], choices: ['αλλά', 'και', 'γιατί', 'όταν'], en: 'I want to come, but I can’t.', hint: 'contrast: but' }
+    ]
   }
 ];

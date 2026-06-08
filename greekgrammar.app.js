@@ -142,15 +142,14 @@
 
     root.innerHTML = html;
 
-    var sr = el('startReview'); if (sr) sr.addEventListener('click', function () { startSession(dueIds(), 'review'); });
+    var sr = el('startReview'); if (sr) sr.addEventListener('click', function () { startSession(reviewQuestions(), 'review'); });
     root.querySelectorAll('.g-mode').forEach(function (b) {
       b.addEventListener('click', function () { store.__settings.answerMode = b.getAttribute('data-mode'); save(); renderDashboard(); });
     });
     root.querySelectorAll('.g-practice').forEach(function (b) {
       b.addEventListener('click', function (e) {
         e.stopPropagation();
-        var lv = b.getAttribute('data-level');
-        startSession(GRAMMAR.filter(function (p) { return p.level === lv; }).map(function (p) { return p.id; }), 'practice');
+        startSession(levelQuestions(b.getAttribute('data-level')), 'practice');
       });
     });
     root.querySelectorAll('.g-point').forEach(function (d) {
@@ -180,42 +179,69 @@
       '<div class="g-md-body">' + p.explanation + '</div>' +
       (ex ? '<div class="g-md-ex"><div class="g-md-exh">Examples</div>' + ex + '</div>' : '') +
       '<div class="g-md-actions">' +
-        '<button class="btn-primary" id="gLearnBtn">' + (learned ? 'Practice now' : 'Add to reviews') + '</button>' +
-        (learned ? '<span class="g-md-note">In your reviews · ' + dueLabel(p.id) + '</span>' : '') +
-      '</div></div>';
+        '<button class="btn-primary" id="gPractice">Practice — ' + p.items.length + ' questions</button>' +
+        '<button id="gAddReviews"' + (learned ? ' disabled' : '') + '>' + (learned ? 'In your reviews ✓' : 'Add to reviews') + '</button>' +
+        (learned ? '<span class="g-md-note">next review ' + dueLabel(p.id) + '</span>' : '') +
+      '</div>' +
+      '<p class="g-md-hint">Read the lesson, then <strong>Practice</strong> drills all of this point’s sentences. Doing well schedules it for spaced review.</p>' +
+      '</div>';
     el('grammarModal').style.display = 'block';
     el('grammarModal').querySelector('.modal-backdrop').addEventListener('click', closeModal);
     el('grammarModal').querySelector('.modal-close').addEventListener('click', closeModal);
-    el('gLearnBtn').addEventListener('click', function () {
-      if (!learned) { rec(p.id).due = Date.now(); save(); } // add at stage 0, due now
+    el('gPractice').addEventListener('click', function () {
       closeModal();
-      startSession([p.id], 'review');
+      startSession(pointQuestions(p), 'practice');
+    });
+    var add = el('gAddReviews');
+    if (add && !learned) add.addEventListener('click', function () {
+      rec(p.id).due = Date.now(); save(); // add at stage 0, due now
+      openPoint(p); // refresh modal state
     });
   }
   function closeModal() { var m = el('grammarModal'); m.style.display = 'none'; m.innerHTML = ''; }
 
   /* ---------- review session ---------- */
-  function startSession(ids, kind) {
-    if (!ids.length) return;
-    state.session = { queue: shuffle(ids.slice()), kind: kind, done: 0, total: ids.length, correctCount: 0, current: null, answered: false };
+  // A session is a queue of questions: { pointId, item, counted }.
+  function startSession(questions, kind) {
+    if (!questions.length) return;
+    state.session = { kind: kind, queue: shuffle(questions.slice()), done: 0, correctCount: 0, results: {}, current: null, answered: false };
     nextQuestion();
+  }
+  function reviewQuestions() {
+    return dueIds().map(function (id) { return { pointId: id, item: randItem(byId[id]) }; });
+  }
+  function pointQuestions(point) {
+    return point.items.map(function (it) { return { pointId: point.id, item: it }; });
+  }
+  function levelQuestions(levelKey) {
+    var qs = [];
+    GRAMMAR.filter(function (p) { return p.level === levelKey; }).forEach(function (p) {
+      p.items.forEach(function (it) { qs.push({ pointId: p.id, item: it }); });
+    });
+    return qs;
   }
   function nextQuestion() {
     var s = state.session;
     if (!s.queue.length) { finishSession(); return; }
-    var id = s.queue.shift();
-    s.current = { id: id, point: byId[id], item: randItem(byId[id]), choices: null };
+    var q = s.queue.shift();
+    s.current = { pointId: q.pointId, point: byId[q.pointId], item: q.item, counted: q.counted || false, choices: null };
     if (store.__settings.answerMode === 'choice') s.current.choices = shuffle(s.current.item.choices || []);
     s.answered = false;
     render();
   }
   function finishSession() {
     var s = state.session;
-    var total = s.done, correct = s.correctCount;
+    // Apply one SRS step per grammar point, based on first-attempt accuracy.
+    var qTotal = 0, qRight = 0;
+    Object.keys(s.results).forEach(function (pid) {
+      var r = s.results[pid];
+      qTotal += r.total; qRight += r.right;
+      schedule(pid, r.total > 0 && r.right / r.total >= 0.6);
+    });
     state.session = null;
     root.innerHTML = '<div class="g-done"><div class="g-done-tick">✓</div>' +
       '<div class="g-done-title">Session complete</div>' +
-      '<div class="g-done-sub">' + correct + ' / ' + total + ' correct</div>' +
+      '<div class="g-done-sub">' + qRight + ' / ' + qTotal + ' correct first try</div>' +
       '<button class="btn-primary" id="gBackDash">Back to grammar</button></div>';
     el('gBackDash').addEventListener('click', render);
   }
@@ -286,8 +312,13 @@
     s.lastCorrect = correct;
     s.done += 1;
     if (correct) s.correctCount += 1;
-    schedule(cur.id, correct);
-    if (!correct) s.queue.push(cur.id); // re-ask wrong items later in the session
+    // Count first attempts only (re-asked items don't double-count toward SRS).
+    if (!cur.counted) {
+      cur.counted = true;
+      var r = s.results[cur.pointId] || (s.results[cur.pointId] = { right: 0, total: 0 });
+      r.total += 1; if (correct) r.right += 1;
+    }
+    if (!correct) s.queue.push({ pointId: cur.pointId, item: cur.item, counted: true }); // re-ask later
     render();
   }
 
