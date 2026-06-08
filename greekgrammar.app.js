@@ -292,7 +292,8 @@
       '<h1 class="g-lesson-title">' + escapeHtml(p.title) + '</h1>' +
       '<p class="g-lesson-intro">' + escapeHtml(p.short) + '</p>' +
       '<div class="g-md-body">' + p.explanation + '</div>' +
-      (ex ? '<div class="g-md-ex"><div class="g-md-exh">Examples</div>' + ex + '</div>' : '');
+      (ex ? '<div class="g-md-ex"><div class="g-md-exh">Examples</div>' + ex + '</div>' : '') +
+      (p.more ? '<div class="g-md-more"><div class="g-md-exh">Notes &amp; common mistakes</div>' + p.more + '</div>' : '');
   }
 
   // Open a point: go to the full lesson page (remembering where we came from).

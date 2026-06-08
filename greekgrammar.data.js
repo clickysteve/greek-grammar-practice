@@ -22,6 +22,7 @@ window.GRAMMAR = [
   /* ===================== A1 ===================== */
   {
     id: 'a1-pronouns-subject',
+    more: '<p>Because the verb ending already shows the person, adding a pronoun feels emphatic — use it on purpose, not by default.</p><ul class="g-tips"><li>Use it for <strong>contrast</strong>: <em>Εγώ δουλεύω, εσύ κοιμάσαι.</em> (I work, you sleep.)</li><li>Use it for <strong>clarity</strong> in the 3rd person, where <em>αυτός / αυτή / αυτό</em> all take the same ending -ει.</li><li><strong>Common mistake:</strong> scattering εγώ/εσύ everywhere — it sounds unnatural. Greek normally drops them.</li><li>αυτός/αυτή/αυτό also mean “this one”; the gender must match the noun.</li></ul>',
     level: 'A1',
     title: 'Subject pronouns',
     short: 'εγώ, εσύ, αυτός… — usually dropped, used for emphasis.',
@@ -51,6 +52,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a1-present-a',
+    more: '<p>One present tense covers both “I write” and “I am writing” — there is no separate continuous form.</p><ul class="g-tips"><li>The stem stays; only the ending changes. Watch the spelling: 1pl is <strong>-ουμε</strong> (γράφουμε), not “-ομε”.</li><li><strong>Easy mix-up:</strong> εμείς <strong>-ουμε</strong> vs αυτοί <strong>-ουν</strong> — different person, similar look.</li><li>The stress normally stays on the same syllable as the 1st person throughout.</li></ul>',
     level: 'A1',
     title: 'Present tense — Group A (-ω)',
     short: 'The default pattern: -ω, -εις, -ει, -ουμε, -ετε, -ουν.',
@@ -80,6 +82,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a1-present-b1',
+    more: '<p>The 1st person has two spellings: <em>αγαπάω</em> (everyday) and <em>αγαπώ</em> (more formal) — same meaning.</p><ul class="g-tips"><li>The stress is always on the ending.</li><li><strong>Tell B1 from B2 by the 2nd person:</strong> B1 is <strong>-άς</strong> (αγαπάς), B2 is -είς (μπορείς).</li><li>Common B1 verbs: μιλάω, ρωτάω, απαντάω, αγαπάω, ζητάω, περπατάω, σταματάω.</li></ul>',
     level: 'A1',
     title: 'Present tense — Group B1 (-άω / -ώ)',
     short: 'Stressed-α contract verbs: -άω, -άς, -άει, -άμε, -άτε, -άνε.',
@@ -109,6 +112,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a1-present-b2',
+    more: '<p>Also stressed on the ending, but with ει/ου instead of α.</p><ul class="g-tips"><li><strong>The giveaway is the 2nd person:</strong> -είς (B2) vs -άς (B1).</li><li>Common B2 verbs: μπορώ, οδηγώ, θεωρώ, τηλεφωνώ, ζητώ, ζω.</li><li>ζω is slightly irregular: ζω, ζεις, ζει, ζούμε, ζείτε, ζουν.</li></ul>',
     level: 'A1',
     title: 'Present tense — Group B2 (-ώ)',
     short: 'Stressed-ε contract verbs: -ώ, -είς, -εί, -ούμε, -είτε, -ούν.',
@@ -138,6 +142,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a1-articles-gender',
+    more: '<p>The endings are only a rough guide — gender is a property of the word, so always learn the article with the noun.</p><ul class="g-tips"><li>Frequent exceptions: <em>ο χάρτης</em> (masc. in -ης), <em>η πόλη</em> (fem. in -η), <em>το κρέας</em> (neut. in -ας).</li><li>The indefinite article matches gender too: <strong>ένας</strong> άντρας, <strong>μία</strong> γυναίκα, <strong>ένα</strong> παιδί.</li><li>The article also changes by <em>case</em> (you’ll meet τον/του next), not only gender.</li></ul>',
     level: 'A1',
     title: 'The definite article & gender',
     short: 'ο (m), η (f), το (n); plural οι / οι / τα.',
@@ -165,6 +170,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a1-weak-object',
+    more: '<p>These short pronouns normally sit <strong>before</strong> the verb, but jump <strong>after</strong> a positive command.</p><ul class="g-tips"><li>Before a normal verb: <em>Σε βλέπω.</em> After a command: <em>Δώσε <strong>μου</strong> το!</em></li><li><strong>Common mistake:</strong> saying “βλέπω σε”. Weak pronouns can’t stand after a plain verb.</li><li>For emphasis use the <em>strong</em> form: <em>Εσένα</em> αγαπώ (it’s <em>you</em> I love).</li></ul>',
     level: 'A1',
     title: 'Weak object pronouns (με, σε, τον…)',
     short: 'me/you/him… — they go BEFORE the verb: σε βλέπω.',
@@ -194,6 +200,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a1-possessive',
+    more: '<p>Keep the article: it’s <em>το σπίτι μου</em>, never just “σπίτι μου”.</p><ul class="g-tips"><li>The forms are identical to the object pronouns (μου, σου, του…) — only the <strong>position</strong> (after the noun) tells them apart.</li><li>Proparoxytone nouns gain a second accent: <em>το όνομα</em> → <em>το όνομά μου</em>.</li><li>For emphasis (“my own”) use <em>δικός/δική/δικό μου</em>.</li></ul>',
     level: 'A1',
     title: 'Possessive pronouns (μου, σου, του…)',
     short: 'my/your/his… — they go AFTER the noun: το σπίτι μου.',
@@ -223,6 +230,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a1-oti-pos-pou',
+    more: '<p>All three mean “that”, but they’re not freely swappable.</p><ul class="g-tips"><li><strong>Common mistake:</strong> using ότι after an emotion verb. It must be <em>που</em>: <em>Χαίρομαι <strong>που</strong> ήρθες</em>, not “ότι”.</li><li>Mind the accents: <em>πού;</em> = where? and <em>πώς;</em> = how? only in questions; plain που/πως are unstressed.</li><li><em>ό,τι</em> (with a comma) = “whatever”: <em>Πάρε ό,τι θέλεις.</em></li></ul>',
     level: 'A1',
     title: 'ότι / πως / που (“that”)',
     short: 'ότι/πως after think/say/know; που after emotions and as “which/who”.',
@@ -252,6 +260,7 @@ window.GRAMMAR = [
   /* ===================== A2 ===================== */
   {
     id: 'a2-accusative',
+    more: '<p>The accusative is also the case every preposition takes — so you’ll use it constantly.</p><ul class="g-tips"><li>After σε, με, για, από, χωρίς: <em>για <strong>την</strong> Άννα</em>, <em>με <strong>τον</strong> φίλο μου</em>.</li><li><strong>σε + article fuses:</strong> σε+τον = <em>στον</em>, σε+την = <em>στην</em>, σε+το = <em>στο</em>.</li><li>Only the <strong>masculine singular</strong> drops its -ς (τον φίλο); the plural keeps it (τους φίλους).</li></ul>',
     level: 'A2',
     title: 'The accusative (object)',
     short: 'The object: τον / την / το, τους / τις / τα — masculine drops its -ς.',
@@ -280,6 +289,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a2-genitive',
+    more: '<p>Genitive endings vary more than the others — learn them per noun pattern.</p><ul class="g-tips"><li>The plural article is always <strong>των</strong>, with the noun ending in -ων: <em>των παιδιών, των γυναικών</em>.</li><li>Used for possession, for time expressions, and after some prepositions in set phrases.</li><li><strong>Word order:</strong> possession first, owner second — <em>το κλειδί <strong>του σπιτιού</strong></em>.</li></ul>',
     level: 'A2',
     title: 'The genitive (possession)',
     short: 'Who owns it: του / της / του, των. Possession first, owner second.',
@@ -306,6 +316,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a2-aorist',
+    more: '<p>The endings are universal; it’s the <em>stem</em> that’s the work.</p><ul class="g-tips"><li>The augment <strong>έ-</strong> appears only to carry the stress (third syllable from the end). It drops in 1pl/2pl: <em>έγραψα</em> but <em>γράψαμε</em>.</li><li>Many high-frequency verbs are <strong>irregular</strong> and must be memorised: πάω→<em>πήγα</em>, λέω→<em>είπα</em>, βλέπω→<em>είδα</em>, τρώω→<em>έφαγα</em>, πίνω→<em>ήπια</em>.</li><li>This is the “one-off / completed” past — for repeated or ongoing past use the παρατατικός.</li></ul>',
     level: 'A2',
     title: 'Simple past (αόριστος)',
     short: 'One set of endings for all verbs: -α, -ες, -ε, -αμε, -ατε, -αν.',
@@ -337,6 +348,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a2-future-simple',
+    more: '<p>θα carries the future; the stem decides one-off vs ongoing.</p><ul class="g-tips"><li><em>θα γράψω</em> (once) vs <em>θα γράφω</em> (will be writing / repeatedly).</li><li>Negative: <strong>δεν θα</strong> + verb: <em>Δεν θα έρθω.</em></li><li>θα also expresses likelihood: <em>Θα είναι σπίτι τώρα.</em> = He’s probably home now.</li></ul>',
     level: 'A2',
     title: 'Simple future (θα + past stem)',
     short: 'θα + the past stem + present endings: θα γράψω.',
@@ -365,6 +377,7 @@ window.GRAMMAR = [
   },
   {
     id: 'a2-negation',
+    more: '<p>Two negators, used in different places.</p><ul class="g-tips"><li><strong>δεν</strong> negates ordinary (indicative) verbs; <strong>μην</strong> goes with commands, after να, and after πριν / χωρίς να.</li><li>Greek uses <strong>double negatives</strong>: <em>Δεν ξέρω <strong>τίποτα</strong></em>, <em>Δεν ήρθε <strong>κανείς</strong></em>.</li><li><em>όχι</em> means “no” on its own — don’t use it to negate a verb.</li></ul>',
     level: 'A2',
     title: 'Negation: δεν and μην',
     short: 'δεν before normal verbs; μην in commands and after να.',
@@ -388,6 +401,7 @@ window.GRAMMAR = [
   /* ===================== B1 ===================== */
   {
     id: 'b1-subjunctive',
+    more: '<p>να is how Greek joins two verbs where English would use “to …”.</p><ul class="g-tips"><li>The verb after να takes the same one-off/ongoing choice as the future: <em>να φύγω</em> (leave, once) vs <em>να φεύγω</em> (be leaving).</li><li>The negative is <strong>μην</strong>: <em>Σου λέω να <strong>μην</strong> αργήσεις.</em></li><li>Common triggers: θέλω, μπορώ, πρέπει, ξέρω, ας, για να.</li><li>The two verbs can have <strong>different subjects</strong>: <em>Θέλω να φας</em> = I want <em>you</em> to eat.</li></ul>',
     level: 'B1',
     title: 'The subjunctive with να',
     short: 'να links two verbs: θέλω να φύγω (I want to leave).',
@@ -410,6 +424,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b1-imperative',
+    more: '<p>Positive commands come from the aorist stem; negatives don’t use this form at all.</p><ul class="g-tips"><li><strong>Negative command = μη(ν) + present/subjunctive</strong>, never the imperative: <em>Μην τρέχεις!</em></li><li>Pronouns attach <strong>after</strong>: <em>Πες <strong>μου</strong>! · Δώσ’ <strong>το</strong> μου!</em></li><li>Learn the common irregulars: έλα, πες, φάε, πιες, δες, μπες, ανέβα, κάτσε.</li></ul>',
     level: 'B1',
     title: 'The imperative (commands)',
     short: 'From the past stem: γράψε! (sing.), γράψτε! (pl.).',
@@ -435,6 +450,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b1-past-continuous',
+    more: '<p>This is the “setting the scene” past — duration, habit, or background.</p><ul class="g-tips"><li><strong>Aorist vs παρατατικός:</strong> <em>έγραψα</em> = I wrote (and finished) · <em>έγραφα</em> = I was writing / used to write.</li><li>Often the background to an aorist event: <em>Διάβαζα όταν <strong>χτύπησε</strong> το τηλέφωνο.</em></li><li>B-group verbs take <strong>-ούσα</strong>: αγαπάω → αγαπούσα, μπορώ → μπορούσα.</li><li>Time cues: κάθε μέρα, συνέχεια, πάντα, όταν ήμουν παιδί.</li></ul>',
     level: 'B1',
     title: 'Past continuous (παρατατικός)',
     short: 'Repeated/ongoing past: present stem + past endings — έγραφα.',
@@ -459,6 +475,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b1-comparatives',
+    more: '<p>πιο works for everything; the -τερος forms are common but optional.</p><ul class="g-tips"><li>“than” is <strong>από</strong> (+ accusative): <em>πιο ψηλός <strong>από</strong> τον Νίκο</em>.</li><li>Learn the irregulars: καλός→<strong>καλύτερος</strong>, κακός→<strong>χειρότερος</strong>, μεγάλος→μεγαλύτερος, μικρός→μικρότερος, πολύς→περισσότερος.</li><li>“as … as” = <em>τόσο … όσο</em>: <em>τόσο ψηλός όσο εσύ</em>.</li></ul>',
     level: 'B1',
     title: 'Comparatives & superlatives',
     short: 'πιο + adjective + από; ο πιο… for the superlative.',
@@ -481,6 +498,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b1-conjunctions',
+    more: '<p>Most linkers take a normal (indicative) verb — but purpose and result take the subjunctive.</p><ul class="g-tips"><li>όταν, αν, γιατί, ενώ, που → indicative. <strong>για να / ώστε να → subjunctive.</strong></li><li><em>γιατί</em> does double duty: “why?” and “because”. <em>επειδή</em> only means “because” (safe at the start of a sentence).</li><li>μόλις = “as soon as”; όταν = “when” (more general).</li></ul>',
     level: 'B1',
     title: 'Linking words (όταν, αν, γιατί, ενώ)',
     short: 'when / if / because / while — joining clauses.',
@@ -511,6 +529,7 @@ window.GRAMMAR = [
   /* ===================== B2 ===================== */
   {
     id: 'b2-mediopassive',
+    more: '<p>These verbs only exist in the middle voice — there’s no active “*έρχω”.</p><ul class="g-tips"><li>Their aorist usually ends <strong>-θηκα</strong>: ντύνομαι → <em>ντύθηκα</em>, σκέφτομαι → <em>σκέφτηκα</em>.</li><li>A few have active meaning despite the form: έρχομαι (come), κάθομαι (sit), γίνομαι (become).</li><li>Don’t confuse a deponent (κοιμάμαι) with the passive of an active verb — the endings look similar but the meaning differs.</li></ul>',
     level: 'B2',
     title: 'Mediopassive verbs (-ομαι / -άμαι)',
     short: 'Middle-voice present: -ομαι, -εσαι, -εται, -όμαστε, -εστε, -ονται.',
@@ -540,6 +559,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b2-conditional',
+    more: '<p>Match the tenses to how real the condition is.</p><ul class="g-tips"><li><strong>Real / likely:</strong> αν + present, θα + future — <em>Αν έχω χρόνο, θα έρθω.</em></li><li><strong>Unreal (now):</strong> αν + παρατατικός, θα + παρατατικός — <em>Αν είχα χρόνο, θα ερχόμουν.</em></li><li><strong>Unreal (past):</strong> αν + υπερσυντέλικος, θα + παρατατικός — <em>Αν είχα φύγει νωρίτερα…</em></li><li>The if-clause never takes θα.</li></ul>',
     level: 'B2',
     title: 'Conditional (αν + θα + παρατατικός)',
     short: 'Unreal “if”: Αν είχα λεφτά, θα ταξίδευα.',
@@ -562,6 +582,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b2-gerund',
+    more: '<p>One invariable form for “while / by doing”.</p><ul class="g-tips"><li>Only for the <strong>same subject</strong> and a <strong>simultaneous</strong> action: <em>Ήρθε <strong>τρέχοντας</strong>.</em></li><li>To negate it or change subject, rephrase with <em>χωρίς να</em> or <em>ενώ</em> instead.</li><li>Greek uses it less than English “-ing”; don’t overuse it.</li></ul>',
     level: 'B2',
     title: 'The gerund (-οντας)',
     short: 'While/by doing: τρέχοντας, μιλώντας.',
@@ -587,6 +608,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b2-relative-oopoios',
+    more: '<p>A precise, formal alternative to που.</p><ul class="g-tips"><li>It <strong>agrees</strong> in gender, number and case, so it can show the role: <em>ο άντρας <strong>του οποίου</strong> το αυτοκίνητο…</em> (whose car…).</li><li><em>που</em> is indeclinable and far more common in speech; <em>ο οποίος</em> is written/formal or used to avoid ambiguity.</li><li>In everyday Greek, prefer που unless clarity demands ο οποίος.</li></ul>',
     level: 'B2',
     title: 'Relative “ο οποίος” (formal which/who)',
     short: 'Formal alternative to που, agreeing in gender, number, case.',
@@ -612,6 +634,7 @@ window.GRAMMAR = [
   },
   {
     id: 'b2-purpose',
+    more: '<p>Both take the subjunctive (να + verb) but answer different questions.</p><ul class="g-tips"><li><strong>για να</strong> = purpose (“in order to”) — answers <em>why?</em></li><li><strong>ώστε να / έτσι ώστε να</strong> = result (“so that”) — the consequence.</li><li>Don’t confuse <em>για</em> + noun (“for X”) with <em>για να</em> + verb (“in order to …”).</li></ul>',
     level: 'B2',
     title: 'Purpose & result (για να, ώστε να)',
     short: 'για να = in order to; ώστε να = so that (result).',
