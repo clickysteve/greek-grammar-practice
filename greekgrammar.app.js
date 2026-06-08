@@ -204,9 +204,16 @@
         '<span class="g-level-prog">' + lr + '/' + pts.length + ' lessons · ' + insrs + ' in SRS · ' + lm + ' mastered' + lvAcc + ' ' +
         '<button class="g-practice" data-level="' + lv.key + '">Practice level</button></span></div>' +
         (function () {
-          var seg = function (n, cls) { return n > 0 ? '<span class="g-lvseg ' + cls + '" style="width:' + (100 * n / pts.length) + '%"></span>' : ''; };
-          return '<div class="g-lvbar" title="' + lm + ' mastered · ' + (insrs - lm) + ' in review · ' + Math.max(0, lr - insrs) + ' read only">' +
-            seg(lm, 'm') + seg(insrs - lm, 's') + seg(Math.max(0, lr - insrs), 'r') + '</div>';
+          // One cell per lesson, coloured by practice accuracy (mastered counts as good).
+          var cells = pts.map(function (p) {
+            var a = practiceAcc(p.id), cls, lab;
+            if (a != null) { cls = a >= 80 ? 'good' : a >= 60 ? 'warn' : 'bad'; lab = a + '% accuracy'; }
+            else if (isMastered(p.id)) { cls = 'good'; lab = 'mastered'; }
+            else if (lessonRead(p.id)) { cls = 'read'; lab = 'read, not practised yet'; }
+            else { cls = 'empty'; lab = 'not started'; }
+            return '<span class="g-lvcell ' + cls + '" title="' + escapeHtml(p.title) + ' — ' + lab + '"></span>';
+          }).join('');
+          return '<div class="g-lvbar">' + cells + '</div>';
         })() +
         '<div class="g-points"' + (collapsed ? ' style="display:none;"' : '') + '>';
       pts.forEach(function (p) {

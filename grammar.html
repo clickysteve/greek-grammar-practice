@@ -165,12 +165,13 @@
     .vm-per { color: var(--muted); font-size: 12px; min-width: 56px; }
     .vm-form { font-weight: 600; }
     .g-vlink { display: inline-block; margin: 10px 14px 14px; font-size: 13px; color: var(--accent); }
-    /* level progress bar */
-    .g-lvbar { display: flex; height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; margin: 0 2px 12px; }
-    .g-lvseg { height: 100%; }
-    .g-lvseg.m { background: var(--good); }
-    .g-lvseg.s { background: #2e9e57; }
-    .g-lvseg.r { background: var(--read); }
+    /* level accuracy bar — one cell per lesson, coloured by practice accuracy */
+    .g-lvbar { display: flex; gap: 2px; height: 9px; margin: 0 2px 12px; }
+    .g-lvcell { flex: 1; height: 100%; border-radius: 2px; background: rgba(255,255,255,.06); }
+    .g-lvcell.read { background: rgba(255,255,255,.20); }
+    .g-lvcell.bad { background: var(--bad); }
+    .g-lvcell.warn { background: var(--warn); }
+    .g-lvcell.good { background: var(--read); }
     .g-point-go { font-size: 12px; padding: 6px 11px; white-space: nowrap; }
     .g-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
     .g-choice { text-align: left; font-size: 17px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
