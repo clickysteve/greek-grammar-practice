@@ -176,8 +176,13 @@
   }
 
   /* ---------- Lessons view ---------- */
+  function readPoints() { return GRAMMAR.filter(function (p) { return lessonRead(p.id); }); }
   function lessonsHtml() {
     var html = '<div class="g-summary">Read a lesson, then practise it. Add points you want to retain to your SRS reviews.</div>';
+    var rp = readPoints();
+    if (rp.length) {
+      html += '<button class="g-megamix" id="gMegamix">🎲 Megamix — practise all ' + rp.length + ' started lesson' + (rp.length === 1 ? '' : 's') + '</button>';
+    }
     LEVELS.forEach(function (lv) {
       var pts = GRAMMAR.filter(function (p) { return p.level === lv.key; });
       if (!pts.length) return;
@@ -212,6 +217,12 @@
     return html;
   }
   function wireLessons() {
+    var mm = el('gMegamix');
+    if (mm) mm.addEventListener('click', function () {
+      var qs = [];
+      readPoints().forEach(function (p) { p.items.forEach(function (it) { qs.push({ pointId: p.id, item: it }); }); });
+      startPractice(qs);
+    });
     root.querySelectorAll('.g-level-head').forEach(function (h) {
       h.addEventListener('click', function (e) {
         if (e.target.closest('.g-practice')) return;
