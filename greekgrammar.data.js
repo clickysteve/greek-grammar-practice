@@ -506,5 +506,131 @@ window.GRAMMAR = [
       { text: '{b} ήρθες, κοιμόμουν.', answer: 'Όταν', choices: ['Όταν', 'Αν', 'Γιατί', 'Ενώ'], en: 'When you came, I was sleeping.', hint: 'time: when' },
       { text: 'Θέλω να έρθω, {b} δεν μπορώ.', answer: 'αλλά', accept: ['όμως'], choices: ['αλλά', 'και', 'γιατί', 'όταν'], en: 'I want to come, but I can’t.', hint: 'contrast: but' }
     ]
+  },
+
+  /* ===================== B2 ===================== */
+  {
+    id: 'b2-mediopassive',
+    level: 'B2',
+    title: 'Mediopassive verbs (-ομαι / -άμαι)',
+    short: 'Middle-voice present: -ομαι, -εσαι, -εται, -όμαστε, -εστε, -ονται.',
+    explanation:
+      '<p>Many everyday verbs only exist in the middle voice, ending in <strong>-ομαι</strong> (or -άμαι). Their present endings are their own:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">εγώ</div><div class="g-v">έρχ<strong>ομαι</strong> · κοιμ<strong>άμαι</strong></div>' +
+      '<div class="g-k">εσύ</div><div class="g-v">έρχ<strong>εσαι</strong> · κοιμ<strong>άσαι</strong></div>' +
+      '<div class="g-k">αυτός/ή/ό</div><div class="g-v">έρχ<strong>εται</strong> · κοιμ<strong>άται</strong></div>' +
+      '<div class="g-k">εμείς</div><div class="g-v">ερχ<strong>όμαστε</strong> · κοιμ<strong>όμαστε</strong></div>' +
+      '<div class="g-k">εσείς</div><div class="g-v">έρχ<strong>εστε</strong> · κοιμ<strong>άστε</strong></div>' +
+      '<div class="g-k">αυτοί/ές/ά</div><div class="g-v">έρχ<strong>ονται</strong> · κοιμ<strong>ούνται</strong></div>' +
+      '</div>' +
+      '<p>Like this: έρχομαι, σκέφτομαι, αισθάνομαι, θυμάμαι, φοβάμαι, γίνομαι.</p>',
+    examples: [
+      { gr: 'Έρχομαι αμέσως.', en: 'I’m coming right away.' },
+      { gr: 'Τι σκέφτεσαι;', en: 'What are you thinking?' },
+      { gr: 'Φοβάται το σκοτάδι.', en: 'He’s afraid of the dark.' }
+    ],
+    items: [
+      { text: 'Εγώ {b} αμέσως. (έρχομαι)', answer: 'έρχομαι', choices: ['έρχομαι', 'έρχεσαι', 'ερχόμαστε', 'έρχονται'], en: 'I’m coming right away.', hint: 'come · εγώ' },
+      { text: 'Εσύ τι {b}; (σκέφτομαι)', answer: 'σκέφτεσαι', choices: ['σκέφτομαι', 'σκέφτεσαι', 'σκέφτεται', 'σκεφτόμαστε'], en: 'What are you thinking?', hint: 'think · εσύ' },
+      { text: 'Ο Νίκος {b} νωρίς. (κοιμάμαι)', answer: 'κοιμάται', choices: ['κοιμάμαι', 'κοιμάσαι', 'κοιμάται', 'κοιμούνται'], en: 'Nick sleeps early.', hint: 'sleep · he' },
+      { text: 'Εμείς {b} καλά εδώ. (αισθάνομαι)', answer: 'αισθανόμαστε', choices: ['αισθάνομαι', 'αισθάνεσαι', 'αισθανόμαστε', 'αισθάνονται'], en: 'We feel good here.', hint: 'feel · εμείς' },
+      { text: 'Τα παιδιά {b} το σκοτάδι. (φοβάμαι)', answer: 'φοβούνται', choices: ['φοβάμαι', 'φοβάται', 'φοβόμαστε', 'φοβούνται'], en: 'The children are afraid of the dark.', hint: 'fear · they' }
+    ]
+  },
+  {
+    id: 'b2-conditional',
+    level: 'B2',
+    title: 'Conditional (αν + θα + παρατατικός)',
+    short: 'Unreal “if”: Αν είχα λεφτά, θα ταξίδευα.',
+    explanation:
+      '<p>For an unreal or hypothetical situation (“if I were… I would…”), use <strong>αν + past continuous</strong> in the if-clause and <strong>θα + past continuous</strong> in the result:</p>' +
+      '<p><em>Αν <strong>είχα</strong> λεφτά, <strong>θα ταξίδευα</strong>.</em> = If I had money, I would travel.</p>' +
+      '<p><em>Αν <strong>ήμουν</strong> εσύ, <strong>θα έφευγα</strong>.</em> = If I were you, I would leave.</p>' +
+      '<p>Compare with a real/open condition, which uses the present/future: <em>Αν έχω χρόνο, θα έρθω.</em> = If I have time, I’ll come.</p>',
+    examples: [
+      { gr: 'Αν είχα χρόνο, θα διάβαζα.', en: 'If I had time, I would read.' },
+      { gr: 'Αν ήμουν πλούσιος, θα ταξίδευα.', en: 'If I were rich, I would travel.' },
+      { gr: 'Τι θα έκανες αν κέρδιζες;', en: 'What would you do if you won?' }
+    ],
+    items: [
+      { text: 'Αν {b} λεφτά, θα ταξίδευα. (έχω, unreal)', answer: 'είχα', choices: ['είχα', 'έχω', 'θα έχω', 'είχες'], en: 'If I had money, I would travel.', hint: 'if-clause · past continuous · εγώ' },
+      { text: 'Αν είχα χρόνο, {b} ένα βιβλίο. (διαβάζω)', answer: 'θα διάβαζα', accept: ['θα διαβαζα'], choices: ['θα διάβαζα', 'διαβάζω', 'θα διαβάσω', 'διάβασα'], en: 'If I had time, I would read a book.', hint: 'result · θα + past continuous' },
+      { text: 'Αν {b} εσύ, θα έφευγα. (είμαι)', answer: 'ήμουν', choices: ['ήμουν', 'είμαι', 'θα είμαι', 'ήσουν'], en: 'If I were you, I would leave.', hint: 'if-clause · “were”' },
+      { text: 'Τι {b} αν κέρδιζες το λαχείο; (κάνω)', answer: 'θα έκανες', accept: ['θα εκανες'], choices: ['θα έκανες', 'κάνεις', 'θα κάνεις', 'έκανες'], en: 'What would you do if you won the lottery?', hint: 'result · θα + past continuous · εσύ' }
+    ]
+  },
+  {
+    id: 'b2-gerund',
+    level: 'B2',
+    title: 'The gerund (-οντας)',
+    short: 'While/by doing: τρέχοντας, μιλώντας.',
+    explanation:
+      '<p>The gerund (present participle) describes a simultaneous action — “while / by doing”. Form it from the <strong>present stem + -οντας</strong> (Group A) or <strong>-ώντας</strong> (Group B):</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">τρέχω</div><div class="g-v">τρέχ<strong>οντας</strong> — running</div>' +
+      '<div class="g-k">μιλάω</div><div class="g-v">μιλ<strong>ώντας</strong> — (by) speaking</div>' +
+      '<div class="g-k">περπατάω</div><div class="g-v">περπατ<strong>ώντας</strong> — walking</div>' +
+      '</div>' +
+      '<p>It never changes form. <em>Έφυγε τρέχοντας.</em> = He left running. · <em>Μαθαίνεις μιλώντας.</em> = You learn by speaking.</p>',
+    examples: [
+      { gr: 'Έφυγε τρέχοντας.', en: 'He left running.' },
+      { gr: 'Μαθαίνω ελληνικά μιλώντας.', en: 'I learn Greek by speaking.' },
+      { gr: 'Ήρθε χαμογελώντας.', en: 'She came smiling.' }
+    ],
+    items: [
+      { text: 'Έφυγε {b}. (τρέχω)', answer: 'τρέχοντας', choices: ['τρέχοντας', 'τρέχω', 'έτρεξε', 'τρέχωντας'], en: 'He left running.', hint: 'gerund · Group A → -οντας' },
+      { text: 'Μαθαίνεις {b}. (μιλάω)', answer: 'μιλώντας', choices: ['μιλώντας', 'μιλάω', 'μιλώ', 'μιλόντας'], en: 'You learn by speaking.', hint: 'gerund · Group B → -ώντας' },
+      { text: 'Ήρθε {b} στο πάρτι. (χαμογελάω)', answer: 'χαμογελώντας', choices: ['χαμογελώντας', 'χαμογελάει', 'χαμογέλασε', 'χαμογελόντας'], en: 'She came to the party smiling.', hint: 'gerund · -ώντας' },
+      { text: 'Πέρασε την ώρα {b} μουσική. (ακούω)', answer: 'ακούγοντας', choices: ['ακούγοντας', 'ακούω', 'άκουσε', 'ακούοντας'], en: 'He passed the time listening to music.', hint: 'gerund of ακούω (γ inserted)' }
+    ]
+  },
+  {
+    id: 'b2-relative-oopoios',
+    level: 'B2',
+    title: 'Relative “ο οποίος” (formal which/who)',
+    short: 'Formal alternative to που, agreeing in gender, number, case.',
+    explanation:
+      '<p>Beyond the all-purpose <strong>που</strong>, more formal Greek uses <strong>ο οποίος / η οποία / το οποίο</strong> (“who / which”). Unlike που, it <strong>agrees</strong> with the noun in gender, number and case:</p>' +
+      '<div class="g-grid">' +
+      '<div class="g-k">masculine</div><div class="g-v">ο άντρας <strong>ο οποίος</strong>…</div>' +
+      '<div class="g-k">feminine</div><div class="g-v">η γυναίκα <strong>η οποία</strong>…</div>' +
+      '<div class="g-k">neuter</div><div class="g-v">το παιδί <strong>το οποίο</strong>…</div>' +
+      '</div>' +
+      '<p>It’s interchangeable with που in most cases but sounds more formal/written: <em>Ο άντρας <strong>που / ο οποίος</strong> ήρθε…</em> = The man who came…</p>',
+    examples: [
+      { gr: 'Η γυναίκα η οποία μιλάει είναι η δασκάλα.', en: 'The woman who is speaking is the teacher.' },
+      { gr: 'Το βιβλίο το οποίο διάβασα ήταν καλό.', en: 'The book which I read was good.' },
+      { gr: 'Οι φίλοι οι οποίοι ήρθαν…', en: 'The friends who came…' }
+    ],
+    items: [
+      { text: 'Ο άντρας {b} ήρθε είναι ο Γιώργος.', answer: 'ο οποίος', choices: ['ο οποίος', 'η οποία', 'το οποίο', 'οι οποίοι'], en: 'The man who came is George.', hint: 'masculine singular' },
+      { text: 'Η γυναίκα {b} μιλάει είναι η δασκάλα.', answer: 'η οποία', choices: ['ο οποίος', 'η οποία', 'το οποίο', 'οι οποίες'], en: 'The woman who is speaking is the teacher.', hint: 'feminine singular' },
+      { text: 'Το βιβλίο {b} διάβασα ήταν καλό.', answer: 'το οποίο', choices: ['ο οποίος', 'η οποία', 'το οποίο', 'τα οποία'], en: 'The book which I read was good.', hint: 'neuter singular' },
+      { text: 'Οι φίλοι {b} ήρθαν έφυγαν νωρίς.', answer: 'οι οποίοι', choices: ['ο οποίος', 'οι οποίοι', 'οι οποίες', 'τα οποία'], en: 'The friends who came left early.', hint: 'masculine plural' }
+    ]
+  },
+  {
+    id: 'b2-purpose',
+    level: 'B2',
+    title: 'Purpose & result (για να, ώστε να)',
+    short: 'για να = in order to; ώστε να = so that (result).',
+    explanation:
+      '<p><strong>για να</strong> + subjunctive expresses purpose — “in order to / so as to”:</p>' +
+      '<p><em>Διαβάζω <strong>για να</strong> μάθω.</em> = I study in order to learn.</p>' +
+      '<p><strong>ώστε να</strong> expresses result/consequence — “so that / with the result that”:</p>' +
+      '<p><em>Μίλησε δυνατά <strong>ώστε να</strong> τον ακούσουν όλοι.</em> = He spoke loudly so that everyone could hear him.</p>' +
+      '<p>Both are followed by the subjunctive (να + conjugated verb). για να is by far the more common in speech.</p>',
+    examples: [
+      { gr: 'Πάω στο σχολείο για να μάθω.', en: 'I go to school (in order) to learn.' },
+      { gr: 'Τρέχω για να προλάβω το λεωφορείο.', en: 'I’m running to catch the bus.' },
+      { gr: 'Μίλα σιγά ώστε να μην ξυπνήσεις το μωρό.', en: 'Speak quietly so you don’t wake the baby.' }
+    ],
+    items: [
+      { text: 'Διαβάζω {b} μάθω ελληνικά.', answer: 'για να', choices: ['για να', 'ώστε να', 'επειδή', 'αν'], en: 'I study in order to learn Greek.', hint: 'purpose: in order to' },
+      { text: 'Τρέχω {b} προλάβω το λεωφορείο.', answer: 'για να', choices: ['για να', 'ώστε να', 'γιατί', 'όταν'], en: 'I’m running to catch the bus.', hint: 'purpose' },
+      { text: 'Μίλησε δυνατά {b} τον ακούσουν όλοι.', answer: 'ώστε να', choices: ['ώστε να', 'για να', 'επειδή', 'αλλά'], en: 'He spoke loudly so that everyone heard him.', hint: 'result: so that' },
+      { text: 'Πήγα νωρίς {b} βρω θέση.', answer: 'για να', choices: ['για να', 'ώστε να', 'αν', 'ενώ'], en: 'I went early in order to find a seat.', hint: 'purpose' }
+    ]
   }
 ];
