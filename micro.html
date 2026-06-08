@@ -26,6 +26,9 @@
     .choice { font-size:18px; padding:14px; }
     .choice.correct { border-color:var(--good); color:var(--good); }
     .choice.wrong { border-color:var(--bad); color:var(--bad); }
+    .choice .ck { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; margin-right:8px; border-radius:5px; background:rgba(255,255,255,.10); font-size:11px; font-weight:700; vertical-align:middle; }
+    .kbd-hint { text-align:center; color:var(--muted); font-size:12px; margin-top:14px; }
+    kbd { display:inline-block; padding:1px 6px; border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; background:var(--panel2); font-family:inherit; font-size:11px; color:var(--text); }
     .next { margin-top:16px; }
     .score { color:var(--muted); font-size:13px; margin-top:16px; text-align:center; }
   </style>
@@ -95,7 +98,7 @@
     };
     var MODE_LABELS = { numbers: 'Numbers', time: 'Time', days: 'Days & months', prices: 'Prices' };
 
-    var mode = 'numbers', q = null, answered = false, score = 0, n = 0;
+    var mode = 'numbers', q = null, answered = false, chosen = null, score = 0, n = 0;
     var root = document.getElementById('root');
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
@@ -108,25 +111,35 @@
       nextQ();
     }); });
 
-    function nextQ() { q = MODES[mode](); answered = false; render(); }
+    function nextQ() { q = MODES[mode](); answered = false; chosen = null; render(); }
+    function choose(c) {
+      if (answered) return;
+      answered = true; chosen = c; n += 1;
+      if (c === q.answer) score += 1;
+      render();
+    }
     function render() {
       var html = '<div class="card"><div class="q-label">' + q.label + '</div>' +
         '<div class="q-main">' + esc(q.main) + '</div>' + (q.sub ? '<div class="q-sub">' + esc(q.sub) + '</div>' : '') +
-        '<div class="choices">' + q.choices.map(function (c) {
-          var cls = ''; if (answered) { if (c === q.answer) cls = ' correct'; else cls = ''; }
-          return '<button class="choice' + cls + '" data-c="' + esc(c) + '">' + esc(c) + '</button>';
+        '<div class="choices">' + q.choices.map(function (c, i) {
+          var cls = ''; if (answered) { if (c === q.answer) cls = ' correct'; else if (c === chosen) cls = ' wrong'; }
+          return '<button class="choice' + cls + '" data-c="' + esc(c) + '"><span class="ck">' + (i + 1) + '</span>' + esc(c) + '</button>';
         }).join('') + '</div>' +
         (answered ? '<button class="btn-primary next" id="next" style="background:var(--accent);color:#1a1205;border-color:var(--accent);font-weight:700;">Next →</button>' : '') +
+        '<div class="kbd-hint">' + (answered ? '<kbd>Enter</kbd> next' : '<kbd>1</kbd>–<kbd>4</kbd> answer') + '</div>' +
         '</div>';
       root.innerHTML = html;
       document.getElementById('score').textContent = score + ' / ' + n + ' correct';
-      if (!answered) root.querySelectorAll('[data-c]').forEach(function (b) { b.addEventListener('click', function () {
-        answered = true; n += 1; var chosen = b.getAttribute('data-c');
-        if (chosen === q.answer) score += 1; else b.classList.add('wrong');
-        render();
-      }); });
+      if (!answered) root.querySelectorAll('[data-c]').forEach(function (b) { b.addEventListener('click', function () { choose(b.getAttribute('data-c')); }); });
       else document.getElementById('next').addEventListener('click', nextQ);
     }
+
+    document.addEventListener('keydown', function (e) {
+      if (!q) return;
+      if (answered) { if (e.key === 'Enter' || e.key === ' ' || e.key === 'n') { e.preventDefault(); nextQ(); } return; }
+      if (/^[1-4]$/.test(e.key)) { var i = +e.key - 1; if (i < q.choices.length) { e.preventDefault(); choose(q.choices[i]); } }
+    });
+
     nextQ();
   })();
   </script>
