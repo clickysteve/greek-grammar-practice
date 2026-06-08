@@ -30,7 +30,31 @@
     .g-tab { font-size: 15px; padding: 10px 16px; border-radius: 12px; }
     .g-tab.active { outline: 2px solid rgba(255,159,67,.45); color: var(--text); background: rgba(255,159,67,.08); }
     .g-tab-due { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px; border-radius: 999px; background: var(--warn); color: #1a1205; font-size: 12px; font-weight: 700; }
-    .g-leninput { width: 56px; padding: 7px 8px; font-size: 12px; text-align: center; border: 1px solid var(--border); background: var(--panel2); color: var(--text); border-radius: 10px; }
+    .g-lenrange { width: 150px; accent-color: var(--accent); vertical-align: middle; }
+    .g-lenval { font-size: 14px; font-weight: 700; min-width: 22px; text-align: center; display: inline-block; }
+    .g-free.active { outline: 2px solid rgba(255,159,67,.45); color: var(--text); }
+    .g-spacer-sm { display: inline-block; width: 10px; }
+
+    /* footer data menu */
+    .g-footer { margin-top: 28px; border-top: 1px solid var(--border); padding-top: 12px; }
+    .g-footer-menu summary { cursor: pointer; font-size: 12px; color: var(--muted); list-style: none; text-transform: uppercase; letter-spacing: .08em; }
+    .g-footer-menu summary::-webkit-details-marker { display: none; }
+    .g-footer-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .g-footer-row button { font-size: 13px; }
+    .g-danger { color: var(--bad); border-color: rgba(255,143,143,.4); }
+    .g-danger:hover { border-color: var(--bad); }
+
+    /* full lesson view */
+    .g-back { font-size: 13px; margin-bottom: 16px; }
+    .g-lesson { border: 1px solid var(--border); border-radius: 20px; background: #12161b; padding: 26px; }
+    .g-lesson-title { font-size: clamp(26px, 5vw, 38px); margin: 6px 0 6px; letter-spacing: -.03em; }
+    .g-lesson-intro { font-size: 16px; color: var(--muted); margin: 0 0 18px; }
+    .g-lesson .g-md-body { font-size: 16px; line-height: 1.65; }
+    .g-lesson-cta { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .g-cta-box { border: 1px solid var(--border); border-radius: 14px; padding: 16px; background: rgba(255,255,255,.02); }
+    .g-cta-h { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
+    .g-cta-p { font-size: 14px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
+    @media (max-width: 560px) { .g-lesson-cta { grid-template-columns: 1fr; } }
 
     /* SRS view */
     .g-srsstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }

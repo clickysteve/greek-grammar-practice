@@ -103,32 +103,45 @@
   var root, state = { view: 'lessons', session: null };
   function render() { if (state.session) renderSession(); else renderShell(); }
 
+  var LEN_MIN = 1, LEN_MAX = 30, prevLen = 5;
   function toolbarHtml() {
     var mode = store.__settings.answerMode;
     var len = store.__settings.sessionLength;
-    var presets = [5, 10, 20];
-    return '<div class="g-modebar"><span class="g-modelabel">Answer:</span>' +
+    var free = len === 0;
+    var sliderVal = free ? prevLen : len;
+    var html = '<div class="g-modebar"><span class="g-modelabel">Answer:</span>' +
       '<button class="g-mode' + (mode === 'choice' ? ' active' : '') + '" data-mode="choice">Multiple choice</button>' +
-      '<button class="g-mode' + (mode === 'type' ? ' active' : '') + '" data-mode="type">Type</button>' +
-      '<span class="g-modelabel" style="margin-left:8px;">Practice length:</span>' +
-      presets.map(function (n) { return '<button class="g-len' + (len === n ? ' active' : '') + '" data-len="' + n + '">' + n + '</button>'; }).join('') +
-      '<input type="number" id="gLenInput" class="g-leninput" min="1" max="200" placeholder="#" value="' + (len > 0 ? len : '') + '" title="custom number" />' +
-      '<button class="g-len' + (len === 0 ? ' active' : '') + '" data-len="0">Free</button>' +
-      '<span class="g-spacer"></span>' +
-      '<button id="gExport">Export</button><button id="gImport">Import</button>' +
-      '<button id="gCloud">☁ Cloud</button><button id="gReset">Reset</button>' +
-      '<input type="file" id="gImportFile" accept="application/json" style="display:none;" />' +
-      '</div>';
+      '<button class="g-mode' + (mode === 'type' ? ' active' : '') + '" data-mode="type">Type</button>';
+    if (state.view === 'lessons') {
+      html += '<span class="g-spacer-sm"></span><span class="g-modelabel">Practice length:</span>' +
+        '<input type="range" id="gLenRange" class="g-lenrange" min="' + LEN_MIN + '" max="' + LEN_MAX + '" value="' + sliderVal + '"' + (free ? ' disabled' : '') + ' />' +
+        '<span class="g-lenval" id="gLenVal">' + (free ? '∞' : sliderVal) + '</span>' +
+        '<button class="g-free' + (free ? ' active' : '') + '" id="gFree">Free</button>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function footerHtml() {
+    return '<div class="g-footer"><details class="g-footer-menu"><summary>⚙ Data &amp; backup</summary>' +
+      '<div class="g-footer-row">' +
+        '<button id="gCloud">☁ Cloud backup</button>' +
+        '<button id="gExport">Export file</button>' +
+        '<button id="gImport">Import file</button>' +
+        '<button id="gReset" class="g-danger">Reset all progress</button>' +
+        '<input type="file" id="gImportFile" accept="application/json" style="display:none;" />' +
+      '</div></details></div>';
   }
 
   function renderShell() {
+    if (state.view === 'lesson') { renderLessonView(); return; }
     var tabs = '<div class="g-tabs">' +
       '<button class="g-tab' + (state.view === 'lessons' ? ' active' : '') + '" data-view="lessons">Lessons</button>' +
       '<button class="g-tab' + (state.view === 'reviews' ? ' active' : '') + '" data-view="reviews">Reviews (SRS) ' +
         (dueIds().length ? '<span class="g-tab-due">' + dueIds().length + '</span>' : '') + '</button>' +
       '</div>';
-    root.innerHTML = tabs + toolbarHtml() + (state.view === 'lessons' ? lessonsHtml() : reviewsHtml());
-    wireToolbar();
+    root.innerHTML = tabs + toolbarHtml() + (state.view === 'lessons' ? lessonsHtml() : reviewsHtml()) + footerHtml();
+    wireToolbar(); wireFooter();
     root.querySelectorAll('.g-tab').forEach(function (b) {
       b.addEventListener('click', function () { state.view = b.getAttribute('data-view'); render(); });
     });
@@ -137,9 +150,19 @@
 
   function wireToolbar() {
     root.querySelectorAll('.g-mode').forEach(function (b) { b.addEventListener('click', function () { store.__settings.answerMode = b.getAttribute('data-mode'); save(); render(); }); });
-    root.querySelectorAll('.g-len').forEach(function (b) { b.addEventListener('click', function () { store.__settings.sessionLength = parseInt(b.getAttribute('data-len'), 10); save(); render(); }); });
-    var li = el('gLenInput');
-    if (li) li.addEventListener('change', function () { var n = parseInt(li.value, 10); if (n > 0) { store.__settings.sessionLength = Math.min(200, n); save(); render(); } });
+    var rng = el('gLenRange');
+    if (rng) rng.addEventListener('input', function () {
+      var n = parseInt(rng.value, 10); prevLen = n; store.__settings.sessionLength = n; save();
+      var lv = el('gLenVal'); if (lv) lv.textContent = String(n);
+    });
+    var fr = el('gFree');
+    if (fr) fr.addEventListener('click', function () {
+      if (store.__settings.sessionLength === 0) { store.__settings.sessionLength = prevLen; }
+      else { prevLen = store.__settings.sessionLength || prevLen; store.__settings.sessionLength = 0; }
+      save(); render();
+    });
+  }
+  function wireFooter() {
     el('gExport').addEventListener('click', exportProgress);
     el('gImport').addEventListener('click', function () { el('gImportFile').click(); });
     el('gImportFile').addEventListener('change', function () { if (this.files && this.files[0]) importProgress(this.files[0]); this.value = ''; });
@@ -260,33 +283,56 @@
     });
   }
 
-  /* ---------- lesson modal ---------- */
-  function openPoint(p) {
-    markLessonRead(p.id);
-    var srs = inSrs(p.id);
-    var lenTxt = store.__settings.sessionLength === 0 ? 'free run' : store.__settings.sessionLength + ' questions';
+  /* ---------- lesson content (shared by full view + in-session reference) ---------- */
+  function lessonBodyHtml(p) {
     var ex = (p.examples || []).map(function (e) {
       return '<div class="g-ex"><span class="g-ex-gr">' + escapeHtml(e.gr) + '</span><span class="g-ex-en">' + escapeHtml(e.en) + '</span></div>';
     }).join('');
+    return '<div class="g-md-kicker">LESSON · ' + escapeHtml(p.level) + '</div>' +
+      '<h1 class="g-lesson-title">' + escapeHtml(p.title) + '</h1>' +
+      '<p class="g-lesson-intro">' + escapeHtml(p.short) + '</p>' +
+      '<div class="g-md-body">' + p.explanation + '</div>' +
+      (ex ? '<div class="g-md-ex"><div class="g-md-exh">Examples</div>' + ex + '</div>' : '');
+  }
+
+  // Open a point: go to the full lesson page (remembering where we came from).
+  function openPoint(p) {
+    if (state.view !== 'lesson') state.lessonBack = state.view;
+    state.lessonPoint = p; state.view = 'lesson'; markLessonRead(p.id); render();
+  }
+
+  function renderLessonView() {
+    var p = state.lessonPoint;
+    var srs = inSrs(p.id);
+    var lenTxt = store.__settings.sessionLength === 0 ? 'free run' : store.__settings.sessionLength + ' questions';
+    root.innerHTML =
+      '<button class="g-back" id="gBack">← Back to lessons</button>' +
+      '<div class="g-lesson">' + lessonBodyHtml(p) +
+      '<div class="g-md-divider"></div>' +
+      '<div class="g-lesson-cta">' +
+        '<div class="g-cta-box"><div class="g-cta-h">Practice</div>' +
+          '<p class="g-cta-p">Drill sentences for this point (' + lenTxt + '). Doesn’t affect your review schedule.</p>' +
+          '<button class="btn-primary" id="gPractice">▶ Start practice</button></div>' +
+        '<div class="g-cta-box"><div class="g-cta-h">Spaced review</div>' +
+          (srs
+            ? '<p class="g-cta-p">In your SRS reviews — next ' + whenLabel(p.id) + '.</p><button id="gAddReviews" disabled>In reviews ✓</button>'
+            : '<p class="g-cta-p">Add this point to spaced repetition so it comes back for review over time.</p><button id="gAddReviews">+ Add to reviews</button>') +
+        '</div>' +
+      '</div></div>';
+    el('gBack').addEventListener('click', function () { state.view = state.lessonBack || 'lessons'; state.lessonPoint = null; render(); });
+    el('gPractice').addEventListener('click', function () { startPractice(pointQuestions(p)); });
+    var add = el('gAddReviews');
+    if (add && !srs) add.addEventListener('click', function () { addToSrs(p.id); render(); });
+  }
+
+  // Compact reference popup (used by "Why?" during a session).
+  function openLessonModal(p) {
     el('grammarModal').innerHTML =
       '<div class="modal-backdrop"></div><div class="modal-panel"><button class="modal-close">×</button>' +
-      '<div class="g-md-kicker">LESSON · ' + escapeHtml(p.level) + '</div>' +
-      '<h2 class="g-md-title">' + escapeHtml(p.title) + '</h2>' +
-      '<div class="g-md-body">' + p.explanation + '</div>' +
-      (ex ? '<div class="g-md-ex"><div class="g-md-exh">Examples</div>' + ex + '</div>' : '') +
-      '<div class="g-md-divider"></div>' +
-      '<p class="g-md-hint"><strong>Practice</strong> drills sentences (' + lenTxt + ') without touching your review schedule. <strong>Add to reviews</strong> puts this point into spaced repetition.</p>' +
-      '<div class="g-md-actions">' +
-        '<button class="btn-primary" id="gPractice">▶ Practice (' + lenTxt + ')</button>' +
-        '<button id="gAddReviews"' + (srs ? ' disabled' : '') + '>' + (srs ? 'In reviews ✓' : '+ Add to reviews') + '</button>' +
-        (srs ? '<span class="g-md-note">next ' + whenLabel(p.id) + '</span>' : '') +
-      '</div></div>';
+      lessonBodyHtml(p) + '</div>';
     el('grammarModal').style.display = 'block';
-    el('grammarModal').querySelector('.modal-backdrop').addEventListener('click', function () { closeModal(); render(); });
-    el('grammarModal').querySelector('.modal-close').addEventListener('click', function () { closeModal(); render(); });
-    el('gPractice').addEventListener('click', function () { closeModal(); startPractice(pointQuestions(p)); });
-    var add = el('gAddReviews');
-    if (add && !srs) add.addEventListener('click', function () { addToSrs(p.id); openPoint(p); });
+    el('grammarModal').querySelector('.modal-backdrop').addEventListener('click', closeModal);
+    el('grammarModal').querySelector('.modal-close').addEventListener('click', closeModal);
   }
   function closeModal() { var m = el('grammarModal'); m.style.display = 'none'; m.innerHTML = ''; }
 
@@ -399,7 +445,7 @@
       if (mode === 'choice') root.querySelectorAll('.g-choice').forEach(function (b) { b.addEventListener('click', function () { answer(b.getAttribute('data-c')); }); });
       else { var inp = el('gAnswerInput'); if (inp) inp.focus(); el('gSubmit').addEventListener('click', function () { answer(el('gAnswerInput').value); }); el('gDontKnow').addEventListener('click', function () { answer('', true); }); }
     } else {
-      el('gExplain').addEventListener('click', function () { openPoint(cur.point); });
+      el('gExplain').addEventListener('click', function () { openLessonModal(cur.point); });
       el('gNext').addEventListener('click', nextQuestion);
     }
   }
@@ -421,7 +467,7 @@
 
   /* ---------- keyboard ---------- */
   document.addEventListener('keydown', function (e) {
-    if (el('grammarModal') && el('grammarModal').style.display === 'block') { if (e.key === 'Escape') { closeModal(); render(); } return; }
+    if (el('grammarModal') && el('grammarModal').style.display === 'block') { if (e.key === 'Escape') closeModal(); return; }
     var s = state.session; if (!s) return;
     if (!s.answered) {
       if (store.__settings.answerMode === 'choice' && /^[1-4]$/.test(e.key)) { var idx = parseInt(e.key, 10) - 1; if (s.current.choices[idx]) answer(s.current.choices[idx]); }
