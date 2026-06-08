@@ -170,18 +170,34 @@ window.GVShared = (function () {
     });
     return count ? { avg: sum / count, count: count } : { avg: 0, count: 0 };
   }
-  // Seed UNRATED vocab-drill cards with a rating; never overwrite existing ratings.
+  function loadSchedule() {
+    try { return JSON.parse(localStorage.getItem('gvm_schedule') || '{}'); } catch (e) { return {}; }
+  }
+  // Hours-until-due by rating, mirroring the Verb Memoriser's own SRS steps.
+  var SEED_HOURS = [0, 0, 4, 12, 24, 72]; // rating 0..5  (5 = pushed well out)
+  // Seed UNRATED vocab-drill cards with a rating (never overwrites tense-by-tense ratings),
+  // and seed/refresh their review SCHEDULE so a rated verb shows up in the SRS due counts.
+  // Real drilled schedule entries (no 'seeded' flag) are left untouched.
   function seedVerbRatings(entry, rating) {
     if (!entry) return 0;
     var ratings = loadDrillRatings();
-    var seeded = 0;
+    var sched = loadSchedule();
+    var now = Date.now();
+    var hrs = SEED_HOURS[Math.max(0, Math.min(5, rating | 0))];
+    var seeded = 0, schedTouched = 0;
     TENSES.forEach(function (t) {
       DIRS.forEach(function (d) {
         var key = entry.set + '__' + entry.english + '__' + t + '__' + d;
         if (!(key in ratings)) { ratings[key] = rating; seeded++; }
+        var ex = sched[key];
+        if (!ex || ex.seeded) { // create, or refresh a previously-seeded entry; never clobber real drills
+          sched[key] = { intervalHours: hrs, dueAt: now + hrs * 3600000, reps: rating >= 2 ? 1 : 0, lapses: 0, lastSeenAt: 0, seeded: true };
+          schedTouched++;
+        }
       });
     });
     if (seeded) { try { localStorage.setItem('gvm_ratings', JSON.stringify(ratings)); } catch (e) {} }
+    if (schedTouched) { try { localStorage.setItem('gvm_schedule', JSON.stringify(sched)); } catch (e) {} }
     return seeded;
   }
   // For linked verbs, drill knowledge raises the effective rating used in sampling.

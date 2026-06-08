@@ -27,6 +27,9 @@
     .tile { font-size:18px; padding:9px 14px; border-radius:10px; border:1px solid var(--border); background:var(--panel2); cursor:pointer; user-select:none; }
     .tile:hover { border-color:var(--accent); }
     .tile.placed { font-weight:700; }
+    .tile .tk { display:inline-block; min-width:15px; height:15px; line-height:15px; text-align:center; margin-right:7px; padding:0 3px; border-radius:4px; background:rgba(255,255,255,.10); font-size:10px; font-weight:700; color:var(--muted); vertical-align:middle; }
+    .kbd-hint { text-align:center; color:var(--muted); font-size:12px; margin-top:14px; }
+    kbd { display:inline-block; padding:1px 6px; border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; background:var(--panel2); font-family:inherit; font-size:11px; color:var(--text); }
     .controls { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
     .feedback { margin-top:14px; font-weight:700; min-height:22px; }
     .feedback.ok { color:var(--good); } .feedback.bad { color:var(--bad); }
@@ -78,7 +81,10 @@
       var q = state.q;
       var zoneCls = state.checked ? (state.ok ? ' ok' : ' bad') : '';
       var placed = state.placed.map(function (t) { return '<span class="tile placed" data-place="' + t.id + '">' + esc(t.word) + '</span>'; }).join('');
-      var bank = state.bank.map(function (t) { return '<span class="tile" data-bank="' + t.id + '">' + esc(t.word) + '</span>'; }).join('');
+      var bank = state.bank.map(function (t, i) { return '<span class="tile" data-bank="' + t.id + '">' + (i < 9 ? '<span class="tk">' + (i + 1) + '</span>' : '') + esc(t.word) + '</span>'; }).join('');
+      var hint = state.checked
+        ? '<kbd>Enter</kbd> next'
+        : '<kbd>1</kbd>–<kbd>9</kbd> place · <kbd>Backspace</kbd> remove · <kbd>Enter</kbd> check · <kbd>C</kbd> clear';
       root.innerHTML =
         '<div class="card"><div class="prompt-en">' + esc(q.en) + '</div>' +
         '<div class="answer-zone' + zoneCls + '" id="zone">' + placed + '</div>' +
@@ -89,25 +95,25 @@
         '<div class="controls">' +
           (state.checked ? '<button class="btn-primary" id="nextBtn">Next →</button>' :
             '<button class="btn-primary" id="checkBtn"' + (state.placed.length === q.words.length ? '' : ' disabled') + '>Check</button><button id="clearBtn">Clear</button>') +
-        '</div></div>' +
+        '</div>' +
+        '<div class="kbd-hint">' + hint + '</div></div>' +
         '<div class="score">' + state.score + ' / ' + state.n + ' correct</div>';
 
       root.querySelectorAll('[data-bank]').forEach(function (b) { b.addEventListener('click', function () {
-        if (state.checked) return;
-        var id = +b.getAttribute('data-bank');
-        var idx = state.bank.findIndex(function (t) { return t.id === id; });
-        state.placed.push(state.bank.splice(idx, 1)[0]); render();
+        if (state.checked) return; placeById(+b.getAttribute('data-bank'));
       }); });
       root.querySelectorAll('[data-place]').forEach(function (b) { b.addEventListener('click', function () {
-        if (state.checked) return;
-        var id = +b.getAttribute('data-place');
-        var idx = state.placed.findIndex(function (t) { return t.id === id; });
-        state.bank.push(state.placed.splice(idx, 1)[0]); render();
+        if (state.checked) return; unplaceById(+b.getAttribute('data-place'));
       }); });
       var cb = document.getElementById('checkBtn'); if (cb) cb.addEventListener('click', check);
-      var clb = document.getElementById('clearBtn'); if (clb) clb.addEventListener('click', function () { state.bank = state.bank.concat(state.placed); state.placed = []; render(); });
+      var clb = document.getElementById('clearBtn'); if (clb) clb.addEventListener('click', doClear);
       var nb = document.getElementById('nextBtn'); if (nb) nb.addEventListener('click', newQuestion);
     }
+
+    function placeById(id) { var i = state.bank.findIndex(function (t) { return t.id === id; }); if (i > -1) { state.placed.push(state.bank.splice(i, 1)[0]); render(); } }
+    function unplaceById(id) { var i = state.placed.findIndex(function (t) { return t.id === id; }); if (i > -1) { state.bank.push(state.placed.splice(i, 1)[0]); render(); } }
+    function unplaceLast() { if (state.placed.length) { state.bank.push(state.placed.pop()); render(); } }
+    function doClear() { state.bank = state.bank.concat(state.placed); state.placed = []; render(); }
 
     function check() {
       var attempt = state.placed.map(function (t) { return t.word; }).join(' ');
@@ -115,6 +121,15 @@
       state.checked = true; state.n += 1; if (state.ok) state.score += 1;
       render();
     }
+
+    document.addEventListener('keydown', function (e) {
+      if (!state.q) return;
+      if (state.checked) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); newQuestion(); } return; }
+      if (/^[1-9]$/.test(e.key)) { var i = +e.key - 1; if (i < state.bank.length) { e.preventDefault(); placeById(state.bank[i].id); } }
+      else if (e.key === 'Backspace') { e.preventDefault(); unplaceLast(); }
+      else if (e.key === 'Enter') { if (state.placed.length === state.q.words.length) { e.preventDefault(); check(); } }
+      else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') { e.preventDefault(); doClear(); }
+    });
 
     if (!pool.length) { root.innerHTML = '<div style="color:var(--muted)">No sentences available.</div>'; return; }
     newQuestion();
