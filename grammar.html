@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greek Grammar — Practice</title>
+  <style>
+    :root {
+      --bg: #111315; --panel: #1b1f24; --panel2: #232a31; --text: #eef2f7;
+      --muted: #aab4c0; --border: #36404a; --accent: #ff9f43;
+      --good: #8ee28e; --warn: #ffd84d; --bad: #ff8f8f; --shadow: 0 12px 34px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top, rgba(255,159,67,.08), transparent 28%), linear-gradient(180deg, #0f1114 0%, #171a1f 100%);
+      color: var(--text); }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 24px; }
+    .nav { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; font-size: 14px; flex-wrap: wrap; }
+    .nav a { color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 7px 12px; border-radius: 999px; background: var(--panel2); }
+    .nav a:hover { color: var(--text); }
+    h1 { font-size: clamp(24px, 4vw, 34px); margin: 0 0 16px; letter-spacing: -.03em; }
+    button { border: 1px solid var(--border); background: var(--panel2); color: var(--text); border-radius: 10px; font-size: 14px; padding: 9px 12px; cursor: pointer; }
+    button:hover { border-color: var(--accent); }
+    button:disabled { opacity: .4; cursor: default; }
+    .btn-primary { background: var(--accent); color: #1a1205; border-color: var(--accent); font-weight: 700; }
+    .btn-primary:hover { filter: brightness(1.05); }
+
+    /* dashboard */
+    .g-hero { text-align: center; border: 1px solid var(--border); border-radius: 24px; padding: 28px 20px;
+      background: radial-gradient(circle at top, rgba(255,159,67,.10), transparent 50%), #12161b; margin-bottom: 14px; }
+    .g-hero-num { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -.04em; }
+    .g-hero-label { color: var(--muted); text-transform: uppercase; letter-spacing: .12em; font-size: 13px; margin: 6px 0 16px; }
+    .g-summary { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+    .g-modebar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; font-size: 13px; color: var(--muted); }
+    .g-mode.active { outline: 2px solid rgba(255,159,67,.4); color: var(--text); }
+    .g-spacer { flex: 1; }
+
+    .g-level { margin-bottom: 20px; }
+    .g-level-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .g-level-title { font-weight: 700; font-size: 16px; }
+    .g-level-prog { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+    .g-practice { font-size: 12px; padding: 6px 10px; }
+    .g-points { display: flex; flex-direction: column; gap: 8px; }
+    .g-point { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-left: 4px solid var(--border);
+      border-radius: 12px; padding: 11px 14px; background: rgba(255,255,255,.025); cursor: pointer; }
+    .g-point:hover { border-color: var(--accent); }
+    .g-point.st-due { border-left-color: var(--warn); }
+    .g-point.st-learning { border-left-color: var(--accent); }
+    .g-point.st-mastered { border-left-color: var(--good); }
+    .g-point-main { flex: 1; }
+    .g-point-title { font-weight: 600; }
+    .g-point-short { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .g-badge { font-size: 11px; color: var(--muted); white-space: nowrap; padding: 2px 9px; border: 1px solid var(--border); border-radius: 999px; }
+    .g-badge.st-new { color: var(--accent); border-color: var(--accent); }
+    .g-badge.st-due { color: var(--warn); border-color: var(--warn); }
+    .g-badge.st-mastered { color: var(--good); border-color: var(--good); }
+
+    /* session */
+    .g-session { border: 1px solid var(--border); border-radius: 24px; background: #12161b; padding: 22px; }
+    .g-sess-top { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+    .g-quit { font-size: 12px; padding: 6px 10px; }
+    .g-prompt-point { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 12px; }
+    .g-sentence { font-size: clamp(22px, 4vw, 30px); font-weight: 700; line-height: 1.5; letter-spacing: -.01em; }
+    .g-blank { color: var(--accent); letter-spacing: 2px; }
+    .g-blank-input { font-size: inherit; font-weight: 700; font-family: inherit; width: 220px; max-width: 60vw; text-align: center;
+      background: #0e1216; border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 2px 10px; }
+    .g-blank-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,159,67,.18); }
+    .g-blank-filled { padding: 0 8px; border-radius: 8px; }
+    .g-blank-filled.ok { background: rgba(142,226,142,.18); color: var(--good); }
+    .g-blank-filled.bad { background: rgba(255,143,143,.18); color: var(--bad); }
+    .g-en { color: var(--muted); font-size: 15px; margin-top: 14px; }
+    .g-hint { color: var(--muted); font-size: 13px; margin-top: 6px; font-style: italic; }
+    .g-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+    .g-choice { text-align: left; font-size: 17px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+    .g-choice-n { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px;
+      background: rgba(255,255,255,.06); font-size: 12px; color: var(--muted); }
+    .g-type-actions, .g-after { display: flex; gap: 10px; margin-top: 22px; align-items: center; }
+    .g-dontknow, .g-explain { font-size: 13px; }
+    .g-feedback { margin-top: 20px; font-size: 17px; font-weight: 700; }
+    .g-feedback.ok { color: var(--good); }
+    .g-feedback.bad { color: var(--bad); }
+
+    .g-done { text-align: center; padding: 50px 20px; }
+    .g-done-tick { font-size: 56px; color: var(--good); }
+    .g-done-title { font-size: 24px; font-weight: 700; margin-top: 8px; }
+    .g-done-sub { color: var(--muted); margin: 8px 0 22px; }
+
+    /* grammar point modal */
+    #grammarModal { position: fixed; inset: 0; z-index: 50; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.62); }
+    .modal-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: min(600px, calc(100vw - 32px)); max-height: 86vh; overflow-y: auto;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); padding: 24px; }
+    .modal-close { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; padding: 0; border-radius: 10px; font-size: 18px; }
+    .g-md-level { font-size: 12px; color: var(--accent); letter-spacing: .12em; }
+    .g-md-title { margin: 4px 0 14px; font-size: 24px; letter-spacing: -.02em; }
+    .g-md-body { font-size: 15px; line-height: 1.6; }
+    .g-md-body p { margin: 0 0 12px; }
+    .g-md-body em { color: var(--text); font-style: normal; background: rgba(255,255,255,.05); padding: 1px 5px; border-radius: 5px; }
+    .g-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 6px 0 14px; font-size: 15px; }
+    .g-grid .g-k { color: var(--muted); }
+    .g-md-ex { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+    .g-md-exh { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+    .g-ex { display: flex; flex-direction: column; margin-bottom: 8px; }
+    .g-ex-gr { font-size: 16px; }
+    .g-ex-en { font-size: 13px; color: var(--muted); }
+    .g-md-actions { margin-top: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .g-md-note { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="index.html">← Verb practice</a>
+      <a href="vocab.html">✎ Writing prompts</a>
+      <a href="words.html">📖 Word list</a>
+      <span style="color:var(--muted)">Grammar</span>
+    </div>
+
+    <h1>Grammar</h1>
+    <div id="grammarRoot"></div>
+  </div>
+
+  <div id="grammarModal" style="display:none;"></div>
+
+  <script src="greekgrammar.data.js"></script>
+  <script src="greekgrammar.app.js"></script>
+</body>
+</html>
