@@ -8,7 +8,7 @@
     :root {
       --bg: #111315; --panel: #1b1f24; --panel2: #232a31; --text: #eef2f7;
       --muted: #aab4c0; --border: #36404a; --accent: #ff9f43;
-      --good: #8ee28e; --warn: #ffd84d; --bad: #ff8f8f; --shadow: 0 12px 34px rgba(0,0,0,.28);
+      --good: #8ee28e; --warn: #ffd84d; --bad: #ff8f8f; --read: #45c46a; --shadow: 0 12px 34px rgba(0,0,0,.28);
       --present: #4ea1ff; --past: #ffd84d; --future: #7fdcff; --pastc: #ff9f43; --futurec: #b78cff;
       --panel2: #232a31;
     }
@@ -110,7 +110,7 @@
     .g-point { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-left: 4px solid var(--border);
       border-radius: 12px; padding: 11px 14px; background: rgba(255,255,255,.025); cursor: pointer; }
     .g-point:hover { border-color: var(--accent); }
-    .g-point.st-lesson { border-left-color: #7fdcff; }
+    .g-point.st-lesson { border-left-color: var(--read); }
     .g-point.st-due { border-left-color: var(--warn); }
     .g-point.st-learning { border-left-color: var(--accent); }
     .g-point.st-mastered { border-left-color: var(--good); }
@@ -124,7 +124,7 @@
     .g-acc.bad { color: var(--bad); border-color: rgba(255,143,143,.4); }
     .g-done-hint { font-size: 12px; color: var(--muted); margin-top: 12px; text-transform: uppercase; letter-spacing: .1em; }
     .g-badge.st-new { color: var(--accent); border-color: var(--accent); }
-    .g-badge.st-lesson { color: #7fdcff; border-color: #7fdcff; }
+    .g-badge.st-lesson { color: var(--read); border-color: var(--read); }
     .g-badge.st-due { color: var(--warn); border-color: var(--warn); }
     .g-badge.st-mastered { color: var(--good); border-color: var(--good); }
 
@@ -170,7 +170,7 @@
     .g-lvseg { height: 100%; }
     .g-lvseg.m { background: var(--good); }
     .g-lvseg.s { background: var(--accent); }
-    .g-lvseg.r { background: #7fdcff; }
+    .g-lvseg.r { background: var(--read); }
     .g-point-go { font-size: 12px; padding: 6px 11px; white-space: nowrap; }
     .g-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
     .g-choice { text-align: left; font-size: 17px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
