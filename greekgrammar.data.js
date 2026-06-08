@@ -1147,3 +1147,146 @@ window.GRAMMAR.push(
     ]
   }
 );
+
+/* ===== Expansion from standard A1–B2 coursebooks (place, numbers, indirect object,
+   plurals, there is/are, double clitics, cause/result, impersonals, wishes) ===== */
+window.GRAMMAR.push(
+  {
+    id: 'a1-place-prepositions', level: 'A1', title: 'Prepositions of place',
+    short: 'πάνω σε, κάτω από, δίπλα σε, μπροστά από…',
+    explanation: '<p>Location is shown by two-word prepositions, all taking the accusative (σε fuses with the article):</p>' +
+      '<div class="g-grid"><div class="g-k">on</div><div class="g-v">πάνω σε</div><div class="g-k">under</div><div class="g-v">κάτω από</div><div class="g-k">in / inside</div><div class="g-v">μέσα σε</div><div class="g-k">next to</div><div class="g-v">δίπλα σε</div><div class="g-k">in front of / behind</div><div class="g-v">μπροστά από / πίσω από</div><div class="g-k">opposite / near</div><div class="g-v">απέναντι από / κοντά σε</div></div>',
+    examples: [ { gr: 'Το βιβλίο είναι πάνω στο τραπέζι.', en: 'The book is on the table.' }, { gr: 'Η στάση είναι απέναντι από την τράπεζα.', en: 'The stop is opposite the bank.' }, { gr: 'Κάθισε δίπλα μου.', en: 'Sit next to me.' } ],
+    more: '<p>Most are <em>place-word + σε/από</em>. With σε the article merges: <em>πάνω στο, μέσα στην</em>. δίπλα/κοντά/απέναντι take σε; κάτω/πίσω/μπροστά/μακριά take από.</p>',
+    items: [
+      { text: 'Το βιβλίο είναι {b} στο τραπέζι. (on)', answer: 'πάνω', choices: ['πάνω', 'κάτω', 'δίπλα', 'μέσα'], en: 'The book is on the table.', hint: 'on (πάνω σε)' },
+      { text: 'Η γάτα κρύβεται {b} από τον καναπέ. (under)', answer: 'κάτω', choices: ['κάτω', 'πάνω', 'δίπλα', 'πίσω'], en: 'The cat is hiding under the sofa.', hint: 'under' },
+      { text: 'Το φαρμακείο είναι {b} από την τράπεζα. (opposite)', answer: 'απέναντι', choices: ['απέναντι', 'μέσα', 'πάνω', 'κοντά'], en: 'The pharmacy is opposite the bank.', hint: 'opposite' },
+      { text: 'Υπάρχει ένα πάρκο {b} από το σπίτι μας. (behind)', answer: 'πίσω', choices: ['πίσω', 'μπροστά', 'πάνω', 'μέσα'], en: 'There is a park behind our house.', hint: 'behind' },
+      { text: 'Τα κλειδιά είναι {b} στην τσάντα. (inside)', answer: 'μέσα', choices: ['μέσα', 'πάνω', 'κάτω', 'δίπλα'], en: 'The keys are inside the bag.', hint: 'inside (μέσα σε)' }
+    ]
+  },
+  {
+    id: 'a1-numbers-agreement', level: 'A1', title: 'Numbers that agree (1, 3, 4)',
+    short: 'ένας/μία/ένα, τρεις/τρία, τέσσερις/τέσσερα.',
+    explanation: '<p>Only <strong>1, 3, 4</strong> (and numbers ending in them) change for gender; 2 and 5+ never change:</p>' +
+      '<div class="g-grid"><div class="g-k">1</div><div class="g-v">ένας / μία / ένα</div><div class="g-k">3</div><div class="g-v">τρεις (m/f) / τρία (n)</div><div class="g-k">4</div><div class="g-v">τέσσερις (m/f) / τέσσερα (n)</div><div class="g-k">2, 5, 6…</div><div class="g-v">δύο, πέντε, έξι… (invariable)</div></div>',
+    examples: [ { gr: 'Έχω τρεις αδερφές.', en: 'I have three sisters.' }, { gr: 'Αγόρασα τέσσερα μήλα.', en: 'I bought four apples.' }, { gr: 'Μένω εδώ πέντε χρόνια.', en: 'I’ve lived here five years.' } ],
+    more: '<p>Numbers ending in 1/3/4 also agree (είκοσι μία, τριάντα τρεις). Hundreds agree too: διακόσιοι / διακόσιες / διακόσια.</p>',
+    items: [
+      { text: 'Θέλω {b} καφέ, παρακαλώ. (one · masc)', answer: 'έναν', choices: ['έναν', 'μία', 'ένα', 'ένας'], en: 'I want one coffee, please.', hint: 'one · masculine accusative' },
+      { text: 'Έχω {b} αδερφές. (three · fem)', answer: 'τρεις', choices: ['τρεις', 'τρία', 'τριών', 'τρες'], en: 'I have three sisters.', hint: 'three · feminine' },
+      { text: 'Αγόρασα {b} μήλα. (four · neuter)', answer: 'τέσσερα', choices: ['τέσσερα', 'τέσσερις', 'τεσσάρων', 'τέσσερο'], en: 'I bought four apples.', hint: 'four · neuter' },
+      { text: 'Έχω {b} παιδιά. (two · invariable)', answer: 'δύο', accept: ['δυο'], choices: ['δύο', 'δύα', 'δυών', 'δύους'], en: 'I have two children.', hint: 'two (no change)' },
+      { text: 'Ήρθαν {b} φίλοι. (three · masc)', answer: 'τρεις', choices: ['τρεις', 'τρία', 'τριών', 'τρες'], en: 'Three friends came.', hint: 'three · masculine' }
+    ]
+  },
+  {
+    id: 'a2-indirect-object', level: 'A2', title: 'Indirect object & μου αρέσει',
+    short: 'μου, σου, του… before the verb: μου δίνει, μου αρέσει.',
+    explanation: '<p>The weak <strong>genitive</strong> pronouns mark “to me / to you…”. They sit before the verb:</p>' +
+      '<div class="g-grid"><div class="g-k">to me / you</div><div class="g-v">μου / σου</div><div class="g-k">to him / her / it</div><div class="g-v">του / της / του</div><div class="g-k">to us / you / them</div><div class="g-v">μας / σας / τους</div></div>' +
+      '<p>The hugely common <strong>μου αρέσει</strong> (“it pleases me” = I like) works this way. It agrees with the thing liked: <em>μου αρέσει</em> (one) / <em>μου αρέσουν</em> (many).</p>',
+    examples: [ { gr: 'Μου αρέσει η ελληνική μουσική.', en: 'I like Greek music.' }, { gr: 'Της έδωσα ένα δώρο.', en: 'I gave her a present.' }, { gr: 'Τι σου αρέσει να κάνεις;', en: 'What do you like to do?' } ],
+    more: '<p>These are the same forms as the possessives, but they go <strong>before</strong> the verb (possessives go after a noun). <em>αρέσει/αρέσουν</em> agree with what is liked, not the person. Emphatic: <em>Εμένα μου αρέσει.</em></p>',
+    items: [
+      { text: '{b} αρέσει η ελληνική μουσική. (I like → to me)', answer: 'Μου', choices: ['Μου', 'Με', 'Εγώ', 'Εμένα'], en: 'I like Greek music.', hint: 'to me (μου αρέσει)' },
+      { text: 'Μου {b} τα γλυκά. (subject is plural)', answer: 'αρέσουν', choices: ['αρέσουν', 'αρέσει', 'αρέσω', 'άρεσε'], en: 'I like sweets.', hint: 'τα γλυκά (plural) → αρέσουν' },
+      { text: '{b} έδωσε ένα δώρο. (to him)', answer: 'Του', choices: ['Του', 'Τον', 'Αυτός', 'Τους'], en: 'She gave him a present.', hint: 'indirect object: to him' },
+      { text: 'Τι {b} αρέσει να κάνεις; (to you)', answer: 'σου', choices: ['σου', 'σε', 'εσύ', 'σας'], en: 'What do you like to do?', hint: 'to you' },
+      { text: '{b} τηλεφώνησε η μητέρα μου. (to me)', answer: 'Μου', choices: ['Μου', 'Με', 'Εγώ', 'Εμένα'], en: 'My mother phoned me.', hint: 'τηλεφωνώ takes an indirect object' }
+    ]
+  },
+  {
+    id: 'a2-noun-plurals', level: 'A2', title: 'Noun plurals',
+    short: '-ος→-οι, -α/-η→-ες, -ο→-α, -ι→-ια, -μα→-ματα.',
+    explanation: '<p>The main plural patterns:</p>' +
+      '<div class="g-grid"><div class="g-k">ο -ος</div><div class="g-v">→ οι -οι (φίλος → φίλοι)</div><div class="g-k">ο -ης / -ας</div><div class="g-v">→ -ες (μαθητής → μαθητές)</div><div class="g-k">η -α / -η</div><div class="g-v">→ -ες (γυναίκα → γυναίκες)</div><div class="g-k">το -ο</div><div class="g-v">→ -α (βιβλίο → βιβλία)</div><div class="g-k">το -ι</div><div class="g-v">→ -ια (παιδί → παιδιά)</div><div class="g-k">το -μα</div><div class="g-v">→ -ματα (πρόβλημα → προβλήματα)</div></div>',
+    examples: [ { gr: 'οι φίλοι, οι δρόμοι', en: 'the friends, the streets' }, { gr: 'τα παιδιά, τα κλειδιά', en: 'the children, the keys' }, { gr: 'οι πόλεις, οι λέξεις', en: 'the cities, the words' } ],
+    more: '<p>A useful sub-pattern: feminine nouns in <strong>-ση/-ξη/-ψη</strong> make <strong>-εις</strong> (η πόλη → οι πόλεις, η λέξη → οι λέξεις). The stress can shift in the plural.</p>',
+    items: [
+      { text: 'ο φίλος → οι {b}', answer: 'φίλοι', choices: ['φίλοι', 'φίλες', 'φίλους', 'φιλιά'], en: 'the friends', hint: '-ος → -οι' },
+      { text: 'το βιβλίο → τα {b}', answer: 'βιβλία', choices: ['βιβλία', 'βιβλίοι', 'βιβλίες', 'βιβλιά'], en: 'the books', hint: '-ο → -α' },
+      { text: 'η γυναίκα → οι {b}', answer: 'γυναίκες', choices: ['γυναίκες', 'γυναίκα', 'γυναίκοι', 'γυναικιά'], en: 'the women', hint: '-α → -ες' },
+      { text: 'το παιδί → τα {b}', answer: 'παιδιά', choices: ['παιδιά', 'παιδία', 'παιδές', 'παιδιού'], en: 'the children', hint: '-ί → -ιά' },
+      { text: 'το πρόβλημα → τα {b}', answer: 'προβλήματα', choices: ['προβλήματα', 'προβλήμα', 'προβλήμες', 'προβληματιά'], en: 'the problems', hint: '-μα → -ματα' },
+      { text: 'ο μαθητής → οι {b}', answer: 'μαθητές', choices: ['μαθητές', 'μαθητοί', 'μαθητάδες', 'μαθητία'], en: 'the students', hint: '-ής → -ές' }
+    ]
+  },
+  {
+    id: 'a2-there-is', level: 'A2', title: 'There is / there are (υπάρχει)',
+    short: 'υπάρχει / υπάρχουν; colloquial έχει.',
+    explanation: '<p>“There is / there are” = <strong>υπάρχει</strong> (singular) / <strong>υπάρχουν</strong> (plural), agreeing with the noun.</p>' +
+      '<p>Very common in speech is the invariable <strong>έχει</strong>: <em>Έχει κόσμο</em> (it’s crowded), <em>Έχει φαγητό;</em> (is there food?).</p>',
+    examples: [ { gr: 'Υπάρχει ένα πρόβλημα.', en: 'There is a problem.' }, { gr: 'Υπάρχουν πολλά εστιατόρια εδώ.', en: 'There are many restaurants here.' }, { gr: 'Έχει κόσμο σήμερα.', en: 'It’s crowded today.' } ],
+    more: '<p>υπάρχει/υπάρχουν agree with the noun; <strong>έχει</strong> never changes. Negative: <em>δεν υπάρχει / δεν έχει</em>.</p>',
+    items: [
+      { text: '{b} ένα πρόβλημα. (there is)', answer: 'Υπάρχει', choices: ['Υπάρχει', 'Υπάρχουν', 'Είναι', 'Έχω'], en: 'There is a problem.', hint: 'there is · singular' },
+      { text: '{b} πολλά εστιατόρια εδώ. (there are)', answer: 'Υπάρχουν', choices: ['Υπάρχει', 'Υπάρχουν', 'Είναι', 'Έχει'], en: 'There are many restaurants here.', hint: 'there are · plural' },
+      { text: 'Δεν {b} κανείς στο σπίτι. (there isn’t)', answer: 'υπάρχει', choices: ['υπάρχει', 'υπάρχουν', 'είναι', 'έχουν'], en: 'There’s no one at home.', hint: 'there isn’t' },
+      { text: '{b} κόσμο σήμερα στην πλατεία. (colloquial: there’s)', answer: 'Έχει', choices: ['Έχει', 'Έχουν', 'Υπάρχουν', 'Είναι'], en: 'It’s crowded in the square today.', hint: 'colloquial “there is” (invariable)' }
+    ]
+  },
+  {
+    id: 'b1-double-clitics', level: 'B1', title: 'Double object pronouns',
+    short: 'Indirect before direct: μου το έδωσε.',
+    explanation: '<p>When both objects are pronouns, the <strong>indirect (genitive) comes first</strong>, then the direct (accusative), then the verb:</p>' +
+      '<p><em><strong>Μου το</strong> έδωσε.</em> = He gave it to me. · <em><strong>Σου τα</strong> στέλνω.</em> = I’m sending them to you.</p>' +
+      '<p>Order: <strong>[μου/σου/του…] [το/τη/τον/τα…] + verb</strong>.</p>',
+    examples: [ { gr: 'Σου το έδωσα χθες.', en: 'I gave it to you yesterday.' }, { gr: 'Της τα έστειλα.', en: 'I sent them to her.' }, { gr: 'Δώσ’ μου το!', en: 'Give it to me!' } ],
+    more: '<p>After a <strong>positive command</strong> they jump after the verb: <em>Δώσ’ μου το!</em> The order stays indirect-then-direct.</p>',
+    items: [
+      { text: 'Το βιβλίο; {b} έδωσα χθες. (to you + it)', answer: 'Σου το', choices: ['Σου το', 'Το σου', 'Σε το', 'Σου τον'], en: 'The book? I gave it to you yesterday.', hint: 'to you + it' },
+      { text: 'Πού είναι τα κλειδιά; {b} έδωσα. (to him + them)', answer: 'Του τα', choices: ['Του τα', 'Τα του', 'Του το', 'Τους τα'], en: 'Where are the keys? I gave them to him.', hint: 'to him + them (neuter pl)' },
+      { text: 'Αν θες το στιλό, {b} δίνω. (to you + it)', answer: 'σου το', choices: ['σου το', 'το σου', 'σε το', 'σου τον'], en: 'If you want the pen, I’ll give it to you.', hint: 'to you + it (neuter)' },
+      { text: 'Μην {b} πεις, θέλω έκπληξη! (to me + it)', answer: 'μου το', choices: ['μου το', 'το μου', 'με το', 'μου τον'], en: 'Don’t tell it to me, I want a surprise!', hint: 'to me + it' },
+      { text: 'Της αρέσει το τραγούδι· {b} τραγουδάω συχνά. (to her + it)', answer: 'της το', choices: ['της το', 'το της', 'τη το', 'της τον'], en: 'She likes the song; I sing it to her often.', hint: 'to her + it' }
+    ]
+  },
+  {
+    id: 'b1-cause-result', level: 'B1', title: 'Cause & result (γι’ αυτό, λόγω)',
+    short: 'γι’ αυτό / έτσι / άρα; λόγω + genitive.',
+    explanation: '<p>Linking a cause to its consequence:</p>' +
+      '<div class="g-grid"><div class="g-k">so / that’s why</div><div class="g-v">γι’ αυτό</div><div class="g-k">so / thus</div><div class="g-v">έτσι</div><div class="g-k">therefore</div><div class="g-v">επομένως / άρα</div><div class="g-k">because of + noun</div><div class="g-v">λόγω / εξαιτίας (+ genitive)</div></div>' +
+      '<p>Compare with cause clauses (γιατί, επειδή + a verb).</p>',
+    examples: [ { gr: 'Ήταν άρρωστος, γι’ αυτό δεν ήρθε.', en: 'He was ill, so he didn’t come.' }, { gr: 'Ακυρώθηκε λόγω του καιρού.', en: 'It was cancelled because of the weather.' }, { gr: 'Σκέφτομαι, άρα υπάρχω.', en: 'I think, therefore I am.' } ],
+    more: '<p><em>γι’ αυτό / έτσι / επομένως / άρα</em> introduce the result; <em>γιατί / επειδή</em> introduce a cause clause (+ verb); <em>λόγω / εξαιτίας</em> take a cause as a noun in the genitive.</p>',
+    items: [
+      { text: 'Ήταν άρρωστος, {b} δεν ήρθε. (so / that’s why)', answer: 'γι’ αυτό', choices: ['γι’ αυτό', 'γιατί', 'αν', 'όταν'], en: 'He was ill, so he didn’t come.', hint: 'so / that’s why' },
+      { text: 'Δεν διάβασα, {b} απέτυχα. (so)', answer: 'γι’ αυτό', choices: ['γι’ αυτό', 'επειδή', 'ενώ', 'μόλις'], en: 'I didn’t study, so I failed.', hint: 'so' },
+      { text: 'Ακυρώθηκε η πτήση {b} του καιρού. (because of + noun)', answer: 'λόγω', choices: ['λόγω', 'γιατί', 'επειδή', 'αφού'], en: 'The flight was cancelled because of the weather.', hint: 'because of + genitive' },
+      { text: 'Σκέφτομαι, {b} υπάρχω. (therefore)', answer: 'άρα', choices: ['άρα', 'αν', 'όταν', 'γιατί'], en: 'I think, therefore I am.', hint: 'therefore' }
+    ]
+  },
+  {
+    id: 'b2-impersonal', level: 'B2', title: 'Impersonal verbs (πρέπει, χρειάζεται)',
+    short: '3rd-person-only + να: πρέπει να, μπορεί να…',
+    explanation: '<p>Some verbs are used only in the 3rd singular (“it”), usually with <strong>να</strong>:</p>' +
+      '<div class="g-grid"><div class="g-k">πρέπει να</div><div class="g-v">must / have to</div><div class="g-k">μπορεί να</div><div class="g-v">may / might</div><div class="g-k">χρειάζεται να</div><div class="g-v">need to</div><div class="g-k">αξίζει να</div><div class="g-v">it’s worth</div><div class="g-k">φαίνεται ότι/να</div><div class="g-v">it seems</div></div>' +
+      '<p>The person is shown by the verb after να: <em>πρέπει να φύγω</em> = I must leave.</p>',
+    examples: [ { gr: 'Πρέπει να φύγουμε τώρα.', en: 'We must leave now.' }, { gr: 'Μπορεί να βρέξει.', en: 'It may rain.' }, { gr: 'Αξίζει να το δεις.', en: 'It’s worth seeing.' } ],
+    more: '<p>These stay 3rd-singular no matter who the action is about — only the verb after να changes for person. <em>πρέπει</em> has no “I/you” forms.</p>',
+    items: [
+      { text: '{b} να φύγουμε τώρα. (must)', answer: 'Πρέπει', choices: ['Πρέπει', 'Μπορώ', 'Θέλω', 'Είναι'], en: 'We must leave now.', hint: 'must (impersonal)' },
+      { text: '{b} να βρέξει αργότερα. (may / might)', answer: 'Μπορεί', choices: ['Μπορεί', 'Πρέπει', 'Θέλει', 'Είναι'], en: 'It may rain later.', hint: 'it may' },
+      { text: 'Δεν {b} να ανησυχείς. (need)', answer: 'χρειάζεται', choices: ['χρειάζεται', 'πρέπεις', 'μπορείς', 'θέλεις'], en: 'You don’t need to worry.', hint: 'it’s necessary' },
+      { text: '{b} να δεις αυτή την ταινία. (it’s worth)', answer: 'Αξίζει', choices: ['Αξίζει', 'Πρέπει', 'Μπορεί', 'Φαίνεται'], en: 'It’s worth seeing this film.', hint: 'it’s worth' },
+      { text: '{b} ότι θα αργήσουν. (it seems)', answer: 'Φαίνεται', choices: ['Φαίνεται', 'Πρέπει', 'Αξίζει', 'Μπορεί'], en: 'It seems they’ll be late.', hint: 'it seems' }
+    ]
+  },
+  {
+    id: 'b2-wishes', level: 'B2', title: 'Wishes & μακάρι',
+    short: 'μακάρι να… / να… for wishes.',
+    explanation: '<p>Wishes use <strong>να</strong> or <strong>μακάρι να</strong> + verb:</p>' +
+      '<p><em>Μακάρι να έρθεις!</em> = I hope you come! · <em>Μακάρι να ήμουν εκεί!</em> = If only I were there! (unreal, with the παρατατικός).</p>' +
+      '<p>Fixed wish phrases start with να: <em>να περάσεις καλά</em> (have a good time), <em>να ’σαι καλά</em> (bless you).</p>',
+    examples: [ { gr: 'Μακάρι να έρθεις στο πάρτι!', en: 'I hope you come to the party!' }, { gr: 'Να περάσεις καλά!', en: 'Have a good time!' }, { gr: 'Να ’σαι καλά!', en: 'Bless you! / Thanks!' } ],
+    more: '<p><em>μακάρι να + present/aorist</em> = a hopeful wish; <em>μακάρι να + παρατατικός</em> = an unreal wish/regret. Lots of set blessings start with να (να ζήσεις, να χαίρεσαι…).</p>',
+    items: [
+      { text: '{b} να έρθεις στο πάρτι! (I hope / if only)', answer: 'Μακάρι', choices: ['Μακάρι', 'Πρέπει', 'Ίσως', 'Όταν'], en: 'I hope you come to the party!', hint: 'I hope / if only' },
+      { text: 'Μακάρι να {b} πλούσιος! (were → unreal wish)', answer: 'ήμουν', choices: ['ήμουν', 'είμαι', 'θα είμαι', 'είσαι'], en: 'If only I were rich!', hint: 'unreal wish · παρατατικός' },
+      { text: '{b} περάσεις καλά! (have a good time)', answer: 'Να', choices: ['Να', 'Θα', 'Αν', 'Μακάρι'], en: 'Have a good time!', hint: 'να + verb = a wish' },
+      { text: 'Έφτιαξες φαγητό; {b} ’σαι καλά! (bless you)', answer: 'Να', choices: ['Να', 'Θα', 'Αν', 'Μακάρι'], en: 'You made food? Bless you!', hint: 'fixed wish: να ’σαι καλά' }
+    ]
+  }
+);
