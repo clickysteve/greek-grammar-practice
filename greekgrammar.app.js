@@ -113,6 +113,7 @@
         '<button class="g-mode' + (mode === 'type' ? ' active' : '') + '" data-mode="type">Type the answer</button>' +
         '<span class="g-spacer"></span>' +
         '<button id="gExport">Export</button><button id="gImport">Import</button>' +
+        '<button id="gCloud">☁ Cloud backup</button>' +
         '<input type="file" id="gImportFile" accept="application/json" style="display:none;" />' +
       '</div>';
 
@@ -161,6 +162,8 @@
       if (this.files && this.files[0]) importProgress(this.files[0]);
       this.value = '';
     });
+    var cb = el('gCloud');
+    if (cb && window.GVBackup) cb.addEventListener('click', function () { GVBackup.openModal(); });
   }
 
   /* ---------- grammar point detail (learn) ---------- */
@@ -334,4 +337,5 @@
   /* ---------- init ---------- */
   root = el('grammarRoot');
   render();
+  if (window.GVBackup) GVBackup.init(); // unified cloud backup + auto-backup
 })();

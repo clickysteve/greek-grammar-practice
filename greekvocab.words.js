@@ -205,4 +205,5 @@
   });
 
   render();
+  if (window.GVBackup) GVBackup.init(); // unified cloud auto-backup
 })();

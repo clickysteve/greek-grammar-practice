@@ -342,98 +342,8 @@
     reader.readAsText(file);
   }
 
-  /* ---------- GitHub gist backup ---------- */
-  var GH_KEY = 'gvm_vocab_gh';
-  var GIST_FILE = 'greek-vocab-progress.json';
-  var gh = { token: '', gistId: '', lastBackup: 0 };
-  try {
-    var stored = JSON.parse(localStorage.getItem(GH_KEY) || '{}');
-    if (stored && typeof stored === 'object') {
-      gh.token = stored.token || ''; gh.gistId = stored.gistId || ''; gh.lastBackup = stored.lastBackup || 0;
-    }
-  } catch (e) {}
-  function ghSave() { try { localStorage.setItem(GH_KEY, JSON.stringify(gh)); } catch (e) {} }
-
-  function ghApi(method, path, body) {
-    return window.fetch('https://api.github.com' + path, {
-      method: method,
-      headers: {
-        'Authorization': 'Bearer ' + gh.token,
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: body ? JSON.stringify(body) : undefined
-    }).then(function (res) {
-      if (!res.ok) throw new Error('GitHub said ' + res.status + (res.status === 401 ? ' (bad token?)' : ''));
-      return res.json();
-    });
-  }
-
-  function backupToGist(silent) {
-    if (!gh.token) { if (!silent) openGhModal('Add a token first.'); return Promise.resolve(); }
-    var payload = { description: 'Greek vocab progress backup (greek.clickysteve.com)', files: {} };
-    payload.files[GIST_FILE] = { content: JSON.stringify(track, null, 2) };
-    var p = gh.gistId
-      ? ghApi('PATCH', '/gists/' + gh.gistId, payload)
-      : ghApi('POST', '/gists', Object.assign({ public: false }, payload));
-    return p.then(function (g) {
-      if (g && g.id) gh.gistId = g.id;
-      gh.lastBackup = Date.now();
-      ghSave();
-      if (!silent) openGhModal('Backed up ✓');
-    }).catch(function (e) {
-      if (!silent) openGhModal('Backup failed: ' + e.message);
-    });
-  }
-
-  function restoreFromGist() {
-    if (!gh.token || !gh.gistId) { openGhModal('No backup to restore from yet.'); return; }
-    ghApi('GET', '/gists/' + gh.gistId).then(function (g) {
-      var f = g.files && g.files[GIST_FILE];
-      if (!f || !f.content) throw new Error('no backup file found in the gist');
-      if (!confirm('Replace the progress in this browser with the GitHub backup?')) return;
-      var data = JSON.parse(f.content);
-      if (typeof data !== 'object' || data === null) throw new Error('bad backup format');
-      track = migrateTrack(data);
-      saveTrack();
-      renderTrackStats();
-      openGhModal('Restored ✓');
-    }).catch(function (e) { openGhModal('Restore failed: ' + e.message); });
-  }
-
-  function openGhModal(status) {
-    var hasToken = !!gh.token;
-    var lastTxt = gh.lastBackup ? new Date(gh.lastBackup).toLocaleString() : 'never';
-    el.wordModal.innerHTML =
-      '<div class="modal-backdrop"></div>' +
-      '<div class="modal-panel"><button class="modal-close" aria-label="Close">×</button>' +
-      '<div class="wd-title" style="margin-bottom:10px;">GitHub backup — secret gist</div>' +
-      '<p class="wd-approx" style="margin:0 0 12px;">Create a <strong>classic</strong> personal access token with only the <code>gist</code> scope (GitHub → Settings → Developer settings → Tokens (classic)). It is stored only in this browser. Auto-backup runs when the page loads and the last backup is over a day old.</p>' +
-      '<input type="password" id="ghTokenInput" class="gh-input" placeholder="' + (hasToken ? 'token saved — paste here to replace' : 'ghp_…') + '" />' +
-      '<div class="gh-status">' +
-        'Last backup: ' + escapeHtml(lastTxt) +
-        (gh.gistId ? ' · <a href="https://gist.github.com/' + escapeHtml(gh.gistId) + '" target="_blank" rel="noopener">view gist</a>' : '') +
-        (status ? '<div class="gh-msg">' + escapeHtml(status) + '</div>' : '') +
-      '</div>' +
-      '<div class="gh-btns">' +
-        '<button id="ghSaveBtn">Save token</button>' +
-        '<button id="ghBackupNowBtn"' + (hasToken ? '' : ' disabled') + '>Backup now</button>' +
-        '<button id="ghRestoreBtn"' + (gh.token && gh.gistId ? '' : ' disabled') + '>Restore</button>' +
-        '<button id="ghForgetBtn"' + (hasToken ? '' : ' disabled') + '>Forget token</button>' +
-      '</div></div>';
-    el.wordModal.style.display = 'block';
-    el.wordModal.querySelector('.modal-backdrop').addEventListener('click', closeDetail);
-    el.wordModal.querySelector('.modal-close').addEventListener('click', closeDetail);
-    document.getElementById('ghSaveBtn').addEventListener('click', function () {
-      var v = document.getElementById('ghTokenInput').value.trim();
-      if (v) { gh.token = v; ghSave(); openGhModal('Token saved.'); }
-    });
-    document.getElementById('ghBackupNowBtn').addEventListener('click', function () { backupToGist(false); });
-    document.getElementById('ghRestoreBtn').addEventListener('click', restoreFromGist);
-    document.getElementById('ghForgetBtn').addEventListener('click', function () {
-      gh.token = ''; ghSave(); openGhModal('Token forgotten (gist kept).');
-    });
-  }
+  /* ---------- cloud backup (unified, greekvocab.backup.js) ---------- */
+  // Backup/restore now covers vocab + grammar + verb practice together (GVBackup module).
 
   /* ---------- wiring ---------- */
   el.newPromptBtn.addEventListener('click', function () { regenerate(true); });
@@ -485,7 +395,7 @@
     }
   });
 
-  el.ghBtn.addEventListener('click', function () { openGhModal(); });
+  if (el.ghBtn && window.GVBackup) el.ghBtn.addEventListener('click', function () { GVBackup.openModal(); });
 
   /* ---------- init ---------- */
   GVShared.init({
@@ -502,8 +412,5 @@
   regenerate(true);
   renderWriteCount();
   renderTrackStats();
-  // Auto-backup to the gist if configured and the last backup is over 24h old.
-  if (gh.token && window.fetch && Date.now() - (gh.lastBackup || 0) > 24 * 3600 * 1000) {
-    backupToGist(true);
-  }
+  if (window.GVBackup) GVBackup.init(); // unified cloud backup + auto-backup
 })();
