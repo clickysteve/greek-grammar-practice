@@ -805,3 +805,293 @@ window.GRAMMAR = [
     if (EXTRA[p.id]) p.items = p.items.concat(EXTRA[p.id]);
   });
 })();
+
+/* ===== Expansion: more granular grammar points across every level ===== */
+window.GRAMMAR.push(
+  {
+    id: 'a1-be', level: 'A1', title: 'The verb “to be” (είμαι)',
+    short: 'Irregular and everywhere: είμαι, είσαι, είναι…',
+    explanation: '<p>είμαι is the most common verb and it’s irregular — learn it as a set:</p>' +
+      '<div class="g-grid"><div class="g-k">εγώ</div><div class="g-v">είμαι</div><div class="g-k">εσύ</div><div class="g-v">είσαι</div><div class="g-k">αυτός/ή/ό</div><div class="g-v">είναι</div><div class="g-k">εμείς</div><div class="g-v">είμαστε</div><div class="g-k">εσείς</div><div class="g-v">είστε</div><div class="g-k">αυτοί/ές/ά</div><div class="g-v">είναι</div></div>' +
+      '<p>Used for identity, origin, location and states: <em>Είμαι από την Αγγλία. · Πού είναι η τράπεζα;</em></p>',
+    examples: [ { gr: 'Είμαι κουρασμένος.', en: 'I am tired.' }, { gr: 'Πού είσαι τώρα;', en: 'Where are you now?' }, { gr: 'Είναι καλοί φίλοι.', en: 'They are good friends.' } ],
+    more: '<p>No indefinite article with jobs/nationalities: <em>Είμαι δάσκαλος</em> (“I’m a teacher”). The past is <strong>ήμουν, ήσουν, ήταν, ήμασταν, ήσασταν, ήταν</strong>.</p>',
+    items: [
+      { text: 'Εγώ {b} δάσκαλος. (είμαι)', answer: 'είμαι', choices: ['είμαι', 'είσαι', 'είναι', 'είμαστε'], en: 'I am a teacher.', hint: 'be · εγώ' },
+      { text: 'Εσύ {b} έτοιμος; (είμαι)', answer: 'είσαι', choices: ['είμαι', 'είσαι', 'είναι', 'είστε'], en: 'Are you ready?', hint: 'be · εσύ' },
+      { text: 'Η Μαρία και ο Νίκος {b} φίλοι. (είμαι)', answer: 'είναι', choices: ['είμαι', 'είσαι', 'είναι', 'είμαστε'], en: 'Maria and Nikos are friends.', hint: 'be · they' },
+      { text: 'Εμείς {b} από την Ελλάδα. (είμαι)', answer: 'είμαστε', choices: ['είμαι', 'είμαστε', 'είστε', 'είναι'], en: 'We are from Greece.', hint: 'be · εμείς' },
+      { text: 'Πού {b} το ξενοδοχείο; (είμαι)', answer: 'είναι', choices: ['είμαι', 'είσαι', 'είναι', 'είστε'], en: 'Where is the hotel?', hint: 'be · it' }
+    ]
+  },
+  {
+    id: 'a1-have', level: 'A1', title: 'The verb “to have” (έχω)',
+    short: 'Regular Group A: έχω, έχεις, έχει…',
+    explanation: '<p>έχω takes the normal Group A endings:</p>' +
+      '<div class="g-grid"><div class="g-k">εγώ</div><div class="g-v">έχω</div><div class="g-k">εσύ</div><div class="g-v">έχεις</div><div class="g-k">αυτός/ή/ό</div><div class="g-v">έχει</div><div class="g-k">εμείς</div><div class="g-v">έχουμε</div><div class="g-k">εσείς</div><div class="g-v">έχετε</div><div class="g-k">αυτοί/ές/ά</div><div class="g-v">έχουν</div></div>' +
+      '<p>For possession and many set phrases: <em>Έχω δίκιο</em> (I’m right), <em>Έχεις όρεξη;</em> (Do you feel like it?).</p>',
+    examples: [ { gr: 'Έχω δύο αδέρφια.', en: 'I have two siblings.' }, { gr: 'Έχεις ώρα;', en: 'Do you have time?' }, { gr: 'Έχει πολλή δουλειά.', en: 'He has a lot of work.' } ],
+    more: '<p>Colloquial <strong>έχει</strong> = “there is / there are”: <em>Έχει κόσμο σήμερα</em> (it’s busy today). The past is <strong>είχα</strong>.</p>',
+    items: [
+      { text: 'Εγώ {b} δύο αδέρφια. (έχω)', answer: 'έχω', choices: ['έχω', 'έχεις', 'έχει', 'έχουν'], en: 'I have two siblings.', hint: 'have · εγώ' },
+      { text: 'Εσύ {b} λίγο χρόνο τώρα; (έχω)', answer: 'έχεις', choices: ['έχω', 'έχεις', 'έχει', 'έχετε'], en: 'Do you have a little time now?', hint: 'have · εσύ' },
+      { text: 'Το σπίτι {b} μεγάλο κήπο. (έχω)', answer: 'έχει', choices: ['έχω', 'έχεις', 'έχει', 'έχουμε'], en: 'The house has a big garden.', hint: 'have · it' },
+      { text: 'Εμείς {b} πολλή δουλειά σήμερα. (έχω)', answer: 'έχουμε', choices: ['έχω', 'έχεις', 'έχουμε', 'έχουν'], en: 'We have a lot of work today.', hint: 'have · εμείς' },
+      { text: 'Οι γονείς μου {b} ένα μικρό μαγαζί. (έχω)', answer: 'έχουν', choices: ['έχει', 'έχουμε', 'έχετε', 'έχουν'], en: 'My parents have a small shop.', hint: 'have · they' }
+    ]
+  },
+  {
+    id: 'a1-adjective-agreement', level: 'A1', title: 'Adjective agreement',
+    short: 'Adjectives match their noun: καλός / καλή / καλό.',
+    explanation: '<p>An adjective agrees with its noun in gender, number and case, and usually goes <strong>before</strong> it:</p>' +
+      '<div class="g-grid"><div class="g-k">masculine</div><div class="g-v">ο καλ<strong>ός</strong> άντρας</div><div class="g-k">feminine</div><div class="g-v">η καλ<strong>ή</strong> ιδέα</div><div class="g-k">neuter</div><div class="g-v">το καλ<strong>ό</strong> παιδί</div><div class="g-k">plural</div><div class="g-v">καλ<strong>οί</strong> / καλ<strong>ές</strong> / καλ<strong>ά</strong></div></div>' +
+      '<p>It agrees even after “to be”: <em>Η σούπα είναι ζεστ<strong>ή</strong>.</em></p>',
+    examples: [ { gr: 'Ένα μεγάλο σπίτι.', en: 'A big house.' }, { gr: 'Μια ωραία μέρα.', en: 'A nice day.' }, { gr: 'Οι δρόμοι είναι στενοί.', en: 'The streets are narrow.' } ],
+    more: '<p>Most adjectives follow <strong>-ος / -η (or -α) / -ο</strong>. A few go -ης/-α/-ικο (ζηλιάρης) or -ύς/-ιά/-ύ (βαρύς). The feminine is -α after a vowel stem (ωραίος → ωραία), -η otherwise (καλός → καλή).</p>',
+    items: [
+      { text: 'Ένας {b} άντρας. (καλός)', answer: 'καλός', choices: ['καλός', 'καλή', 'καλό', 'καλοί'], en: 'A good man.', hint: 'masculine' },
+      { text: 'Μια {b} ιδέα! (καλός)', answer: 'καλή', choices: ['καλός', 'καλή', 'καλό', 'καλές'], en: 'A good idea!', hint: 'feminine' },
+      { text: 'Ένα {b} παιδί. (καλός)', answer: 'καλό', choices: ['καλός', 'καλή', 'καλό', 'καλά'], en: 'A good child.', hint: 'neuter' },
+      { text: 'Δύο {b} φίλοι. (καλός)', answer: 'καλοί', choices: ['καλός', 'καλή', 'καλοί', 'καλές'], en: 'Two good friends.', hint: 'masculine plural' },
+      { text: 'Η σούπα είναι πολύ {b}. (ζεστός)', answer: 'ζεστή', choices: ['ζεστός', 'ζεστή', 'ζεστό', 'ζεστά'], en: 'The soup is very hot.', hint: 'agrees with η σούπα (fem)' }
+    ]
+  },
+  {
+    id: 'a1-demonstratives', level: 'A1', title: 'This & that (αυτός / εκείνος)',
+    short: 'αυτός = this, εκείνος = that — and keep the article.',
+    explanation: '<p><strong>αυτός/αυτή/αυτό</strong> = this, <strong>εκείνος/εκείνη/εκείνο</strong> = that. They agree with the noun and you <strong>keep the article</strong>:</p>' +
+      '<p><em>αυτός <strong>ο</strong> άντρας</em> = this man · <em>εκείνη <strong>η</strong> γυναίκα</em> = that woman.</p>' +
+      '<p>Plurals: αυτοί/αυτές/αυτά, εκείνοι/εκείνες/εκείνα.</p>',
+    examples: [ { gr: 'Αυτό το βιβλίο είναι δικό μου.', en: 'This book is mine.' }, { gr: 'Ποιος είναι εκείνος ο κύριος;', en: 'Who is that gentleman?' }, { gr: 'Μου αρέσουν αυτά τα παπούτσια.', en: 'I like these shoes.' } ],
+    more: '<p>Don’t drop the article: it’s <em>αυτός <strong>ο</strong> άντρας</em>, not “αυτός άντρας”. On their own (no noun) they mean “this/that one”: <em>Αυτό είναι ωραίο.</em></p>',
+    items: [
+      { text: '{b} ο άντρας είναι πολύ ψηλός. (this, masc)', answer: 'Αυτός', choices: ['Αυτός', 'Αυτή', 'Αυτό', 'Εκείνος'], en: 'This man is very tall.', hint: 'this · masculine' },
+      { text: 'Θέλω {b} το βιβλίο, όχι το άλλο. (that, neuter)', answer: 'εκείνο', choices: ['αυτό', 'εκείνο', 'εκείνος', 'εκείνη'], en: 'I want that book, not the other one.', hint: 'that · neuter' },
+      { text: '{b} η ταινία ήταν υπέροχη. (this, fem)', answer: 'Αυτή', choices: ['Αυτός', 'Αυτή', 'Αυτό', 'Εκείνη'], en: 'This film was wonderful.', hint: 'this · feminine' },
+      { text: 'Ποιος είναι {b} ο κύριος εκεί πέρα; (that, masc)', answer: 'εκείνος', choices: ['αυτός', 'εκείνος', 'εκείνη', 'εκείνο'], en: 'Who is that gentleman over there?', hint: 'that · masculine' },
+      { text: 'Μου αρέσουν {b} τα παπούτσια. (these, neut pl)', answer: 'αυτά', choices: ['αυτοί', 'αυτές', 'αυτά', 'εκείνοι'], en: 'I like these shoes.', hint: 'these · neuter plural' }
+    ]
+  },
+  {
+    id: 'a1-question-words', level: 'A1', title: 'Question words',
+    short: 'τι, ποιος, πού, πότε, πώς, πόσο, γιατί.',
+    explanation: '<p>The main question words:</p>' +
+      '<div class="g-grid"><div class="g-k">what</div><div class="g-v">τι</div><div class="g-k">who / which</div><div class="g-v">ποιος / ποια / ποιο</div><div class="g-k">where</div><div class="g-v">πού</div><div class="g-k">when</div><div class="g-v">πότε</div><div class="g-k">how</div><div class="g-v">πώς</div><div class="g-k">how much/many</div><div class="g-v">πόσο / πόσος</div><div class="g-k">why</div><div class="g-v">γιατί</div></div>' +
+      '<p><em>ποιος</em> agrees with its noun; <em>τι</em> never changes.</p>',
+    examples: [ { gr: 'Τι ώρα είναι;', en: 'What time is it?' }, { gr: 'Πού πας;', en: 'Where are you going?' }, { gr: 'Πόσο κάνει;', en: 'How much is it?' } ],
+    more: '<p>Note the accents: <strong>πού</strong> (where?) and <strong>πώς</strong> (how?) only get a stress as questions — plain που/πως mean “that”. <em>ποιος/ποια/ποιο</em> agrees in gender, e.g. <em>Ποια μέρα;</em></p>',
+    items: [
+      { text: '{b} σε λένε;', answer: 'Πώς', choices: ['Πώς', 'Πού', 'Τι', 'Ποιος'], en: 'What’s your name?', hint: 'how (lit. “how do they call you”)' },
+      { text: '{b} μένεις;', answer: 'Πού', choices: ['Πού', 'Πότε', 'Πώς', 'Τι'], en: 'Where do you live?', hint: 'where' },
+      { text: '{b} θέλεις να πιεις;', answer: 'Τι', choices: ['Τι', 'Ποιος', 'Πού', 'Πότε'], en: 'What do you want to drink?', hint: 'what' },
+      { text: '{b} κοστίζει αυτό;', answer: 'Πόσο', choices: ['Πόσο', 'Πότε', 'Πώς', 'Ποιο'], en: 'How much does this cost?', hint: 'how much' },
+      { text: '{b} δεν ήρθες χθες;', answer: 'Γιατί', choices: ['Γιατί', 'Πότε', 'Πώς', 'Πού'], en: 'Why didn’t you come yesterday?', hint: 'why' },
+      { text: '{b} είναι ο καθηγητής σου; (who, masc)', answer: 'Ποιος', choices: ['Ποιος', 'Ποια', 'Ποιο', 'Τι'], en: 'Who is your teacher?', hint: 'who · masculine' }
+    ]
+  },
+  {
+    id: 'a2-indefinite-pronouns', level: 'A2', title: 'Indefinite pronouns (κάποιος, κάτι, κανένας…)',
+    short: 'someone / something / no one / all / some.',
+    explanation: '<p>The everyday “some / any / no” words:</p>' +
+      '<div class="g-grid"><div class="g-k">someone / some</div><div class="g-v">κάποιος / κάποια / κάποιο</div><div class="g-k">no one / any</div><div class="g-v">κανένας / καμία / κανένα</div><div class="g-k">something</div><div class="g-v">κάτι</div><div class="g-k">nothing / anything</div><div class="g-v">τίποτα</div><div class="g-k">all</div><div class="g-v">όλος / όλη / όλο</div><div class="g-k">some (pl.)</div><div class="g-v">μερικοί / μερικές / μερικά</div></div>' +
+      '<p><em>κάποιος</em> and <em>κανένας</em> agree in gender and number; <em>κάτι</em> and <em>τίποτα</em> never change.</p>',
+    examples: [ { gr: 'Κάποιος σε ζητάει.', en: 'Someone is asking for you.' }, { gr: 'Δεν θέλω τίποτα.', en: 'I don’t want anything.' }, { gr: 'Όλοι ήρθαν στην ώρα τους.', en: 'Everyone came on time.' } ],
+    more: '<p><strong>κανένας</strong> and <strong>τίποτα</strong> normally need <strong>δεν</strong> (the Greek double negative): <em>Δεν ήρθε κανένας.</em> In a question, κανένας/τίποτα mean “any/anything”: <em>Θέλεις τίποτα;</em> = Do you want anything? <em>ο καθένας</em> = each one.</p>',
+    items: [
+      { text: '{b} χτύπησε την πόρτα. (someone, masc)', answer: 'Κάποιος', choices: ['Κάποιος', 'Κάτι', 'Κανένας', 'Όλος'], en: 'Someone knocked on the door.', hint: 'someone · masculine' },
+      { text: 'Δεν ήρθε {b} στο πάρτι. (no one, masc)', answer: 'κανένας', choices: ['κάποιος', 'κανένας', 'κάτι', 'όλος'], en: 'No one came to the party.', hint: 'with δεν = no one' },
+      { text: 'Θέλω να σου πω {b}. (something)', answer: 'κάτι', choices: ['κάτι', 'τίποτα', 'κάποιος', 'όλα'], en: 'I want to tell you something.', hint: 'something' },
+      { text: 'Δεν κατάλαβα {b} από το μάθημα. (anything)', answer: 'τίποτα', choices: ['κάτι', 'τίποτα', 'κάποιο', 'όλα'], en: 'I didn’t understand anything from the lesson.', hint: 'with δεν = anything' },
+      { text: '{b} οι φίλοι μου ήρθαν. (all, masc pl)', answer: 'Όλοι', choices: ['Όλοι', 'Μερικοί', 'Κάποιοι', 'Κανείς'], en: 'All my friends came.', hint: 'all · masculine plural' },
+      { text: 'Αγόρασα {b} βιβλία για το ταξίδι. (some, neut pl)', answer: 'μερικά', choices: ['μερικά', 'κάποια', 'κάτι', 'όλα'], en: 'I bought some books for the trip.', hint: 'some · neuter plural' }
+    ]
+  },
+  {
+    id: 'a2-strong-pronouns', level: 'A2', title: 'Strong pronouns & emphasis',
+    short: 'εμένα, εσένα, αυτόν… — after prepositions and for emphasis.',
+    explanation: '<p>Besides the weak object pronouns (με, σε…), Greek has <strong>strong</strong> forms used after prepositions and for emphasis:</p>' +
+      '<div class="g-grid"><div class="g-k">me</div><div class="g-v">εμένα</div><div class="g-k">you</div><div class="g-v">εσένα</div><div class="g-k">him / her / it</div><div class="g-v">αυτόν / αυτήν / αυτό</div><div class="g-k">us</div><div class="g-v">εμάς</div><div class="g-k">you (pl.)</div><div class="g-v">εσάς</div><div class="g-k">them</div><div class="g-v">αυτούς / αυτές / αυτά</div></div>' +
+      '<p>After a preposition: <em>για εσένα, με αυτόν, σ’ εμένα</em>. For emphasis they often double the weak one: <em><strong>Εμένα</strong> μου αρέσει.</em></p>',
+    examples: [ { gr: 'Αυτό είναι για σένα.', en: 'This is for you.' }, { gr: 'Μίλησα με αυτόν χθες.', en: 'I spoke with him yesterday.' }, { gr: 'Εμένα δεν μου αρέσει.', en: 'I (for one) don’t like it.' } ],
+    more: '<p>Use the strong form when the pronoun stands alone, follows a preposition, or carries stress/contrast. Otherwise the weak form (με, σε, του…) is the default.</p>',
+    items: [
+      { text: 'Αυτό το δώρο είναι για {b}. (you, strong)', answer: 'εσένα', choices: ['εσένα', 'εσύ', 'σε', 'σου'], en: 'This gift is for you.', hint: 'after για · you' },
+      { text: '{b} μου αρέσει ο καφές, εσένα; (me, emphatic)', answer: 'Εμένα', choices: ['Εμένα', 'Εγώ', 'Με', 'Μου'], en: 'I like coffee, (how about) you?', hint: 'emphasis · me' },
+      { text: 'Μίλησα με {b} χθες το βράδυ. (him, strong)', answer: 'αυτόν', choices: ['αυτόν', 'αυτός', 'τον', 'του'], en: 'I spoke with him last night.', hint: 'after με · him' },
+      { text: 'Ήρθαν όλοι εκτός από {b}. (us, strong)', answer: 'εμάς', choices: ['εμάς', 'εμείς', 'μας', 'μου'], en: 'Everyone came except us.', hint: 'after εκτός από · us' },
+      { text: 'Σ’ {b} μιλάω, άκουσέ με! (you, strong)', answer: 'εσένα', choices: ['εσένα', 'εσύ', 'σου', 'σε'], en: 'I’m talking to you, listen to me!', hint: 'emphasis · you' }
+    ]
+  },
+  {
+    id: 'a2-prepositions', level: 'A2', title: 'Prepositions & στον / στη / στο',
+    short: 'σε, από, με, για… + accusative; σε fuses with the article.',
+    explanation: '<p>Common prepositions all take the accusative: <strong>σε</strong> (to/at/in), <strong>από</strong> (from), <strong>με</strong> (with), <strong>για</strong> (for), <strong>χωρίς</strong> (without), <strong>μέχρι</strong> (until), <strong>προς</strong> (towards).</p>' +
+      '<p><strong>σε merges with the article:</strong> σε + τον = <em>στον</em>, σε + την = <em>στη(ν)</em>, σε + το = <em>στο</em>, σε + τα = <em>στα</em>.</p>',
+    examples: [ { gr: 'Πάω στη δουλειά.', en: 'I’m going to work.' }, { gr: 'Ήρθα από την Αθήνα.', en: 'I came from Athens.' }, { gr: 'Καφές με γάλα, παρακαλώ.', en: 'Coffee with milk, please.' } ],
+    more: '<p>The σε-fusion is obligatory — you can’t say “σε το”. “From … to …” = <em>από … μέχρι/ως …</em>. <em>με</em> also means “by” (transport): <em>με το λεωφορείο</em>.</p>',
+    items: [
+      { text: 'Πάω {b} σχολείο με τα πόδια. (σε + το)', answer: 'στο', choices: ['στο', 'στον', 'στη', 'σε'], en: 'I walk to school.', hint: 'σε + το' },
+      { text: 'Μένω {b} Αθήνα εδώ και χρόνια. (σε + την)', answer: 'στην', choices: ['στον', 'στην', 'στο', 'στη'], en: 'I’ve lived in Athens for years.', hint: 'σε + την' },
+      { text: 'Αυτό το γράμμα είναι {b} εσένα. (for)', answer: 'για', choices: ['για', 'από', 'με', 'σε'], en: 'This letter is for you.', hint: 'for' },
+      { text: 'Δούλεψα {b} το πρωί ως το βράδυ. (from)', answer: 'από', choices: ['από', 'με', 'για', 'προς'], en: 'I worked from morning till evening.', hint: 'from' },
+      { text: 'Πήγαμε {b} γιατρό χθες. (σε + τον)', answer: 'στον', choices: ['στον', 'στην', 'στο', 'σε'], en: 'We went to the doctor yesterday.', hint: 'σε + τον' },
+      { text: 'Έφυγε {b} να πει αντίο. (without)', answer: 'χωρίς', choices: ['χωρίς', 'με', 'από', 'για'], en: 'He left without saying goodbye.', hint: 'without' }
+    ]
+  },
+  {
+    id: 'a2-future-continuous', level: 'A2', title: 'Future continuous (θα + present)',
+    short: 'Ongoing/repeated future: θα + present tense.',
+    explanation: '<p>For an ongoing or repeated future action, use <strong>θα + the present tense</strong> (not the aorist stem):</p>' +
+      '<p><em>θα γράφω</em> = I’ll be writing / will write (regularly) · contrast <em>θα γράψω</em> = I’ll write (once).</p>' +
+      '<p>It’s the same one-off vs ongoing choice as everywhere else, just in the future.</p>',
+    examples: [ { gr: 'Του χρόνου θα δουλεύω στο εξωτερικό.', en: 'Next year I’ll be working abroad.' }, { gr: 'Θα σε σκέφτομαι κάθε μέρα.', en: 'I’ll be thinking of you every day.' }, { gr: 'Θα περιμένω εδώ.', en: 'I’ll be waiting here.' } ],
+    more: '<p><strong>θα + present</strong> = ongoing/habitual; <strong>θα + aorist stem</strong> = single completed act. Negative: <em>δεν θα</em>.</p>',
+    items: [
+      { text: 'Του χρόνου {b} ελληνικά κάθε μέρα. (μαθαίνω, ongoing)', answer: 'θα μαθαίνω', accept: ['θα μαθαινω'], choices: ['θα μαθαίνω', 'θα μάθω', 'μαθαίνω', 'έμαθα'], en: 'Next year I’ll be learning Greek every day.', hint: 'future continuous · εγώ' },
+      { text: 'Κάθε Κυριακή {b} τους γονείς μου. (βλέπω, ongoing)', answer: 'θα βλέπω', accept: ['θα βλεπω'], choices: ['θα βλέπω', 'θα δω', 'βλέπω', 'είδα'], en: 'Every Sunday I’ll be seeing my parents.', hint: 'future continuous · εγώ' },
+      { text: 'Από αύριο {b} πιο υγιεινά. (τρώω, ongoing)', answer: 'θα τρώω', accept: ['θα τρωω'], choices: ['θα τρώω', 'θα φάω', 'τρώω', 'έφαγα'], en: 'From tomorrow I’ll be eating more healthily.', hint: 'future continuous · εγώ' },
+      { text: 'Όλο το καλοκαίρι τα παιδιά {b} έξω. (παίζω, ongoing)', answer: 'θα παίζουν', choices: ['θα παίζουν', 'θα παίξουν', 'παίζουν', 'έπαιζαν'], en: 'All summer the kids will be playing outside.', hint: 'future continuous · they' },
+      { text: 'Μη μου τηλεφωνείς στις εννιά, {b}. (διαβάζω, ongoing)', answer: 'θα διαβάζω', accept: ['θα διαβαζω'], choices: ['θα διαβάζω', 'θα διαβάσω', 'διαβάζω', 'διάβαζα'], en: 'Don’t call me at nine, I’ll be studying.', hint: 'future continuous · εγώ' }
+    ]
+  },
+  {
+    id: 'a2-vocative', level: 'A2', title: 'The vocative (addressing someone)',
+    short: 'Calling someone: Γιώργο! κύριε! Μαρία!',
+    explanation: '<p>When you call or address someone, masculine nouns/names change:</p>' +
+      '<div class="g-grid"><div class="g-k">-ος → -ε</div><div class="g-v">ο φίλος → <strong>φίλε!</strong> · κύριος → <strong>κύριε!</strong></div><div class="g-k">first names</div><div class="g-v">Γιώργος → <strong>Γιώργο!</strong> · Νίκος → <strong>Νίκο!</strong></div><div class="g-k">feminine / neuter</div><div class="g-v">unchanged: <strong>Μαρία! · παιδί!</strong></div></div>',
+    examples: [ { gr: 'Γιώργο, έλα εδώ!', en: 'George, come here!' }, { gr: 'Καλημέρα, κύριε Παπαδόπουλε!', en: 'Good morning, Mr Papadopoulos!' }, { gr: 'Μαρία, πού είσαι;', en: 'Maria, where are you?' } ],
+    more: '<p>Common everyday vocatives: <em>φίλε, ρε, κυρία, αγάπη μου, παιδιά</em>. Most first names just drop the final -ς (Γιώργο, Νίκο, Κώστα, Πέτρο).</p>',
+    items: [
+      { text: '{b}, έλα εδώ! (Γιώργος)', answer: 'Γιώργο', choices: ['Γιώργο', 'Γιώργος', 'Γιώργου', 'Γιώργε'], en: 'George, come here!', hint: 'vocative of Γιώργος' },
+      { text: 'Καλημέρα, {b}! (κύριος)', answer: 'κύριε', choices: ['κύριε', 'κύριος', 'κύριο', 'κυρίου'], en: 'Good morning, sir!', hint: 'vocative of κύριος (-ος → -ε)' },
+      { text: '{b}, πού πας τόσο γρήγορα; (Νίκος)', answer: 'Νίκο', choices: ['Νίκο', 'Νίκος', 'Νίκου', 'Νίκε'], en: 'Nikos, where are you going so fast?', hint: 'vocative of Νίκος' },
+      { text: 'Σ’ αγαπώ, {b} μου! (αγάπη)', answer: 'αγάπη', choices: ['αγάπη', 'αγάπης', 'αγάπα', 'αγάπε'], en: 'I love you, my love!', hint: 'feminine — unchanged' },
+      { text: '{b}, μπορείς να με βοηθήσεις; (φίλος)', answer: 'Φίλε', choices: ['Φίλε', 'Φίλος', 'Φίλο', 'Φίλου'], en: 'Friend, can you help me?', hint: 'vocative of φίλος (-ος → -ε)' }
+    ]
+  },
+  {
+    id: 'b1-present-perfect', level: 'B1', title: 'Present perfect (παρακείμενος)',
+    short: 'έχω + perfect form: έχω γράψει.',
+    explanation: '<p>“I have done”: <strong>έχω</strong> + an invariable perfect form made from the <strong>aorist stem + -ει</strong>:</p>' +
+      '<p>γράφω → έγραψα → <strong>έχω γράψει</strong> · διαβάζω → διάβασα → <strong>έχω διαβάσει</strong>.</p>' +
+      '<p>Used for completed actions with present relevance and for experience (“ever / never / already / yet”). The second word never changes for person.</p>',
+    examples: [ { gr: 'Έχω ζήσει στην Ελλάδα.', en: 'I have lived in Greece.' }, { gr: 'Έχεις δει αυτή την ταινία;', en: 'Have you seen this film?' }, { gr: 'Δεν έχουμε τελειώσει ακόμα.', en: 'We haven’t finished yet.' } ],
+    more: '<p>Form: <strong>έχω/έχεις/έχει… + (aorist stem + -ει)</strong>. Only έχω conjugates; the second part is fixed. Great with <em>ποτέ, κιόλας, ήδη, ακόμα</em>.</p>',
+    items: [
+      { text: 'Δεν {b} ποτέ στην Ελλάδα. (πηγαίνω → έχω πάει)', answer: 'έχω πάει', accept: ['εχω παει'], choices: ['έχω πάει', 'πήγα', 'πηγαίνω', 'θα πάω'], en: 'I have never been to Greece.', hint: 'present perfect · εγώ' },
+      { text: '{b} κιόλας το βιβλίο; (διαβάζω → έχεις διαβάσει)', answer: 'Έχεις διαβάσει', accept: ['εχεις διαβασει'], choices: ['Έχεις διαβάσει', 'Διάβασες', 'Διαβάζεις', 'Θα διαβάσεις'], en: 'Have you already read the book?', hint: 'present perfect · εσύ' },
+      { text: 'Η ταινία μόλις {b}. (αρχίζω → έχει αρχίσει)', answer: 'έχει αρχίσει', choices: ['έχει αρχίσει', 'άρχισε', 'αρχίζει', 'θα αρχίσει'], en: 'The film has just started.', hint: 'present perfect · it' },
+      { text: '{b} ποτέ σου σαλιγκάρια; (τρώω → έχεις φάει)', answer: 'Έχεις φάει', choices: ['Έχεις φάει', 'Έφαγες', 'Τρως', 'Θα φας'], en: 'Have you ever eaten snails?', hint: 'present perfect · εσύ' },
+      { text: 'Δεν {b} ακόμα τη δουλειά μου. (τελειώνω → έχω τελειώσει)', answer: 'έχω τελειώσει', choices: ['έχω τελειώσει', 'τελείωσα', 'τελειώνω', 'θα τελειώσω'], en: 'I haven’t finished my work yet.', hint: 'present perfect · εγώ' }
+    ]
+  },
+  {
+    id: 'b1-past-perfect', level: 'B1', title: 'Past perfect (υπερσυντέλικος)',
+    short: 'είχα + perfect form: είχα γράψει.',
+    explanation: '<p>“I had done” — an action completed <strong>before</strong> another point in the past. Form: <strong>είχα</strong> + the same invariable perfect form:</p>' +
+      '<p><em>Όταν έφτασα, το τρένο <strong>είχε φύγει</strong>.</em> = When I arrived, the train had left.</p>',
+    examples: [ { gr: 'Είχα φάει πριν έρθω.', en: 'I had eaten before I came.' }, { gr: 'Δεν τον είχα ξαναδεί.', en: 'I hadn’t seen him before.' }, { gr: 'Είχαν ήδη φύγει.', en: 'They had already left.' } ],
+    more: '<p>Same perfect form as the present perfect, just with <strong>είχα/είχες/είχε…</strong> instead of έχω. It’s the “past before the past”.</p>',
+    items: [
+      { text: 'Όταν έφτασα, το τρένο {b} ήδη. (φεύγω → είχε φύγει)', answer: 'είχε φύγει', choices: ['είχε φύγει', 'έφυγε', 'φεύγει', 'θα φύγει'], en: 'When I arrived, the train had already left.', hint: 'past perfect · it' },
+      { text: 'Δεν πεινούσα γιατί {b} νωρίτερα. (τρώω → είχα φάει)', answer: 'είχα φάει', choices: ['είχα φάει', 'έφαγα', 'τρώω', 'θα φάω'], en: 'I wasn’t hungry because I had eaten earlier.', hint: 'past perfect · εγώ' },
+      { text: 'Μέχρι τα δέκα {b} κιόλας πιάνο. (μαθαίνω → είχα μάθει)', answer: 'είχα μάθει', choices: ['είχα μάθει', 'έμαθα', 'μαθαίνω', 'θα μάθω'], en: 'By the age of ten I had already learned piano.', hint: 'past perfect · εγώ' },
+      { text: 'Όταν μπήκα, αυτοί {b} τη συζήτηση. (τελειώνω → είχαν τελειώσει)', answer: 'είχαν τελειώσει', choices: ['είχαν τελειώσει', 'τελείωσαν', 'τελειώνουν', 'θα τελειώσουν'], en: 'When I came in, they had finished the conversation.', hint: 'past perfect · they' },
+      { text: 'Δεν τον αναγνώρισα· {b} πάρα πολύ. (αλλάζω → είχε αλλάξει)', answer: 'είχε αλλάξει', choices: ['είχε αλλάξει', 'άλλαξε', 'αλλάζει', 'θα αλλάξει'], en: 'I didn’t recognise him; he had changed so much.', hint: 'past perfect · he' }
+    ]
+  },
+  {
+    id: 'b1-passive', level: 'B1', title: 'The passive voice',
+    short: 'Active → -ομαι: πλένω → πλένομαι; aorist -θηκα.',
+    explanation: '<p>Active verbs form a passive in <strong>-ομαι</strong>: πλένω (I wash) → <strong>πλένομαι</strong> (I wash myself / am washed). The present takes the mediopassive endings (-ομαι, -εσαι, -εται…).</p>' +
+      '<p>The passive aorist usually ends <strong>-θηκα</strong>: <em>χτίστηκε</em> (was built), <em>πλύθηκα</em> (I was washed).</p>' +
+      '<p>The doer (“by …”) is introduced with <strong>από</strong>.</p>',
+    examples: [ { gr: 'Το φαγητό μαγειρεύεται τώρα.', en: 'The food is being cooked now.' }, { gr: 'Η εκκλησία χτίστηκε τον 12ο αιώνα.', en: 'The church was built in the 12th century.' }, { gr: 'Τα παιδιά ντύνονται μόνα τους.', en: 'The children dress themselves.' } ],
+    more: '<p>Present passive = -ομαι endings; aorist passive = -θηκα/-τηκα. Agent with <strong>από</strong>: <em>χτίστηκε <strong>από</strong> τους Βυζαντινούς</em>.</p>',
+    items: [
+      { text: 'Το φαγητό {b} σιγά σιγά. (μαγειρεύω → μαγειρεύεται)', answer: 'μαγειρεύεται', choices: ['μαγειρεύεται', 'μαγειρεύει', 'μαγείρεψε', 'μαγειρεύω'], en: 'The food is being cooked slowly.', hint: 'passive · it' },
+      { text: 'Κάθε πρωί {b} με κρύο νερό. (πλένομαι)', answer: 'πλένομαι', choices: ['πλένομαι', 'πλένω', 'πλύθηκα', 'πλένεσαι'], en: 'Every morning I wash with cold water.', hint: 'mediopassive · εγώ' },
+      { text: 'Αυτά τα προϊόντα {b} σε όλο τον κόσμο. (πουλάω → πουλιούνται)', answer: 'πουλιούνται', choices: ['πουλιούνται', 'πουλάνε', 'πούλησαν', 'πουλάω'], en: 'These products are sold all over the world.', hint: 'passive · they' },
+      { text: 'Η εκκλησία {b} τον 12ο αιώνα. (χτίζω → χτίστηκε)', answer: 'χτίστηκε', choices: ['χτίστηκε', 'έχτισε', 'χτίζεται', 'χτίζει'], en: 'The church was built in the 12th century.', hint: 'passive aorist · it' },
+      { text: 'Τα παιδιά {b} μόνα τους πια. (ντύνομαι)', answer: 'ντύνονται', choices: ['ντύνονται', 'ντύνουν', 'ντύθηκαν', 'ντύνεσαι'], en: 'The children dress themselves now.', hint: 'mediopassive · they' }
+    ]
+  },
+  {
+    id: 'b1-time-clauses', level: 'B1', title: 'Time clauses (πριν, αφού, μόλις, μέχρι)',
+    short: 'before / after / as soon as / until.',
+    explanation: '<p>Linking events in time:</p>' +
+      '<div class="g-grid"><div class="g-k">πριν (να)</div><div class="g-v">before</div><div class="g-k">αφού</div><div class="g-v">after / since</div><div class="g-k">μόλις</div><div class="g-v">as soon as / once</div><div class="g-k">μέχρι / ώσπου να</div><div class="g-v">until</div></div>' +
+      '<p><em>μέχρι να</em> and <em>πριν να</em> take the subjunctive; <em>αφού</em> and <em>μόλις</em> take a normal tense.</p>',
+    examples: [ { gr: 'Πριν φύγεις, κλείσε το φως.', en: 'Before you leave, turn off the light.' }, { gr: 'Μόλις τελειώσω, θα σε πάρω.', en: 'As soon as I finish, I’ll call you.' }, { gr: 'Περίμενε μέχρι να γυρίσω.', en: 'Wait until I come back.' } ],
+    more: '<p><em>πριν</em> = before, <em>αφού</em> = after (also “since/because”), <em>μόλις</em> = the moment that, <em>μέχρι/ώσπου να</em> = until. Don’t confuse <em>πριν</em> (before) with <em>μπροστά</em> (in front of).</p>',
+    items: [
+      { text: '{b} φύγεις, κλείσε το παράθυρο. (before)', answer: 'Πριν', choices: ['Πριν', 'Αφού', 'Μόλις', 'Ενώ'], en: 'Before you leave, close the window.', hint: 'before' },
+      { text: '{b} έφαγα, ένιωσα πολύ καλύτερα. (after)', answer: 'Αφού', choices: ['Αφού', 'Πριν', 'Μέχρι', 'Αν'], en: 'After I ate, I felt much better.', hint: 'after' },
+      { text: '{b} δω τα νέα, θα σου πω. (as soon as)', answer: 'Μόλις', choices: ['Μόλις', 'Πριν', 'Αφού', 'Ενώ'], en: 'As soon as I see the news, I’ll tell you.', hint: 'as soon as' },
+      { text: 'Περίμενε εδώ {b} να γυρίσω. (until)', answer: 'μέχρι', choices: ['μέχρι', 'πριν', 'μόλις', 'αφού'], en: 'Wait here until I get back.', hint: 'until' },
+      { text: '{b} τελειώσεις, μπορούμε να βγούμε. (once / as soon as)', answer: 'Μόλις', choices: ['Μόλις', 'Ενώ', 'Πριν', 'Αν'], en: 'Once you finish, we can go out.', hint: 'as soon as / once' }
+    ]
+  },
+  {
+    id: 'b2-passive-participle', level: 'B2', title: 'Passive participle (γραμμένος)',
+    short: 'Result/state adjective in -μένος: κουρασμένος, γραμμένο.',
+    explanation: '<p>The perfect passive participle ends in <strong>-μένος / -μένη / -μένο</strong> and behaves like an adjective (agreeing in gender, number, case). It describes a resulting state:</p>' +
+      '<p>γράφω → <strong>γραμμένος</strong> (written) · κουράζομαι → <strong>κουρασμένος</strong> (tired) · κλείνω → <strong>κλεισμένος</strong>.</p>',
+    examples: [ { gr: 'Είμαι πολύ κουρασμένος.', en: 'I’m very tired.' }, { gr: 'Η πόρτα είναι κλειδωμένη.', en: 'The door is locked.' }, { gr: 'Τα τραπέζια είναι στρωμένα.', en: 'The tables are laid.' } ],
+    more: '<p>Stress on the penult: <strong>γραμμένος</strong>. It agrees like any adjective and often follows “είμαι” to describe a state (the result of the action).</p>',
+    items: [
+      { text: 'Είμαι πολύ {b} σήμερα. (κουράζομαι → κουρασμένος)', answer: 'κουρασμένος', choices: ['κουρασμένος', 'κουράζομαι', 'κούρασα', 'κουρασμένη'], en: 'I’m very tired today.', hint: 'participle · masculine' },
+      { text: 'Το γράμμα ήταν {b} στα ελληνικά. (γράφω → γραμμένο)', answer: 'γραμμένο', choices: ['γραμμένο', 'γράφει', 'έγραψε', 'γραμμένη'], en: 'The letter was written in Greek.', hint: 'participle · neuter' },
+      { text: 'Τα παιδιά είναι {b} για το σχολείο. (ετοιμάζομαι → ετοιμασμένα)', answer: 'ετοιμασμένα', choices: ['ετοιμασμένα', 'ετοιμάζουν', 'ετοίμασαν', 'ετοιμασμένος'], en: 'The children are ready for school.', hint: 'participle · neuter plural' },
+      { text: 'Βρήκα το κλειδί {b} κάτω από το χαλί. (κρύβω → κρυμμένο)', answer: 'κρυμμένο', choices: ['κρυμμένο', 'κρύβει', 'έκρυψε', 'κρυμμένη'], en: 'I found the key hidden under the rug.', hint: 'participle · neuter' },
+      { text: 'Η σαλάτα είναι ήδη {b}. (φτιάχνω → φτιαγμένη)', answer: 'φτιαγμένη', choices: ['φτιαγμένη', 'φτιάχνει', 'έφτιαξε', 'φτιαγμένο'], en: 'The salad is already made.', hint: 'participle · feminine' }
+    ]
+  },
+  {
+    id: 'b2-concessive', level: 'B2', title: 'Although & despite (αν και, παρόλο που)',
+    short: 'concession: αν και / παρόλο που / παρά / παρόλα αυτά.',
+    explanation: '<p>To say “although / even though”, use <strong>αν και</strong> or <strong>παρόλο που</strong> (+ a normal verb); <strong>μολονότι</strong> is formal.</p>' +
+      '<p><strong>παρά</strong> + noun = “despite”. <strong>παρόλα αυτά / ωστόσο</strong> = “nevertheless”.</p>',
+    examples: [ { gr: 'Αν και ήταν αργά, βγήκαμε.', en: 'Although it was late, we went out.' }, { gr: 'Παρόλο που έβρεχε, περπατήσαμε.', en: 'Even though it was raining, we walked.' }, { gr: 'Ήταν δύσκολο· ωστόσο, τα κατάφερε.', en: 'It was hard; nevertheless, he managed.' } ],
+    more: '<p><em>αν και / παρόλο που</em> introduce a clause (with a verb); <em>παρά</em> takes a noun (“despite the rain” = παρά τη βροχή). Don’t confuse with <em>παρά</em> meaning “than/to” in other contexts.</p>',
+    items: [
+      { text: '{b} ήταν κουρασμένος, συνέχισε να δουλεύει. (although)', answer: 'Αν και', choices: ['Αν και', 'Επειδή', 'Μόλις', 'Όταν'], en: 'Although he was tired, he kept working.', hint: 'although' },
+      { text: '{b} έβρεχε, πήγαμε βόλτα στην παραλία. (even though)', answer: 'Παρόλο που', choices: ['Παρόλο που', 'Γιατί', 'Αφού', 'Αν'], en: 'Even though it was raining, we walked on the beach.', hint: 'even though' },
+      { text: 'Δεν τα κατάφερε, {b} προσπάθησε πολύ. (although)', answer: 'αν και', choices: ['αν και', 'γιατί', 'όταν', 'μόλις'], en: 'He didn’t make it, although he tried hard.', hint: 'although' },
+      { text: 'Ήταν ακριβό· {b}, το αγόρασα. (nevertheless)', answer: 'παρόλα αυτά', choices: ['παρόλα αυτά', 'επειδή', 'γιατί', 'ώστε'], en: 'It was expensive; nevertheless, I bought it.', hint: 'nevertheless' },
+      { text: '{b} τις δυσκολίες, δεν τα παράτησε. (despite + noun)', answer: 'Παρά', choices: ['Παρά', 'Αν και', 'Επειδή', 'Μόλις'], en: 'Despite the difficulties, he didn’t give up.', hint: 'despite + noun' }
+    ]
+  },
+  {
+    id: 'b2-conditional-perfect', level: 'B2', title: 'Unreal past (θα είχα κάνει)',
+    short: 'If I had…, I would have…',
+    explanation: '<p>For something that didn’t happen in the past: <strong>αν + υπερσυντέλικος</strong> in the if-clause, and <strong>θα + παρατατικός</strong> (or θα + υπερσυντέλικος) in the result:</p>' +
+      '<p><em>Αν <strong>είχα</strong> φύγει νωρίτερα, <strong>θα πρόλαβα</strong> / <strong>θα είχα προλάβει</strong> το τρένο.</em></p>' +
+      '<p>The if-clause never takes θα.</p>',
+    examples: [ { gr: 'Αν το ήξερα, θα σου το έλεγα.', en: 'If I had known, I would have told you.' }, { gr: 'Αν δεν έβρεχε, θα είχαμε πάει στην παραλία.', en: 'If it hadn’t rained, we would have gone to the beach.' }, { gr: 'Τι θα έκανες αν είχες κερδίσει;', en: 'What would you have done if you had won?' } ],
+    more: '<p>If-clause = <strong>αν + υπερσυντέλικος</strong> (είχα κάνει); result = <strong>θα + παρατατικός</strong> or <strong>θα είχα + perfect</strong>. Contrast present-unreal (αν είχα…, θα έκανα).</p>',
+    items: [
+      { text: 'Αν {b} νωρίτερα, θα προλάβαινες το τρένο. (φεύγω → είχες φύγει)', answer: 'είχες φύγει', choices: ['είχες φύγει', 'έφυγες', 'φεύγεις', 'θα φύγεις'], en: 'If you had left earlier, you would have caught the train.', hint: 'if-clause · past perfect' },
+      { text: 'Αν δεν έβρεχε, {b} στην παραλία. (πηγαίνω → θα είχαμε πάει)', answer: 'θα είχαμε πάει', choices: ['θα είχαμε πάει', 'πήγαμε', 'θα πάμε', 'πηγαίναμε'], en: 'If it hadn’t rained, we would have gone to the beach.', hint: 'result · θα + past perfect' },
+      { text: 'Θα σε βοηθούσα αν {b}. (ζητάω → είχες ζητήσει)', answer: 'είχες ζητήσει', choices: ['είχες ζητήσει', 'ζήτησες', 'ζητάς', 'θα ζητήσεις'], en: 'I would have helped you if you had asked.', hint: 'if-clause · past perfect' },
+      { text: 'Αν {b} πιο προσεκτικός, δεν θα έσπαγες το ποτήρι. (είμαι → ήσουν)', answer: 'ήσουν', choices: ['ήσουν', 'είσαι', 'θα είσαι', 'ήμουν'], en: 'If you had been more careful, you wouldn’t have broken the glass.', hint: 'if-clause' },
+      { text: 'Τι {b} αν είχες κερδίσει το λαχείο; (κάνω → θα έκανες)', answer: 'θα έκανες', choices: ['θα έκανες', 'έκανες', 'κάνεις', 'θα κάνεις'], en: 'What would you have done if you had won the lottery?', hint: 'result · εσύ' }
+    ]
+  },
+  {
+    id: 'b2-dipote', level: 'B2', title: '“-ever” words (οποιοσδήποτε, οτιδήποτε)',
+    short: 'Add -δήποτε: whoever / whatever / wherever.',
+    explanation: '<p>Add <strong>-δήποτε</strong> to a question word for “-ever / any”:</p>' +
+      '<div class="g-grid"><div class="g-k">whoever / anyone</div><div class="g-v">οποιοσδήποτε</div><div class="g-k">whatever / anything</div><div class="g-v">οτιδήποτε</div><div class="g-k">wherever</div><div class="g-v">οπουδήποτε</div><div class="g-k">whenever</div><div class="g-v">οποτεδήποτε</div><div class="g-k">(by all means)</div><div class="g-v">οπωσδήποτε</div></div>' +
+      '<p><em>οποιοσδήποτε</em> agrees in gender (οποιαδήποτε, οποιοδήποτε).</p>',
+    examples: [ { gr: 'Πάρε οτιδήποτε θέλεις.', en: 'Take whatever you want.' }, { gr: 'Έλα οποτεδήποτε.', en: 'Come whenever you like.' }, { gr: 'Πρέπει οπωσδήποτε να πάω.', en: 'I absolutely have to go.' } ],
+    more: '<p><strong>οπωσδήποτε</strong> is the odd one out — it means “definitely / by all means”, not “however”. The others mean “any-/-ever”.</p>',
+    items: [
+      { text: 'Πάρε {b} θέλεις από το ψυγείο. (whatever)', answer: 'οτιδήποτε', choices: ['οτιδήποτε', 'οποιοσδήποτε', 'οπουδήποτε', 'κάτι'], en: 'Take whatever you want from the fridge.', hint: 'whatever' },
+      { text: '{b} μπορεί να κάνει αυτή τη δουλειά. (anyone, masc)', answer: 'Οποιοσδήποτε', choices: ['Οποιοσδήποτε', 'Οτιδήποτε', 'Οπουδήποτε', 'Κανένας'], en: 'Anyone can do this job.', hint: 'anyone · masculine' },
+      { text: 'Θα σε ακολουθήσω {b} κι αν πας. (wherever)', answer: 'οπουδήποτε', choices: ['οπουδήποτε', 'οτιδήποτε', 'οποτεδήποτε', 'κάπου'], en: 'I’ll follow you wherever you go.', hint: 'wherever' },
+      { text: 'Έλα να με δεις {b} θέλεις. (whenever)', answer: 'οποτεδήποτε', choices: ['οποτεδήποτε', 'οπουδήποτε', 'οτιδήποτε', 'πότε'], en: 'Come and see me whenever you like.', hint: 'whenever' },
+      { text: 'Πρέπει {b} να τελειώσουμε σήμερα. (definitely)', answer: 'οπωσδήποτε', choices: ['οπωσδήποτε', 'οτιδήποτε', 'οπουδήποτε', 'ίσως'], en: 'We must definitely finish today.', hint: 'definitely / by all means' }
+    ]
+  }
+);
