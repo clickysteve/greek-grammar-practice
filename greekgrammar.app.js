@@ -431,7 +431,10 @@
   }
   function startReview() {
     var qs = reviewQuestions(); if (!qs.length) return;
-    state.session = { kind: 'review', free: false, pool: null, queue: shuffle(qs), target: qs.length,
+    // How many items each due point contributes — a point only advances once ALL are done.
+    var expected = {};
+    qs.forEach(function (q) { expected[q.pointId] = (expected[q.pointId] || 0) + 1; });
+    state.session = { kind: 'review', free: false, pool: null, queue: shuffle(qs), expected: expected, target: qs.length,
       done: 0, correctCount: 0, results: {}, current: null, answered: false };
     nextQuestion();
   }
@@ -459,20 +462,30 @@
   }
   function finishSession() {
     var s = state.session;
-    var qTotal = 0, qRight = 0;
+    var qTotal = 0, qRight = 0, skipped = 0;
     Object.keys(s.results).forEach(function (pid) {
       var r = s.results[pid]; qTotal += r.total; qRight += r.right;
-      if (s.kind === 'review') srsSchedule(pid, r.total > 0 && r.right / r.total >= 0.6);
-      else recordPractice(pid, r.right, r.total);
+      if (s.kind === 'review') {
+        // Only advance/reschedule a point once ALL its items were answered this session.
+        // Partially-done points are left untouched so they stay due (partial complete).
+        var need = (s.expected && s.expected[pid]) || r.total;
+        if (r.total >= need) srsSchedule(pid, r.total > 0 && r.right / r.total >= 0.6);
+        else skipped += 1;
+      } else {
+        recordPractice(pid, r.right, r.total);
+      }
     });
     save();
     var kind = s.kind;
+    // Early quit on a review that left points unfinished (still in the queue or never reached).
+    var partial = kind === 'review' && (skipped > 0 || s.queue.length > 0);
     state.session = null;
     state.lessonPoint = null;
     state.view = (kind === 'review') ? 'reviews' : 'lessons'; // return to the list, not the single lesson
     root.innerHTML = '<div class="g-done"><div class="g-done-tick">✓</div>' +
-      '<div class="g-done-title">' + (kind === 'review' ? 'Review complete' : 'Practice complete') + '</div>' +
-      '<div class="g-done-sub">' + qRight + ' / ' + qTotal + ' correct first try</div>' +
+      '<div class="g-done-title">' + (kind === 'review' ? (partial ? 'Review saved' : 'Review complete') : 'Practice complete') + '</div>' +
+      '<div class="g-done-sub">' + qRight + ' / ' + qTotal + ' correct first try' +
+        (partial ? ' · unfinished points stay due for review' : '') + '</div>' +
       '<button class="btn-primary" id="gBackDash">Back to grammar</button>' +
       '<div class="g-done-hint">press Enter</div></div>';
     el('gBackDash').addEventListener('click', render);

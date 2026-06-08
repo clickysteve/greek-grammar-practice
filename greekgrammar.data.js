@@ -16,7 +16,8 @@ window.GRAMMAR_LEVELS = [
   { key: 'A1', label: 'A1 — Beginner' },
   { key: 'A2', label: 'A2 — Elementary' },
   { key: 'B1', label: 'B1 — Intermediate' },
-  { key: 'B2', label: 'B2 — Upper intermediate' }
+  { key: 'B2', label: 'B2 — Upper intermediate' },
+  { key: 'C1', label: 'C1 — Advanced' }
 ];
 
 window.GRAMMAR = [
@@ -1459,6 +1460,126 @@ window.GRAMMAR.push(
       { text: 'Ήταν κουρασμένος και αργοπορημένος. {b}, δεν πήγε καθόλου. (in short)', answer: 'Με λίγα λόγια', choices: ['Με λίγα λόγια', 'Επιπλέον', 'Δηλαδή', 'Με την ευκαιρία'], en: 'He was tired and late. In short, he didn’t go at all.', hint: 'in short / to sum up' },
       { text: 'Δεν μου αρέσει. {b}, θα το πάρω για το παιδί. (nevertheless)', answer: 'Παρ’ όλα αυτά', choices: ['Παρ’ όλα αυτά', 'Κατά τη γνώμη μου', 'Πρώτον', 'Δηλαδή'], en: 'I don’t like it. Nevertheless, I’ll get it for the child.', hint: 'nevertheless / even so' },
       { text: '{b}, ξέρεις τι έγινε με τη Μαρία; (by the way)', answer: 'Με την ευκαιρία', choices: ['Με την ευκαιρία', 'Με λίγα λόγια', 'Συνεπώς', 'Δηλαδή'], en: 'By the way, do you know what happened with Maria?', hint: 'by the way' }
+    ]
+  }
+);
+
+/* ===================== C1 — Advanced ===================== */
+window.GRAMMAR.push(
+  {
+    id: 'c1-formal-connectors', level: 'C1', title: 'Formal connectors (ωστόσο, προκειμένου να)',
+    short: 'Register markers for writing & formal speech.',
+    explanation: '<p>Higher-register links used in writing and formal speech:</p>' +
+      '<div class="g-grid"><div class="g-k">however</div><div class="g-v">ωστόσο / εντούτοις</div><div class="g-k">in order to</div><div class="g-v">προκειμένου να</div><div class="g-k">given that</div><div class="g-v">δεδομένου ότι</div><div class="g-k">provided / as long as</div><div class="g-v">εφόσον</div><div class="g-k">although</div><div class="g-v">παρότι / μολονότι</div></div>',
+    examples: [ { gr: 'Προσπάθησε· ωστόσο, απέτυχε.', en: 'He tried; however, he failed.' }, { gr: 'Δούλεψε σκληρά προκειμένου να πετύχει.', en: 'He worked hard in order to succeed.' }, { gr: 'Δεδομένου ότι βρέχει, μείναμε σπίτι.', en: 'Given that it’s raining, we stayed home.' } ],
+    more: '<p>These belong to the formal register (καθαρεύουσα-flavoured). Everyday equivalents: ωστόσο ≈ όμως, προκειμένου να ≈ για να, δεδομένου ότι ≈ επειδή, εφόσον ≈ αφού, παρότι ≈ αν και.</p>',
+    items: [
+      { text: 'Προσπάθησε πολύ· {b}, απέτυχε. (however — formal)', answer: 'ωστόσο', choices: ['ωστόσο', 'επειδή', 'προκειμένου', 'εφόσον'], en: 'He tried hard; however, he failed.', hint: 'however (formal)' },
+      { text: 'Δούλεψε σκληρά {b} να πετύχει. (in order to)', answer: 'προκειμένου', choices: ['προκειμένου', 'δεδομένου', 'παρότι', 'καθώς'], en: 'He worked hard in order to succeed.', hint: 'in order to (+ να)' },
+      { text: '{b} ότι δεν υπάρχουν στοιχεία, η υπόθεση έκλεισε. (given that)', answer: 'Δεδομένου', choices: ['Δεδομένου', 'Εφόσον', 'Ωστόσο', 'Παρότι'], en: 'Given that there’s no evidence, the case was closed.', hint: 'given that' },
+      { text: 'Θα σε βοηθήσω, {b} μου το ζητήσεις. (provided that)', answer: 'εφόσον', choices: ['εφόσον', 'ωστόσο', 'προκειμένου', 'εντούτοις'], en: 'I’ll help you, provided you ask me.', hint: 'provided that / as long as' },
+      { text: '{b} ήταν κουρασμένος, συνέχισε. (although — formal)', answer: 'Παρότι', choices: ['Παρότι', 'Εφόσον', 'Δεδομένου', 'Προκειμένου'], en: 'Although he was tired, he carried on.', hint: 'although (formal)' }
+    ]
+  },
+  {
+    id: 'c1-nominalization', level: 'C1', title: 'Nominalizing clauses (το να, το γεγονός ότι)',
+    short: 'Turn a whole clause into a noun.',
+    explanation: '<p>A clause can act as a noun:</p>' +
+      '<p><strong>το να</strong> + verb = “the act of …ing”: <em>Το να διαβάζεις βοηθάει.</em> It declines like a neuter (<em>του να, στο να</em>).</p>' +
+      '<p><strong>το (γεγονός) ότι</strong> = “the fact that”: <em>Με ενοχλεί το γεγονός ότι άργησες.</em></p>',
+    examples: [ { gr: 'Το να ζεις στο εξωτερικό έχει δυσκολίες.', en: 'Living abroad has its difficulties.' }, { gr: 'Με στενοχωρεί το γεγονός ότι έφυγες.', en: 'The fact that you left saddens me.' }, { gr: 'Είμαι υπέρ του να αλλάξουμε σχέδιο.', en: 'I’m in favour of changing the plan.' } ],
+    more: '<p>το να + verb names an action (“the …ing”) and takes case (του να, στο να, με το να). το (γεγονός) ότι names a fact. Both let an entire clause sit where a noun would.</p>',
+    items: [
+      { text: '{b} διαβάζεις κάθε μέρα βοηθάει πολύ. (the act of reading)', answer: 'Το να', choices: ['Το να', 'Που', 'Ότι', 'Να'], en: 'Reading every day helps a lot.', hint: 'το να + verb = the act of' },
+      { text: 'Με ενοχλεί {b} ότι δεν με ειδοποίησες. (the fact that)', answer: 'το γεγονός', choices: ['το γεγονός', 'να', 'αν', 'όσο'], en: 'It bothers me that you didn’t let me know.', hint: 'the fact that (το γεγονός ότι)' },
+      { text: '{b} να ζεις μόνος έχει και πλεονεκτήματα. (living alone)', answer: 'Το να', choices: ['Το να', 'Αν', 'Που', 'Όταν'], en: 'Living alone has its advantages too.', hint: 'nominalized clause' },
+      { text: 'Είμαι υπέρ {b} να αλλάξουμε σχέδιο. (of …ing → genitive)', answer: 'του να', choices: ['του να', 'το να', 'που', 'ότι'], en: 'I’m in favour of changing the plan.', hint: 'genitive of the nominalized clause' }
+    ]
+  },
+  {
+    id: 'c1-cleft', level: 'C1', title: 'Emphasis with Αυτό που…',
+    short: 'Cleft sentences move the focus: Αυτό που θέλω είναι…',
+    explanation: '<p>To foreground an element, “cleft” the sentence with <strong>Αυτό που … είναι …</strong> or <strong>Εκείνος που …</strong>:</p>' +
+      '<p><em>Αυτό που θέλω είναι ησυχία.</em> = What I want is quiet. <em>Εκείνος που έφταιγε ήταν αυτός.</em> = The one at fault was him.</p>',
+    examples: [ { gr: 'Αυτό που με ενοχλεί είναι ο θόρυβος.', en: 'What bothers me is the noise.' }, { gr: 'Αυτό που χρειαζόμαστε είναι χρόνος.', en: 'What we need is time.' }, { gr: 'Εκείνο που μετράει είναι η πρόθεση.', en: 'What counts is the intention.' } ],
+    more: '<p>Cleft structures (Αυτό που … είναι …, Εκείνος που …) put the emphasised part in focus, often for contrast. The verb after the cleft phrase is είναι/ήταν.</p>',
+    items: [
+      { text: '{b} με ενοχλεί είναι ο θόρυβος. (what)', answer: 'Αυτό που', choices: ['Αυτό που', 'Ότι', 'Αν', 'Όποιος'], en: 'What bothers me is the noise.', hint: 'what … (cleft)' },
+      { text: '{b} χρειαζόμαστε είναι περισσότερος χρόνος. (what)', answer: 'Αυτό που', choices: ['Αυτό που', 'Που', 'Να', 'Όσο'], en: 'What we need is more time.', hint: 'what we need is…' },
+      { text: '{b} έφταιγε ήταν ο ίδιος, όχι εσύ. (the one who)', answer: 'Εκείνος που', choices: ['Εκείνος που', 'Αυτό που', 'Ό,τι', 'Όποιος'], en: 'The one at fault was himself, not you.', hint: 'the one who (emphatic)' },
+      { text: 'Δεν είναι τα λεφτά· {b} μετράει είναι η πρόθεση. (what)', answer: 'αυτό που', choices: ['αυτό που', 'ότι', 'να', 'όσο'], en: 'It’s not the money; what counts is the intention.', hint: 'what counts is…' }
+    ]
+  },
+  {
+    id: 'c1-concessive-advanced', level: 'C1', title: 'Whatever, however (ό,τι και να)',
+    short: '“No matter …”: question word + και να + verb.',
+    explanation: '<p>“No matter what/how/where” = <strong>question word + και να + verb</strong> (subjunctive):</p>' +
+      '<div class="g-grid"><div class="g-k">whatever</div><div class="g-v">ό,τι και να</div><div class="g-k">however much</div><div class="g-v">όσο και να</div><div class="g-k">wherever</div><div class="g-v">όπου και να</div><div class="g-k">whoever</div><div class="g-v">όποιος και να</div></div>',
+    examples: [ { gr: 'Ό,τι και να πεις, δεν αλλάζω γνώμη.', en: 'Whatever you say, I won’t change my mind.' }, { gr: 'Όσο και να προσπαθώ, δεν τα καταφέρνω.', en: 'However hard I try, I can’t manage.' }, { gr: 'Όπου και να πας, θα σε βρω.', en: 'Wherever you go, I’ll find you.' } ],
+    more: '<p>Pattern: question word + και να + subjunctive. Note <strong>ό,τι</strong> (whatever — with the comma) versus <strong>ότι</strong> (that). The “και” is what gives the concessive “no matter” sense.</p>',
+    items: [
+      { text: '{b} και να πεις, δεν θα αλλάξω γνώμη. (whatever)', answer: 'Ό,τι', choices: ['Ό,τι', 'Όσο', 'Όπου', 'Όποιος'], en: 'Whatever you say, I won’t change my mind.', hint: 'whatever (+ και να)' },
+      { text: '{b} και να προσπαθώ, δεν τα καταφέρνω. (however much)', answer: 'Όσο', choices: ['Όσο', 'Ό,τι', 'Όπου', 'Όποτε'], en: 'However hard I try, I can’t manage.', hint: 'however much' },
+      { text: '{b} και να πας, θα σε βρω. (wherever)', answer: 'Όπου', choices: ['Όπου', 'Όσο', 'Ό,τι', 'Όποιος'], en: 'Wherever you go, I’ll find you.', hint: 'wherever' },
+      { text: '{b} και να είναι, δεν τον φοβάμαι. (whoever)', answer: 'Όποιος', choices: ['Όποιος', 'Ό,τι', 'Όσο', 'Όπου'], en: 'Whoever he is, I’m not afraid of him.', hint: 'whoever' }
+    ]
+  },
+  {
+    id: 'c1-causative', level: 'C1', title: 'Causative (κάνω κάποιον να)',
+    short: 'make / get / let someone do something.',
+    explanation: '<p>“Make/have/get someone to do” = verb + object + <strong>να</strong> + verb:</p>' +
+      '<div class="g-grid"><div class="g-k">make someone</div><div class="g-v">κάνω κάποιον να</div><div class="g-k">get / set someone</div><div class="g-v">βάζω κάποιον να</div><div class="g-k">let / allow someone</div><div class="g-v">αφήνω κάποιον να</div></div>' +
+      '<p>The object is in the accusative: <em>Με έκανε να γελάσω.</em></p>',
+    examples: [ { gr: 'Η ταινία με έκανε να κλάψω.', en: 'The film made me cry.' }, { gr: 'Τον έβαλα να πλύνει τα πιάτα.', en: 'I got him to wash the dishes.' }, { gr: 'Δεν την άφησαν να βγει.', en: 'They didn’t let her go out.' } ],
+    more: '<p>All take object (accusative) + να + verb. κάνω = make, βάζω = get/set someone to, αφήνω = let/allow. The clitic comes before the main verb: <em>Με έκανε να…</em></p>',
+    items: [
+      { text: 'Η ταινία με {b} να κλάψω. (made)', answer: 'έκανε', choices: ['έκανε', 'άφησε', 'έβαλε', 'βοήθησε'], en: 'The film made me cry.', hint: 'make someone do (κάνω … να)' },
+      { text: 'Τον {b} να πλύνει τα πιάτα. (got / set him to)', answer: 'έβαλα', choices: ['έβαλα', 'έκανα', 'άφησα', 'είδα'], en: 'I got him to wash the dishes.', hint: 'set someone to (βάζω … να)' },
+      { text: 'Μη με {b} να περιμένω. (make)', answer: 'κάνεις', choices: ['κάνεις', 'αφήνεις', 'βάζεις', 'βλέπεις'], en: 'Don’t make me wait.', hint: 'make me (κάνω … να)' },
+      { text: 'Οι γονείς της δεν την {b} να βγει. (let)', answer: 'άφησαν', choices: ['άφησαν', 'έκαναν', 'έβαλαν', 'είπαν'], en: 'Her parents didn’t let her go out.', hint: 'let someone (αφήνω … να)' }
+    ]
+  },
+  {
+    id: 'c1-passive-agent', level: 'C1', title: 'Agent & formal passives',
+    short: 'από marks the agent; learned -είται/-ούται verbs.',
+    explanation: '<p>The <strong>agent</strong> of a passive is marked with <strong>από</strong>: <em>Το βιβλίο γράφτηκε από τον συγγραφέα.</em></p>' +
+      '<p>Formal/learned verbs keep a 3rd-person <strong>-είται/-ούται</strong> passive: αποτελείται από (consists of), θεωρείται (is considered), χρησιμοποιείται (is used), οφείλεται σε (is due to).</p>',
+    examples: [ { gr: 'Το άγαλμα φτιάχτηκε από έναν γλύπτη.', en: 'The statue was made by a sculptor.' }, { gr: 'Η ομάδα αποτελείται από δέκα μέλη.', en: 'The team consists of ten members.' }, { gr: 'Θεωρείται ο καλύτερος.', en: 'He is considered the best.' } ],
+    more: '<p>Agent = από + accusative. The learned passives (αποτελείται, θεωρείται, χρησιμοποιείται, οφείλεται, πρόκειται) are very common in formal/written Greek and mostly appear in the 3rd person.</p>',
+    items: [
+      { text: 'Το άγαλμα φτιάχτηκε {b} έναν διάσημο γλύπτη. (by — agent)', answer: 'από', choices: ['από', 'με', 'σε', 'για'], en: 'The statue was made by a famous sculptor.', hint: 'agent of a passive' },
+      { text: 'Η ομάδα {b} από δέκα μέλη. (consists of)', answer: 'αποτελείται', choices: ['αποτελείται', 'αποτελεί', 'αποτέλεσε', 'αποτελούν'], en: 'The team consists of ten members.', hint: 'formal passive: consists of' },
+      { text: 'Αυτή η λέξη {b} σπάνια. (is used)', answer: 'χρησιμοποιείται', choices: ['χρησιμοποιείται', 'χρησιμοποιεί', 'χρησιμοποίησε', 'χρησιμοποιούν'], en: 'This word is rarely used.', hint: 'formal passive: is used' },
+      { text: 'Ο Σωκράτης {b} πατέρας της φιλοσοφίας. (is considered)', answer: 'θεωρείται', choices: ['θεωρείται', 'θεωρεί', 'θεώρησε', 'θεωρούν'], en: 'Socrates is considered the father of philosophy.', hint: 'formal passive: is considered' }
+    ]
+  },
+  {
+    id: 'c1-participles-formal', level: 'C1', title: 'Formal participles (-ων, -μένος)',
+    short: 'Declinable participles used as adjectives/nouns.',
+    explanation: '<p>Beyond the invariable -οντας, formal Greek uses <strong>declinable</strong> participles:</p>' +
+      '<p>Perfect passive <strong>-μένος/-μένη/-μένο</strong> works as an adjective and agrees: <em>κουρασμένος</em> (tired), <em>γραμμένο</em> (written).</p>' +
+      '<p>Learned active <strong>-ων/-ουσα/-ον</strong>: <em>ο διευθύνων σύμβουλος</em> (managing director), <em>οι ενδιαφερόμενοι</em> (the interested parties).</p>',
+    examples: [ { gr: 'Ήταν πολύ κουρασμένος.', en: 'He was very tired.' }, { gr: 'Βρήκα ένα γράμμα γραμμένο στα ελληνικά.', en: 'I found a letter written in Greek.' }, { gr: 'Οι ενδιαφερόμενοι ας δηλώσουν.', en: 'Those interested should register.' } ],
+    more: '<p>-μένος is the perfect passive participle as an adjective (agrees in gender/number/case). The active -ων/-ουσα/-ον is learned and survives mostly in fixed expressions (ο διευθύνων σύμβουλος, ο επικεφαλής, τα συμβαίνοντα).</p>',
+    items: [
+      { text: 'Ήταν πολύ {b} μετά τη δουλειά. (tired)', answer: 'κουρασμένος', choices: ['κουρασμένος', 'κουράζοντας', 'κουράζει', 'κούρασε'], en: 'He was very tired after work.', hint: 'passive participle -μένος as adjective' },
+      { text: 'Βρήκα ένα γράμμα {b} στα ελληνικά. (written)', answer: 'γραμμένο', choices: ['γραμμένο', 'γράφοντας', 'έγραψε', 'γράφει'], en: 'I found a letter written in Greek.', hint: 'perfect passive participle -μένο' },
+      { text: 'Η πόρτα ήταν {b} όλη μέρα. (closed)', answer: 'κλειστή', choices: ['κλειστή', 'κλείνοντας', 'κλείνει', 'έκλεισε'], en: 'The door was closed all day.', hint: 'participle/adjective, feminine' },
+      { text: 'Οι {b} ας δηλώσουν συμμετοχή. (those interested)', answer: 'ενδιαφερόμενοι', choices: ['ενδιαφερόμενοι', 'ενδιαφέροντας', 'ενδιαφέρουν', 'ενδιαφερθεί'], en: 'Those interested should register.', hint: 'declinable active participle' }
+    ]
+  },
+  {
+    id: 'c1-stance-adverbs', level: 'C1', title: 'Hedging & stance adverbs',
+    short: 'προφανώς, ενδεχομένως, μάλλον, οπωσδήποτε…',
+    explanation: '<p>Epistemic adverbs signal how certain or probable a statement is:</p>' +
+      '<div class="g-grid"><div class="g-k">probably / rather</div><div class="g-v">μάλλον</div><div class="g-k">possibly</div><div class="g-v">ενδεχομένως / πιθανώς</div><div class="g-k">obviously</div><div class="g-v">προφανώς</div><div class="g-k">definitely</div><div class="g-v">οπωσδήποτε</div><div class="g-k">un/fortunately</div><div class="g-v">δυστυχώς / ευτυχώς</div></div>',
+    examples: [ { gr: 'Μάλλον θα αργήσει.', en: 'He’ll probably be late.' }, { gr: 'Προφανώς έχεις δίκιο.', en: 'You’re obviously right.' }, { gr: 'Δυστυχώς δεν πρόλαβα.', en: 'Unfortunately I didn’t make it.' } ],
+    more: '<p>These adverbs hedge or strengthen a claim and usually sit at the start of the sentence or just before the verb: μάλλον/πιθανώς/ενδεχομένως (probably/possibly), προφανώς/οπωσδήποτε (obviously/definitely), δυστυχώς/ευτυχώς (un/fortunately).</p>',
+    items: [
+      { text: '{b} θα αργήσει, όπως πάντα. (probably)', answer: 'Μάλλον', choices: ['Μάλλον', 'Οπωσδήποτε', 'Καθόλου', 'Ποτέ'], en: 'He’ll probably be late, as always.', hint: 'probably / rather' },
+      { text: '{b} έχεις δίκιο, δεν το είχα σκεφτεί. (obviously)', answer: 'Προφανώς', choices: ['Προφανώς', 'Ίσως', 'Δυστυχώς', 'Σπάνια'], en: 'You’re obviously right, I hadn’t thought of it.', hint: 'obviously' },
+      { text: 'Θα έρθω {b}, μην ανησυχείς. (definitely)', answer: 'οπωσδήποτε', choices: ['οπωσδήποτε', 'ενδεχομένως', 'μάλλον', 'ίσως'], en: 'I’ll definitely come, don’t worry.', hint: 'definitely' },
+      { text: '{b}, δεν πρόλαβα να σε ειδοποιήσω. (unfortunately)', answer: 'Δυστυχώς', choices: ['Δυστυχώς', 'Ευτυχώς', 'Προφανώς', 'Οπωσδήποτε'], en: 'Unfortunately, I didn’t manage to let you know.', hint: 'unfortunately' }
     ]
   }
 );
