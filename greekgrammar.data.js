@@ -1583,3 +1583,59 @@ window.GRAMMAR.push(
     ]
   }
 );
+
+/* More varied sentences for the thinner A1 points (bigger free-run pool, less repetition). */
+(function () {
+  var MORE = {
+    'a1-be': [
+      { text: 'Εμείς {b} από την Ελλάδα. (είμαι)', answer: 'είμαστε', choices: ['είμαι', 'είμαστε', 'είναι', 'είστε'], en: 'We are from Greece.', hint: 'be · εμείς' },
+      { text: 'Εσείς {b} έτοιμοι; (είμαι)', answer: 'είστε', choices: ['είσαι', 'είστε', 'είναι', 'είμαστε'], en: 'Are you (pl) ready?', hint: 'be · εσείς' },
+      { text: 'Σήμερα {b} Δευτέρα. (είμαι)', answer: 'είναι', choices: ['είναι', 'είμαι', 'είσαι', 'είμαστε'], en: 'Today is Monday.', hint: 'be · it' },
+      { text: 'Δεν {b} κουρασμένος, είμαι χαρούμενος. (είμαι)', answer: 'είμαι', choices: ['είμαι', 'είσαι', 'είναι', 'είμαστε'], en: 'I’m not tired, I’m happy.', hint: 'be · εγώ' }
+    ],
+    'a1-have': [
+      { text: 'Εμείς {b} ένα μικρό σκύλο. (έχω)', answer: 'έχουμε', choices: ['έχω', 'έχουμε', 'έχει', 'έχουν'], en: 'We have a small dog.', hint: 'have · εμείς' },
+      { text: 'Εσείς {b} παιδιά; (έχω)', answer: 'έχετε', choices: ['έχεις', 'έχετε', 'έχουν', 'έχουμε'], en: 'Do you (pl) have children?', hint: 'have · εσείς' },
+      { text: 'Οι γείτονες {b} ωραίο μπαλκόνι. (έχω)', answer: 'έχουν', choices: ['έχω', 'έχεις', 'έχει', 'έχουν'], en: 'The neighbours have a nice balcony.', hint: 'have · they' },
+      { text: 'Δεν {b} χρόνο σήμερα. (έχω)', answer: 'έχω', choices: ['έχω', 'έχεις', 'έχει', 'έχουμε'], en: 'I don’t have time today.', hint: 'have · εγώ' }
+    ],
+    'a1-adjective-agreement': [
+      { text: 'Μια {b} μέρα! (ωραίος)', answer: 'ωραία', choices: ['ωραίος', 'ωραία', 'ωραίο', 'ωραίες'], en: 'A nice day!', hint: 'feminine (η μέρα)' },
+      { text: 'Ένας {b} καφές. (ζεστός)', answer: 'ζεστός', choices: ['ζεστός', 'ζεστή', 'ζεστό', 'ζεστοί'], en: 'A hot coffee.', hint: 'masculine (ο καφές)' },
+      { text: 'Τα παιδιά είναι {b}. (μικρός)', answer: 'μικρά', choices: ['μικρά', 'μικροί', 'μικρές', 'μικρό'], en: 'The children are small.', hint: 'neuter plural' },
+      { text: 'Οι δρόμοι είναι {b}. (μεγάλος)', answer: 'μεγάλοι', choices: ['μεγάλοι', 'μεγάλες', 'μεγάλα', 'μεγάλος'], en: 'The streets are big.', hint: 'masculine plural' }
+    ],
+    'a1-demonstratives': [
+      { text: '{b} τα παπούτσια είναι ακριβά. (these, neuter pl)', answer: 'Αυτά', choices: ['Αυτά', 'Αυτές', 'Αυτοί', 'Εκείνα'], en: 'These shoes are expensive.', hint: 'these · neuter plural' },
+      { text: 'Ποιος είναι {b} ο κύριος; (that, masc)', answer: 'εκείνος', choices: ['εκείνος', 'εκείνη', 'αυτό', 'εκείνο'], en: 'Who is that gentleman?', hint: 'that · masculine' },
+      { text: 'Μου αρέσει {b} το φόρεμα. (this, neuter)', answer: 'αυτό', choices: ['αυτό', 'αυτή', 'εκείνος', 'αυτός'], en: 'I like this dress.', hint: 'this · neuter' },
+      { text: '{b} οι μέρες ήταν δύσκολες. (those, fem pl)', answer: 'Εκείνες', choices: ['Εκείνες', 'Εκείνοι', 'Αυτές', 'Εκείνα'], en: 'Those days were hard.', hint: 'those · feminine plural' }
+    ],
+    'a1-question-words': [
+      { text: '{b} κοστίζει αυτό;', answer: 'Πόσο', choices: ['Πόσο', 'Πότε', 'Πού', 'Ποιος'], en: 'How much does this cost?', hint: 'how much' },
+      { text: '{b} φεύγει το τρένο;', answer: 'Πότε', choices: ['Πότε', 'Πού', 'Πώς', 'Τι'], en: 'When does the train leave?', hint: 'when' },
+      { text: '{b} είναι η τσάντα σου;', answer: 'Ποια', choices: ['Ποια', 'Ποιος', 'Πού', 'Πώς'], en: 'Which one is your bag?', hint: 'which (feminine)' }
+    ],
+    'a1-place-prepositions': [
+      { text: 'Η λάμπα κρέμεται {b} από το τραπέζι. (above)', answer: 'πάνω', choices: ['πάνω', 'κάτω', 'δίπλα', 'μέσα'], en: 'The lamp hangs above the table.', hint: 'above (πάνω από)' },
+      { text: 'Στάθηκα {b} στον φίλο μου. (next to)', answer: 'δίπλα', choices: ['δίπλα', 'πίσω', 'κάτω', 'μακριά'], en: 'I stood next to my friend.', hint: 'next to' },
+      { text: 'Το σκυλί είναι {b} στο σπίτι. (inside)', answer: 'μέσα', choices: ['μέσα', 'έξω', 'πάνω', 'κάτω'], en: 'The dog is inside the house.', hint: 'inside (μέσα σε)' },
+      { text: 'Το αμάξι είναι σταθμευμένο {b} από το κτίριο. (in front of)', answer: 'μπροστά', choices: ['μπροστά', 'πίσω', 'πάνω', 'μέσα'], en: 'The car is parked in front of the building.', hint: 'in front of' }
+    ],
+    'a1-numbers-agreement': [
+      { text: 'Έχω {b} γάτες. (four · fem)', answer: 'τέσσερις', choices: ['τέσσερις', 'τέσσερα', 'τεσσάρων', 'τέσσερος'], en: 'I have four cats.', hint: 'four · feminine' },
+      { text: 'Ήρθαν {b} γυναίκες. (three · fem)', answer: 'τρεις', choices: ['τρεις', 'τρία', 'τριών', 'τρες'], en: 'Three women came.', hint: 'three · feminine' },
+      { text: 'Θέλω {b} ποτήρι νερό. (one · neuter)', answer: 'ένα', choices: ['ένα', 'έναν', 'μία', 'ένας'], en: 'I want one glass of water.', hint: 'one · neuter' },
+      { text: 'Αγόρασα {b} εφημερίδα. (one · fem)', answer: 'μία', choices: ['μία', 'ένα', 'έναν', 'ένας'], en: 'I bought one newspaper.', hint: 'one · feminine' }
+    ],
+    'a1-dates-days': [
+      { text: 'Έχουμε ραντεβού {b} Τρίτη. (on Tuesday)', answer: 'την', choices: ['την', 'τη', 'στην', 'ο'], en: 'We have an appointment on Tuesday.', hint: 'on + day (accusative)' },
+      { text: 'Οι διακοπές είναι {b} Αύγουστο. (in August)', answer: 'τον', choices: ['τον', 'στον', 'το', 'τη'], en: 'The holidays are in August.', hint: 'in + month' },
+      { text: 'Γυρίζω σπίτι {b} βράδυ. (in the evening)', answer: 'το', choices: ['το', 'τη', 'στο', 'τον'], en: 'I come home in the evening.', hint: 'το βράδυ' },
+      { text: 'Η γιορτή είναι στις 28 {b}. (October — genitive)', answer: 'Οκτωβρίου', choices: ['Οκτωβρίου', 'Οκτώβριος', 'Οκτώβριο', 'Οκτωβρίους'], en: 'The celebration is on the 28th of October.', hint: 'date: genitive of the month' }
+    ]
+  };
+  (window.GRAMMAR || []).forEach(function (p) {
+    if (MORE[p.id]) p.items = p.items.concat(MORE[p.id]);
+  });
+})();
