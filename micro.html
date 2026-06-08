@@ -21,6 +21,7 @@
     .card { border:1px solid var(--border); border-radius:24px; background:#12161b; padding:30px 22px; text-align:center; }
     .q-label { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; }
     .q-main { font-size:clamp(40px,9vw,72px); font-weight:800; letter-spacing:-.03em; margin:10px 0 6px; }
+    .q-main.small { font-size:clamp(20px,4.5vw,30px); font-weight:600; letter-spacing:-.01em; line-height:1.35; }
     .q-sub { font-size:14px; color:var(--muted); }
     .swatch { display:inline-block; width:120px; height:120px; border-radius:18px; border:2px solid var(--border); box-shadow:inset 0 0 0 1px rgba(0,0,0,.2); }
     .choices { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px; }
@@ -66,7 +67,6 @@
       ['γυναίκα', 'η'], ['φίλη', 'η'], ['θάλασσα', 'η'], ['πόλη', 'η'], ['καρδιά', 'η'], ['μέρα', 'η'], ['νύχτα', 'η'], ['ώρα', 'η'], ['δουλειά', 'η'], ['αγάπη', 'η'], ['μητέρα', 'η'], ['γλώσσα', 'η'], ['χώρα', 'η'], ['πόρτα', 'η'],
       ['σπίτι', 'το'], ['παιδί', 'το'], ['νερό', 'το'], ['βιβλίο', 'το'], ['αυτοκίνητο', 'το'], ['τραπέζι', 'το'], ['δέντρο', 'το'], ['ψωμί', 'το'], ['κρασί', 'το'], ['γάλα', 'το'], ['φαγητό', 'το'], ['παράθυρο', 'το'], ['λουλούδι', 'το'], ['βουνό', 'το']
     ];
-    var GENDER = { 'ο': 'm', 'η': 'f', 'το': 'n' };
     // [name, hex]
     var COLOURS = [
       ['κόκκινο', '#e53935'], ['μπλε', '#1e88e5'], ['πράσινο', '#43a047'], ['κίτρινο', '#fdd835'], ['πορτοκαλί', '#fb8c00'],
@@ -93,15 +93,24 @@
       ['ο άνθρωπος', 'οι άνθρωποι', ['οι άνθρωπες', 'τα άνθρωπα', 'οι ανθρώπους']],
       ['η γλώσσα', 'οι γλώσσες', ['οι γλώσσα', 'οι γλώσσοι', 'τα γλώσσα']]
     ];
-    // pronoun/adjective that agrees in gender: {m, f, n, en}
-    var AGREE = [
-      { m: 'τέτοιος', f: 'τέτοια', n: 'τέτοιο', en: 'such (a)' },
-      { m: 'κάποιος', f: 'κάποια', n: 'κάποιο', en: 'some / a certain' },
-      { m: 'άλλος', f: 'άλλη', n: 'άλλο', en: 'other / another' },
-      { m: 'ίδιος', f: 'ίδια', n: 'ίδιο', en: 'the same' },
-      { m: 'όποιος', f: 'όποια', n: 'όποιο', en: 'whichever' },
-      { m: 'πόσος', f: 'πόση', n: 'πόσο', en: 'how much' },
-      { m: 'όλος', f: 'όλη', n: 'όλο', en: 'all / whole' }
+    // Usage of indefinite/determiner words — which word fits the context.
+    // Distractors are in the SAME form as the answer, so only the MEANING is tested.
+    var USAGE = [
+      { gr: 'Δεν έχω ξαναδεί ___ ομορφιά!', en: 'I’ve never seen such beauty!', a: 'τέτοια', c: ['τέτοια', 'κάποια', 'άλλη', 'ίδια'] },
+      { gr: '___ μέρα θα γίνεις διάσημος.', en: 'Some day you’ll be famous.', a: 'Κάποια', c: ['Κάποια', 'Τέτοια', 'Άλλη', 'Ίδια'] },
+      { gr: 'Θέλω ___ καφέ· αυτός κρύωσε.', en: 'I want another coffee; this one got cold.', a: 'άλλον', c: ['άλλον', 'κάποιον', 'τέτοιον', 'ίδιο'] },
+      { gr: 'Φοράμε τα ___ παπούτσια!', en: 'We’re wearing the same shoes!', a: 'ίδια', c: ['ίδια', 'άλλα', 'κάποια', 'τέτοια'] },
+      { gr: '___ θέλει, ας έρθει.', en: 'Whoever wants to can come.', a: 'Όποιος', c: ['Όποιος', 'Κάποιος', 'Άλλος', 'Κανένας'] },
+      { gr: '___ μέρα πηγαίνω γυμναστήριο.', en: 'Every day I go to the gym.', a: 'Κάθε', c: ['Κάθε', 'Κάποια', 'Άλλη', 'Τέτοια'] },
+      { gr: 'Ήρθαν ___ οι φίλοι μου.', en: 'All my friends came.', a: 'όλοι', c: ['όλοι', 'κάποιοι', 'άλλοι', 'μερικοί'] },
+      { gr: 'Ξέρει ___ την απάντηση;', en: 'Does anyone know the answer?', a: 'κανείς', c: ['κανείς', 'κάποιος', 'άλλος', 'καθένας'] },
+      { gr: 'Αγόρασα ___ μήλα, όχι πολλά.', en: 'I bought a few apples, not many.', a: 'μερικά', c: ['μερικά', 'όλα', 'άλλα', 'τέτοια'] },
+      { gr: 'Υπάρχει ___ πρόβλημα με το αυτοκίνητο.', en: 'There’s some problem with the car.', a: 'κάποιο', c: ['κάποιο', 'τέτοιο', 'άλλο', 'ίδιο'] },
+      { gr: 'Ποτέ μην εμπιστεύεσαι ___ ανθρώπους.', en: 'Never trust such people.', a: 'τέτοιους', c: ['τέτοιους', 'κάποιους', 'άλλους', 'ίδιους'] },
+      { gr: 'Θα το ξανακάνουμε ___ φορά.', en: 'We’ll do it another time.', a: 'άλλη', c: ['άλλη', 'κάποια', 'τέτοια', 'ίδια'] },
+      { gr: 'Πάρε ___ θέλεις.', en: 'Take whichever you want.', a: 'όποιο', c: ['όποιο', 'κάποιο', 'άλλο', 'τέτοιο'] },
+      { gr: 'Όλοι έφυγαν· δεν έμεινε ___.', en: 'Everyone left; nobody stayed.', a: 'κανείς', c: ['κανείς', 'κάποιος', 'άλλος', 'καθένας'] },
+      { gr: 'Έχει ___ δίκιο σ’ αυτό.', en: 'He’s somewhat right about this.', a: 'κάποιο', c: ['κάποιο', 'τέτοιο', 'άλλο', 'ίδιο'] }
     ];
 
     function rint(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
@@ -152,13 +161,12 @@
         var p = PLURALS[rint(0, PLURALS.length - 1)];
         return { label: 'plural of…', main: p[0], sub: '', answer: p[1], choices: shuffle([p[1]].concat(p[2])) };
       },
-      agree: function () {
-        var w = NOUNS[rint(0, NOUNS.length - 1)], base = AGREE[rint(0, AGREE.length - 1)];
-        var g = GENDER[w[1]], gLabel = { m: 'masculine', f: 'feminine', n: 'neuter' }[g];
-        return { label: base.en, main: '___ ' + w[0], sub: gLabel + ' (' + w[1] + ')', answer: base[g], choices: shuffle([base.m, base.f, base.n]) };
+      usage: function () {
+        var it = USAGE[rint(0, USAGE.length - 1)];
+        return { label: it.en, main: it.gr, small: true, sub: 'which word fits?', answer: it.a, choices: shuffle(it.c) };
       }
     };
-    var MODE_LABELS = { numbers: 'Numbers', time: 'Time', days: 'Days & months', prices: 'Prices', gender: 'Gender ο/η/το', colours: 'Colours', plurals: 'Plurals', agree: 'τέτοιος/κάποιος' };
+    var MODE_LABELS = { numbers: 'Numbers', time: 'Time', days: 'Days & months', prices: 'Prices', gender: 'Gender ο/η/το', colours: 'Colours', plurals: 'Plurals', usage: 'τέτοιος/κάποιος' };
 
     var mode = 'numbers', q = null, answered = false, chosen = null, score = 0, n = 0;
     var root = document.getElementById('root');
@@ -182,7 +190,7 @@
     }
     function render() {
       var html = '<div class="card"><div class="q-label">' + q.label + '</div>' +
-        '<div class="q-main">' + (q.swatch ? '<span class="swatch" style="background:' + q.swatch + '"></span>' : esc(q.main)) + '</div>' + (q.sub ? '<div class="q-sub">' + esc(q.sub) + '</div>' : '') +
+        '<div class="q-main' + (q.small ? ' small' : '') + '">' + (q.swatch ? '<span class="swatch" style="background:' + q.swatch + '"></span>' : esc(q.main)) + '</div>' + (q.sub ? '<div class="q-sub">' + esc(q.sub) + '</div>' : '') +
         '<div class="choices">' + q.choices.map(function (c, i) {
           var cls = ''; if (answered) { if (c === q.answer) cls = ' correct'; else if (c === chosen) cls = ' wrong'; }
           return '<button class="choice' + cls + '" data-c="' + esc(c) + '"><span class="ck">' + (i + 1) + '</span>' + esc(c) + '</button>';
