@@ -20,8 +20,14 @@
   var KEY = 'gvm_grammar';
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { store = {}; }
-  if (!store.__settings) store.__settings = { answerMode: 'choice' };
+  if (!store.__settings) store.__settings = {};
+  if (!store.__settings.answerMode) store.__settings.answerMode = 'choice';
+  if (typeof store.__settings.sessionLength !== 'number') store.__settings.sessionLength = 10; // 0 = free
+  if (!store.__lessons) store.__lessons = {};   // pointId -> true once the lesson is read
+  if (!store.__open) store.__open = {};         // level key -> collapsed state
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+  function markLessonRead(id) { if (!store.__lessons[id]) { store.__lessons[id] = true; save(); } }
+  function lessonRead(id) { return !!store.__lessons[id]; }
   function rec(id) {
     if (!store[id]) store[id] = { stage: 0, due: 0, seen: 0, correct: 0, incorrect: 0, last: null };
     return store[id];
@@ -75,8 +81,10 @@
     if (isMastered(id)) return 'mastered';
     if (isDue(id)) return 'due';
     if (isLearned(id)) return 'learning';
+    if (lessonRead(id)) return 'lesson';
     return 'new';
   }
+  var STATUS_BADGE = { new: 'new', lesson: '✓ lesson read', due: 'due', mastered: '★ mastered' };
   function dueLabel(id) {
     var r = store[id];
     if (!r || !r.due) return '';
@@ -101,6 +109,8 @@
     var learned = GRAMMAR.filter(function (p) { return isLearned(p.id); }).length;
     var mastered = GRAMMAR.filter(function (p) { return isMastered(p.id); }).length;
     var mode = store.__settings.answerMode;
+    var len = store.__settings.sessionLength;
+    var LENS = [{ v: 5, t: '5' }, { v: 10, t: '10' }, { v: 20, t: '20' }, { v: 0, t: 'Free' }];
 
     var html = '<div class="g-hero">' +
       '<div class="g-hero-num">' + due.length + '</div>' +
@@ -108,9 +118,11 @@
       '<button class="btn-primary g-review-btn"' + (due.length ? '' : ' disabled') + ' id="startReview">Start review session</button>' +
       '</div>' +
       '<div class="g-summary">' + learned + ' learned · ' + mastered + ' mastered · ' + GRAMMAR.length + ' grammar points total</div>' +
-      '<div class="g-modebar">Answer mode: ' +
+      '<div class="g-modebar"><span class="g-modelabel">Answer:</span>' +
         '<button class="g-mode' + (mode === 'choice' ? ' active' : '') + '" data-mode="choice">Multiple choice</button>' +
-        '<button class="g-mode' + (mode === 'type' ? ' active' : '') + '" data-mode="type">Type the answer</button>' +
+        '<button class="g-mode' + (mode === 'type' ? ' active' : '') + '" data-mode="type">Type</button>' +
+        '<span class="g-modelabel" style="margin-left:8px;">Practice length:</span>' +
+        LENS.map(function (l) { return '<button class="g-len' + (len === l.v ? ' active' : '') + '" data-len="' + l.v + '">' + l.t + '</button>'; }).join('') +
         '<span class="g-spacer"></span>' +
         '<button id="gExport">Export</button><button id="gImport">Import</button>' +
         '<button id="gCloud">☁ Cloud backup</button>' +
@@ -122,19 +134,23 @@
       if (!pts.length) return;
       var lm = pts.filter(function (p) { return isMastered(p.id); }).length;
       var ll = pts.filter(function (p) { return isLearned(p.id); }).length;
-      html += '<div class="g-level"><div class="g-level-head">' +
-        '<span class="g-level-title">' + escapeHtml(lv.label) + '</span>' +
-        '<span class="g-level-prog">' + ll + '/' + pts.length + ' started · ' + lm + ' mastered ' +
+      var lr = pts.filter(function (p) { return lessonRead(p.id); }).length;
+      var collapsed = !!store.__open[lv.key + '_collapsed'];
+      html += '<div class="g-level' + (collapsed ? ' collapsed' : '') + '">' +
+        '<div class="g-level-head" data-toggle="' + lv.key + '">' +
+        '<span class="g-level-title"><span class="g-caret">' + (collapsed ? '▸' : '▾') + '</span> ' + escapeHtml(lv.label) + '</span>' +
+        '<span class="g-level-prog">' + lr + '/' + pts.length + ' lessons · ' + ll + ' practising · ' + lm + ' mastered ' +
           '<button class="g-practice" data-level="' + lv.key + '">Practice level</button></span>' +
-        '</div><div class="g-points">';
+        '</div><div class="g-points"' + (collapsed ? ' style="display:none;"' : '') + '>';
       pts.forEach(function (p) {
         var st = pointStatus(p.id);
+        var badge = st === 'learning' ? dueLabel(p.id) : (STATUS_BADGE[st] || st);
         html += '<div class="g-point st-' + st + '" data-point="' + p.id + '">' +
           '<div class="g-point-main">' +
             '<div class="g-point-title">' + escapeHtml(p.title) + '</div>' +
             '<div class="g-point-short">' + escapeHtml(p.short) + '</div>' +
           '</div>' +
-          '<span class="g-badge st-' + st + '">' + (st === 'new' ? 'new' : st === 'due' ? 'due' : st === 'mastered' ? '★' : dueLabel(p.id)) + '</span>' +
+          '<span class="g-badge st-' + st + '">' + badge + '</span>' +
           '</div>';
       });
       html += '</div></div>';
@@ -142,14 +158,25 @@
 
     root.innerHTML = html;
 
-    var sr = el('startReview'); if (sr) sr.addEventListener('click', function () { startSession(reviewQuestions(), 'review'); });
+    var sr = el('startReview'); if (sr) sr.addEventListener('click', function () { startReview(); });
     root.querySelectorAll('.g-mode').forEach(function (b) {
       b.addEventListener('click', function () { store.__settings.answerMode = b.getAttribute('data-mode'); save(); renderDashboard(); });
+    });
+    root.querySelectorAll('.g-len').forEach(function (b) {
+      b.addEventListener('click', function () { store.__settings.sessionLength = parseInt(b.getAttribute('data-len'), 10); save(); renderDashboard(); });
+    });
+    root.querySelectorAll('.g-level-head').forEach(function (h) {
+      h.addEventListener('click', function (e) {
+        if (e.target.closest('.g-practice')) return;
+        var k = h.getAttribute('data-toggle');
+        store.__open[k + '_collapsed'] = !store.__open[k + '_collapsed'];
+        save(); renderDashboard();
+      });
     });
     root.querySelectorAll('.g-practice').forEach(function (b) {
       b.addEventListener('click', function (e) {
         e.stopPropagation();
-        startSession(levelQuestions(b.getAttribute('data-level')), 'practice');
+        startPractice(levelQuestions(b.getAttribute('data-level')));
       });
     });
     root.querySelectorAll('.g-point').forEach(function (d) {
@@ -165,48 +192,45 @@
     if (cb && window.GVBackup) cb.addEventListener('click', function () { GVBackup.openModal(); });
   }
 
-  /* ---------- grammar point detail (learn) ---------- */
+  /* ---------- grammar point LESSON ---------- */
   function openPoint(p) {
+    markLessonRead(p.id); // opening the lesson marks it as read
     var learned = isLearned(p.id);
+    var lenTxt = store.__settings.sessionLength === 0 ? 'free run' : store.__settings.sessionLength + ' questions';
     var ex = (p.examples || []).map(function (e) {
       return '<div class="g-ex"><span class="g-ex-gr">' + escapeHtml(e.gr) + '</span><span class="g-ex-en">' + escapeHtml(e.en) + '</span></div>';
     }).join('');
     el('grammarModal').innerHTML =
       '<div class="modal-backdrop"></div><div class="modal-panel">' +
       '<button class="modal-close">×</button>' +
-      '<div class="g-md-level">' + escapeHtml(p.level) + '</div>' +
+      '<div class="g-md-kicker">LESSON · ' + escapeHtml(p.level) + '</div>' +
       '<h2 class="g-md-title">' + escapeHtml(p.title) + '</h2>' +
       '<div class="g-md-body">' + p.explanation + '</div>' +
       (ex ? '<div class="g-md-ex"><div class="g-md-exh">Examples</div>' + ex + '</div>' : '') +
+      '<div class="g-md-divider"></div>' +
+      '<p class="g-md-hint">You’ve read the lesson. <strong>Practice</strong> now drills sentences (' + lenTxt + '); doing well schedules this point for spaced review.</p>' +
       '<div class="g-md-actions">' +
-        '<button class="btn-primary" id="gPractice">Practice — ' + p.items.length + ' questions</button>' +
+        '<button class="btn-primary" id="gPractice">▶ Practice (' + lenTxt + ')</button>' +
         '<button id="gAddReviews"' + (learned ? ' disabled' : '') + '>' + (learned ? 'In your reviews ✓' : 'Add to reviews') + '</button>' +
         (learned ? '<span class="g-md-note">next review ' + dueLabel(p.id) + '</span>' : '') +
-      '</div>' +
-      '<p class="g-md-hint">Read the lesson, then <strong>Practice</strong> drills all of this point’s sentences. Doing well schedules it for spaced review.</p>' +
-      '</div>';
+      '</div></div>';
     el('grammarModal').style.display = 'block';
-    el('grammarModal').querySelector('.modal-backdrop').addEventListener('click', closeModal);
-    el('grammarModal').querySelector('.modal-close').addEventListener('click', closeModal);
+    el('grammarModal').querySelector('.modal-backdrop').addEventListener('click', function () { closeModal(); render(); });
+    el('grammarModal').querySelector('.modal-close').addEventListener('click', function () { closeModal(); render(); });
     el('gPractice').addEventListener('click', function () {
       closeModal();
-      startSession(pointQuestions(p), 'practice');
+      startPractice(pointQuestions(p));
     });
     var add = el('gAddReviews');
     if (add && !learned) add.addEventListener('click', function () {
-      rec(p.id).due = Date.now(); save(); // add at stage 0, due now
-      openPoint(p); // refresh modal state
+      rec(p.id).due = Date.now(); save();
+      openPoint(p);
     });
   }
   function closeModal() { var m = el('grammarModal'); m.style.display = 'none'; m.innerHTML = ''; }
 
   /* ---------- review session ---------- */
   // A session is a queue of questions: { pointId, item, counted }.
-  function startSession(questions, kind) {
-    if (!questions.length) return;
-    state.session = { kind: kind, queue: shuffle(questions.slice()), done: 0, correctCount: 0, results: {}, current: null, answered: false };
-    nextQuestion();
-  }
   function reviewQuestions() {
     return dueIds().map(function (id) { return { pointId: id, item: randItem(byId[id]) }; });
   }
@@ -220,9 +244,40 @@
     });
     return qs;
   }
+  // Repeat/sample the base questions up to n (cycling through reshuffled batches).
+  function expandTo(base, n) {
+    var out = [], pool = shuffle(base), i = 0;
+    while (out.length < n) {
+      if (i >= pool.length) { pool = shuffle(base); i = 0; }
+      out.push({ pointId: pool[i].pointId, item: pool[i].item });
+      i++;
+    }
+    return out;
+  }
+  // Review = exactly the due items, no repetition.
+  function startReview() {
+    var qs = reviewQuestions();
+    if (!qs.length) return;
+    state.session = { kind: 'review', queue: shuffle(qs), free: false, pool: null, target: qs.length,
+      done: 0, correctCount: 0, results: {}, current: null, answered: false };
+    nextQuestion();
+  }
+  // Practice = length-limited (5/10/20) or free run until you end.
+  function startPractice(base) {
+    if (!base.length) return;
+    var n = store.__settings.sessionLength;
+    var free = n === 0;
+    state.session = { kind: 'practice', free: free, pool: base.slice(),
+      queue: free ? shuffle(base) : expandTo(base, n), target: free ? 0 : n,
+      done: 0, correctCount: 0, results: {}, current: null, answered: false };
+    nextQuestion();
+  }
   function nextQuestion() {
     var s = state.session;
-    if (!s.queue.length) { finishSession(); return; }
+    if (!s.queue.length) {
+      if (s.free) { s.queue = shuffle(s.pool); } // free run: keep going until ended
+      else { finishSession(); return; }
+    }
     var q = s.queue.shift();
     s.current = { pointId: q.pointId, point: byId[q.pointId], item: q.item, counted: q.counted || false, choices: null };
     if (store.__settings.answerMode === 'choice') s.current.choices = shuffle(s.current.item.choices || []);
@@ -261,9 +316,12 @@
       blankHtml = '<span class="' + cls + '">' + escapeHtml(item.answer) + '</span>';
     }
 
+    var answered = 0;
+    Object.keys(s.results).forEach(function (k) { answered += s.results[k].total; });
+    var progress = s.free ? ('Q' + (answered + 1) + ' · free run') : (Math.min(answered + 1, s.target) + ' / ' + s.target);
     var html = '<div class="g-session">' +
-      '<div class="g-sess-top"><button id="gQuit" class="g-quit">✕ end</button>' +
-        '<span class="g-progress">' + (s.done + 1) + ' / ' + (s.done + 1 + s.queue.length) + '</span></div>' +
+      '<div class="g-sess-top"><button id="gQuit" class="g-quit">✕ end &amp; save</button>' +
+        '<span class="g-progress">' + progress + '</span></div>' +
       '<div class="g-prompt-point">' + escapeHtml(cur.point.title) + '</div>' +
       '<div class="g-sentence">' + pre + blankHtml + post + '</div>' +
       '<div class="g-en">' + escapeHtml(item.en) + '</div>' +
@@ -288,7 +346,7 @@
     html += '</div>';
     root.innerHTML = html;
 
-    el('gQuit').addEventListener('click', function () { state.session = null; render(); });
+    el('gQuit').addEventListener('click', function () { finishSession(); });
     if (!s.answered) {
       if (mode === 'choice') {
         root.querySelectorAll('.g-choice').forEach(function (b) {

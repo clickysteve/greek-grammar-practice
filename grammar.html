@@ -31,12 +31,16 @@
     .g-hero-num { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -.04em; }
     .g-hero-label { color: var(--muted); text-transform: uppercase; letter-spacing: .12em; font-size: 13px; margin: 6px 0 16px; }
     .g-summary { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 14px; }
-    .g-modebar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; font-size: 13px; color: var(--muted); }
-    .g-mode.active { outline: 2px solid rgba(255,159,67,.4); color: var(--text); }
+    .g-modebar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; font-size: 13px; color: var(--muted); }
+    .g-modebar button { font-size: 12px; padding: 7px 11px; }
+    .g-modelabel { color: var(--muted); }
+    .g-mode.active, .g-len.active { outline: 2px solid rgba(255,159,67,.4); color: var(--text); }
     .g-spacer { flex: 1; }
 
-    .g-level { margin-bottom: 20px; }
-    .g-level-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .g-level { margin-bottom: 18px; }
+    .g-level-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; cursor: pointer; padding: 4px 2px; border-radius: 10px; }
+    .g-level-head:hover { background: rgba(255,255,255,.03); }
+    .g-caret { color: var(--muted); font-size: 12px; display: inline-block; width: 12px; }
     .g-level-title { font-weight: 700; font-size: 16px; }
     .g-level-prog { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
     .g-practice { font-size: 12px; padding: 6px 10px; }
@@ -44,6 +48,7 @@
     .g-point { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-left: 4px solid var(--border);
       border-radius: 12px; padding: 11px 14px; background: rgba(255,255,255,.025); cursor: pointer; }
     .g-point:hover { border-color: var(--accent); }
+    .g-point.st-lesson { border-left-color: #7fdcff; }
     .g-point.st-due { border-left-color: var(--warn); }
     .g-point.st-learning { border-left-color: var(--accent); }
     .g-point.st-mastered { border-left-color: var(--good); }
@@ -52,6 +57,7 @@
     .g-point-short { font-size: 13px; color: var(--muted); margin-top: 2px; }
     .g-badge { font-size: 11px; color: var(--muted); white-space: nowrap; padding: 2px 9px; border: 1px solid var(--border); border-radius: 999px; }
     .g-badge.st-new { color: var(--accent); border-color: var(--accent); }
+    .g-badge.st-lesson { color: #7fdcff; border-color: #7fdcff; }
     .g-badge.st-due { color: var(--warn); border-color: var(--warn); }
     .g-badge.st-mastered { color: var(--good); border-color: var(--good); }
 
@@ -92,7 +98,8 @@
       width: min(600px, calc(100vw - 32px)); max-height: 86vh; overflow-y: auto;
       background: var(--panel); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); padding: 24px; }
     .modal-close { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; padding: 0; border-radius: 10px; font-size: 18px; }
-    .g-md-level { font-size: 12px; color: var(--accent); letter-spacing: .12em; }
+    .g-md-kicker { font-size: 12px; color: var(--accent); letter-spacing: .14em; font-weight: 700; }
+    .g-md-divider { height: 1px; background: var(--border); margin: 18px 0; }
     .g-md-title { margin: 4px 0 14px; font-size: 24px; letter-spacing: -.02em; }
     .g-md-body { font-size: 15px; line-height: 1.6; }
     .g-md-body p { margin: 0 0 12px; }
