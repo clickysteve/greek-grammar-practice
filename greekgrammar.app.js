@@ -350,7 +350,13 @@
     GRAMMAR.filter(function (p) { return p.level === levelKey; }).forEach(function (p) { p.items.forEach(function (it) { qs.push({ pointId: p.id, item: it }); }); });
     return qs;
   }
-  function reviewQuestions() { return dueIds().map(function (id) { return { pointId: id, item: randItem(byId[id]) }; }); }
+  // A review tests every due point across ALL its sentences (not just one), so a
+  // session is substantial. SRS still advances once per point (on aggregate accuracy).
+  function reviewQuestions() {
+    var qs = [];
+    dueIds().forEach(function (id) { byId[id].items.forEach(function (it) { qs.push({ pointId: id, item: it }); }); });
+    return qs;
+  }
   function expandTo(base, n) {
     var out = [], pool = shuffle(base), i = 0;
     while (out.length < n) { if (i >= pool.length) { pool = shuffle(base); i = 0; } out.push({ pointId: pool[i].pointId, item: pool[i].item }); i++; }
