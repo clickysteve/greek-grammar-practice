@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greek — Stats</title>
+  <style>
+    :root { --bg:#111315; --panel:#1b1f24; --panel2:#232a31; --text:#eef2f7; --muted:#aab4c0; --border:#36404a; --accent:#ff9f43; --good:#8ee28e; --warn:#ffd84d; --bad:#ff8f8f; --shadow:0 12px 34px rgba(0,0,0,.28); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top,rgba(255,159,67,.08),transparent 28%),linear-gradient(180deg,#0f1114,#171a1f); color:var(--text); }
+    .wrap { max-width:760px; margin:0 auto; padding:24px; }
+    .nav { display:flex; gap:12px; margin-bottom:18px; font-size:14px; flex-wrap:wrap; }
+    .nav a { color:var(--muted); text-decoration:none; border:1px solid var(--border); padding:7px 12px; border-radius:999px; background:var(--panel2); }
+    .nav a:hover { color:var(--text); }
+    h1 { font-size:clamp(24px,4vw,34px); margin:0 0 16px; letter-spacing:-.03em; }
+    .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-bottom:18px; }
+    .kpi { background:#12161b; border:1px solid var(--border); border-radius:16px; padding:16px; text-align:center; }
+    .kpi .n { font-size:30px; font-weight:800; }
+    .kpi .l { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-top:4px; }
+    .panel { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:16px; box-shadow:var(--shadow); }
+    .panel h2 { font-size:15px; margin:0 0 14px; }
+    .stack { display:flex; flex-direction:column; gap:12px; }
+    .barrow { }
+    .barrow-top { display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px; }
+    .barrow-top .v { color:var(--muted); }
+    .bar { height:10px; border-radius:999px; background:rgba(255,255,255,.06); overflow:hidden; display:flex; }
+    .seg { height:100%; }
+    .seg.m { background:var(--good); } .seg.s { background:var(--accent); } .seg.r { background:#7fdcff; } .seg.w { background:var(--bad); }
+    .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-top:10px; }
+    .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav"><a href="index.html">🏠 Home</a><a href="verbs.html">Verbs</a><a href="grammar.html">Grammar</a><a href="flashcards.html">Flashcards</a><span style="color:var(--muted)">Stats</span></div>
+    <h1>Your progress</h1>
+    <div class="kpis" id="kpis"></div>
+    <div class="panel"><h2>Mastery by area</h2><div class="stack" id="areas"></div>
+      <div class="legend"><span><span class="dot" style="background:var(--good)"></span>mastered</span><span><span class="dot" style="background:var(--accent)"></span>learning</span><span><span class="dot" style="background:#7fdcff"></span>started</span></div>
+    </div>
+    <div class="panel"><h2>Grammar by level</h2><div class="stack" id="levels"></div></div>
+  </div>
+
+  <script src="greekgrammar.data.js"></script>
+  <script src="greekvocab.data.js"></script>
+  <script src="greeksuite.stats.js"></script>
+  <script>
+  (function () {
+    var S = window.GSStats;
+    var v = S.verbs(), g = S.grammar(), o = S.vocab(), st = S.streak();
+    function kpi(n, l) { return '<div class="kpi"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>'; }
+    document.getElementById('kpis').innerHTML =
+      kpi(st.days || 0, 'day streak') + kpi(st.best || 0, 'best streak') +
+      kpi(S.totalDue(), 'due now') + kpi((g.mastered + v.mastered + o.mastered), 'mastered total');
+
+    function bar(label, segs, right) {
+      var inner = segs.filter(function (s) { return s.n > 0; }).map(function (s) { return '<span class="seg ' + s.c + '" style="width:' + s.w + '%"></span>'; }).join('');
+      return '<div class="barrow"><div class="barrow-top"><span>' + label + '</span><span class="v">' + right + '</span></div><div class="bar">' + inner + '</div></div>';
+    }
+    // areas: grammar (points in srs), verbs (cards rated), vocab (rated)
+    var gTotal = (window.GRAMMAR || []).length || 1;
+    var gStarted = g.lessonsRead, gMaster = g.mastered, gLearn = g.inSrs - g.mastered;
+    var areas = [
+      bar('Grammar', [{ n: gMaster, c: 'm', w: 100 * gMaster / gTotal }, { n: gLearn, c: 's', w: 100 * gLearn / gTotal }, { n: Math.max(0, gStarted - g.inSrs), c: 'r', w: 100 * Math.max(0, gStarted - g.inSrs) / gTotal }], gMaster + ' / ' + gTotal + (g.acc != null ? ' · ' + g.acc + '% acc' : '')),
+      bar('Verbs', [{ n: v.mastered, c: 'm', w: v.rated ? 100 * v.mastered / v.rated : 0 }, { n: v.rated - v.mastered, c: 's', w: v.rated ? 100 * (v.rated - v.mastered) / v.rated : 0 }], (v.avg != null ? 'avg ' + v.avg + '/5' : 'no data') + ' · ' + v.rated + ' cards'),
+      bar('Vocabulary', [{ n: o.mastered, c: 'm', w: o.rated ? 100 * o.mastered / o.rated : 0 }, { n: o.learning, c: 's', w: o.rated ? 100 * o.learning / o.rated : 0 }], o.rated + ' rated · ' + o.srsCount + ' in flashcards')
+    ];
+    document.getElementById('areas').innerHTML = areas.join('') || '<div style="color:var(--muted)">No data yet.</div>';
+
+    // grammar by level
+    var levels = (window.GRAMMAR_LEVELS || []);
+    var rows = levels.map(function (lv) {
+      var pts = (window.GRAMMAR || []).filter(function (p) { return p.level === lv.key; });
+      if (!pts.length) return '';
+      var m = 0, s = 0, r = 0;
+      pts.forEach(function (p) {
+        var rec = g.srs[p.id], read = false;
+        try { read = !!(JSON.parse(localStorage.getItem('gvm_grammar') || '{}').__lessons || {})[p.id]; } catch (e) {}
+        if (rec && rec.stage >= S.MASTER) m++; else if (rec) s++; else if (read) r++;
+      });
+      var n = pts.length;
+      return bar(lv.label, [{ n: m, c: 'm', w: 100 * m / n }, { n: s, c: 's', w: 100 * s / n }, { n: r, c: 'r', w: 100 * r / n }], m + ' / ' + n + ' mastered');
+    });
+    document.getElementById('levels').innerHTML = rows.join('') || '<div style="color:var(--muted)">No data yet.</div>';
+  })();
+  </script>
+</body>
+</html>

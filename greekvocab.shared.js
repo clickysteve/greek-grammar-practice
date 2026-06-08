@@ -273,7 +273,7 @@ window.GVShared = (function () {
             ? 'Verb practice: average <strong>' + stats.avg.toFixed(1) + '/5</strong> across ' + stats.count + ' rated cards. The higher of the two ratings decides how often it appears in prompts.'
             : 'Not yet rated in verb practice. Rating it here seeds its drill cards.') +
           '</p>' +
-          '<p class="wd-link"><a href="index.html">Drill this verb in the Verb Memoriser →</a></p>';
+          '<p class="wd-link"><a href="verbs.html">Drill this verb in the Verb Memoriser →</a></p>';
       } else {
         var t = verbPresentTable(w.gr);
         if (t) {

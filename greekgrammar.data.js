@@ -1095,3 +1095,55 @@ window.GRAMMAR.push(
     ]
   }
 );
+
+/* ===== Further grammar: adverbs, relatives, reported speech ===== */
+window.GRAMMAR.push(
+  {
+    id: 'a2-adverbs', level: 'A2', title: 'Adverbs & comparison',
+    short: 'From adjectives: καλός → καλά; πιο γρήγορα.',
+    explanation: '<p>Most adverbs are the <strong>neuter-plural form of the adjective</strong> (-α):</p>' +
+      '<div class="g-grid"><div class="g-k">καλός</div><div class="g-v">καλ<strong>ά</strong> (well)</div><div class="g-k">γρήγορος</div><div class="g-v">γρήγορ<strong>α</strong> (quickly)</div><div class="g-k">ωραίος</div><div class="g-v">ωραί<strong>α</strong> (nicely)</div></div>' +
+      '<p>Compare with <strong>πιο</strong> (+ adverb): <em>πιο γρήγορα</em>. Irregulars: καλά → <strong>καλύτερα</strong>, πολύ → <strong>περισσότερο</strong>, λίγο → <strong>λιγότερο</strong>.</p>',
+    examples: [ { gr: 'Μιλάει πολύ γρήγορα.', en: 'He speaks very fast.' }, { gr: 'Όλα πήγαν καλά.', en: 'Everything went well.' }, { gr: 'Τρέξε πιο γρήγορα!', en: 'Run faster!' } ],
+    more: '<p>Adverb = adjective’s neuter plural (-α). A few are lexical (πολύ, λίγο, πάντα, μαζί). Comparatives use πιο, except καλά→καλύτερα, πολύ→περισσότερο.</p>',
+    items: [
+      { text: 'Μιλάει πολύ {b}. (γρήγορος → γρήγορα)', answer: 'γρήγορα', choices: ['γρήγορα', 'γρήγορος', 'γρήγορο', 'γρήγορη'], en: 'He speaks very fast.', hint: 'adverb from γρήγορος' },
+      { text: 'Όλα πήγαν {b}. (καλός → καλά)', answer: 'καλά', choices: ['καλά', 'καλός', 'καλό', 'καλή'], en: 'Everything went well.', hint: 'adverb from καλός' },
+      { text: 'Τραγουδάει πολύ {b}. (ωραίος → ωραία)', answer: 'ωραία', choices: ['ωραία', 'ωραίος', 'ωραίο', 'ωραίες'], en: 'She sings very beautifully.', hint: 'adverb' },
+      { text: 'Τρέξε πιο {b}! (γρήγορα)', answer: 'γρήγορα', choices: ['γρήγορα', 'γρήγορος', 'καλά', 'πολύ'], en: 'Run faster!', hint: 'πιο + adverb' },
+      { text: 'Σήμερα νιώθω {b} από χθες. (better → καλύτερα)', answer: 'καλύτερα', choices: ['καλύτερα', 'καλά', 'καλύτερος', 'πιο καλός'], en: 'Today I feel better than yesterday.', hint: 'irregular adverb: better' }
+    ]
+  },
+  {
+    id: 'b1-relatives-oti', level: 'B1', title: 'ό,τι / όποιος / όπου / όσος',
+    short: 'whatever / whoever / wherever / as much as.',
+    explanation: '<p>The “free relative” words:</p>' +
+      '<div class="g-grid"><div class="g-k">ό,τι</div><div class="g-v">whatever (note the comma)</div><div class="g-k">όποιος</div><div class="g-v">whoever / whichever (agrees)</div><div class="g-k">όπου</div><div class="g-v">wherever</div><div class="g-k">όσος</div><div class="g-v">as much / many as (agrees)</div><div class="g-k">όποτε</div><div class="g-v">whenever</div></div>' +
+      '<p>Mind <strong>ό,τι</strong> (with a comma = whatever) vs <strong>ότι</strong> (no comma = that).</p>',
+    examples: [ { gr: 'Κάνε ό,τι θέλεις.', en: 'Do whatever you want.' }, { gr: 'Όποιος έρθει πρώτος, κερδίζει.', en: 'Whoever comes first wins.' }, { gr: 'Κάθισε όπου θέλεις.', en: 'Sit wherever you like.' } ],
+    more: '<p>όποιος and όσος agree in gender/number. ό,τι and όπου don’t change. You can add -δήποτε for extra force (οτιδήποτε, οπουδήποτε).</p>',
+    items: [
+      { text: 'Κάνε {b} νομίζεις σωστό. (whatever)', answer: 'ό,τι', choices: ['ό,τι', 'όποιος', 'όπου', 'ότι'], en: 'Do whatever you think is right.', hint: 'whatever (with comma)' },
+      { text: '{b} έρθει πρώτος, κερδίζει. (whoever, masc)', answer: 'Όποιος', choices: ['Όποιος', 'Ό,τι', 'Όπου', 'Όσος'], en: 'Whoever comes first wins.', hint: 'whoever · masculine' },
+      { text: 'Κάθισε {b} θέλεις. (wherever)', answer: 'όπου', choices: ['όπου', 'ό,τι', 'όποιος', 'όποτε'], en: 'Sit wherever you like.', hint: 'wherever' },
+      { text: 'Πάρε {b} βιβλία θέλεις. (as many as → όσα)', answer: 'όσα', choices: ['όσα', 'ό,τι', 'όπου', 'όποια'], en: 'Take as many books as you want.', hint: 'as many as · neuter plural' },
+      { text: 'Έλα {b} σε βολεύει. (whenever)', answer: 'όποτε', choices: ['όποτε', 'όπου', 'ό,τι', 'όποιος'], en: 'Come whenever suits you.', hint: 'whenever' }
+    ]
+  },
+  {
+    id: 'b2-reported-speech', level: 'B2', title: 'Reported speech',
+    short: 'ότι (statements), να (requests), αν (yes/no questions).',
+    explanation: '<p>To report what someone said, choose the link word by the type of original:</p>' +
+      '<div class="g-grid"><div class="g-k">statement</div><div class="g-v">… <strong>ότι / πως</strong> …</div><div class="g-k">request / command</div><div class="g-v">… <strong>να</strong> …</div><div class="g-k">yes/no question</div><div class="g-v">… <strong>αν</strong> …</div><div class="g-k">wh-question</div><div class="g-v">keeps the question word (πού, τι…)</div></div>' +
+      '<p>Tenses and pronouns shift as in English: <em>«Θα έρθω» → Είπε ότι θα ερχόταν.</em></p>',
+    examples: [ { gr: 'Μου είπε ότι θα αργήσει.', en: 'He told me he’d be late.' }, { gr: 'Μου ζήτησε να τον βοηθήσω.', en: 'He asked me to help him.' }, { gr: 'Με ρώτησε αν θέλω καφέ.', en: 'She asked me if I wanted coffee.' } ],
+    more: '<p>statements → ότι/πως; requests/commands → να; yes-no questions → αν; wh-questions keep their word (<em>με ρώτησε πού μένω</em>). Shift tense and pronouns to the speaker’s viewpoint.</p>',
+    items: [
+      { text: 'Μου είπε {b} θα αργήσει. (statement)', answer: 'ότι', accept: ['πως'], choices: ['ότι', 'να', 'αν', 'που'], en: 'He told me (that) he’ll be late.', hint: 'reported statement' },
+      { text: 'Μου ζήτησε {b} τον βοηθήσω. (request)', answer: 'να', choices: ['να', 'ότι', 'αν', 'που'], en: 'He asked me to help him.', hint: 'reported request' },
+      { text: 'Με ρώτησε {b} θέλω καφέ. (yes/no question)', answer: 'αν', choices: ['αν', 'ότι', 'να', 'πως'], en: 'She asked me if I wanted coffee.', hint: 'reported yes/no question' },
+      { text: 'Είπαν {b} δεν θα έρθουν. (statement)', answer: 'ότι', accept: ['πως'], choices: ['ότι', 'να', 'αν', 'που'], en: 'They said (that) they won’t come.', hint: 'reported statement' },
+      { text: 'Μας είπε {b} περιμένουμε εδώ. (command)', answer: 'να', choices: ['να', 'ότι', 'αν', 'που'], en: 'He told us to wait here.', hint: 'reported command' }
+    ]
+  }
+);

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greek — Micro Trainers</title>
+  <style>
+    :root { --bg:#111315; --panel:#1b1f24; --panel2:#232a31; --text:#eef2f7; --muted:#aab4c0; --border:#36404a; --accent:#ff9f43; --good:#8ee28e; --bad:#ff8f8f; --shadow:0 12px 34px rgba(0,0,0,.28); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top,rgba(255,159,67,.08),transparent 28%),linear-gradient(180deg,#0f1114,#171a1f); color:var(--text); }
+    .wrap { max-width:600px; margin:0 auto; padding:24px; }
+    .nav { display:flex; gap:12px; margin-bottom:18px; font-size:14px; flex-wrap:wrap; }
+    .nav a { color:var(--muted); text-decoration:none; border:1px solid var(--border); padding:7px 12px; border-radius:999px; background:var(--panel2); }
+    .nav a:hover { color:var(--text); }
+    h1 { font-size:clamp(24px,4vw,34px); margin:0 0 14px; letter-spacing:-.03em; }
+    button { border:1px solid var(--border); background:var(--panel2); color:var(--text); border-radius:10px; font-size:14px; padding:10px 14px; cursor:pointer; }
+    button:hover { border-color:var(--accent); }
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .tab { font-size:14px; }
+    .tab.active { outline:2px solid rgba(255,159,67,.45); color:var(--text); background:rgba(255,159,67,.08); }
+    .card { border:1px solid var(--border); border-radius:24px; background:#12161b; padding:30px 22px; text-align:center; }
+    .q-label { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; }
+    .q-main { font-size:clamp(40px,9vw,72px); font-weight:800; letter-spacing:-.03em; margin:10px 0 6px; }
+    .q-sub { font-size:14px; color:var(--muted); }
+    .choices { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px; }
+    .choice { font-size:18px; padding:14px; }
+    .choice.correct { border-color:var(--good); color:var(--good); }
+    .choice.wrong { border-color:var(--bad); color:var(--bad); }
+    .next { margin-top:16px; }
+    .score { color:var(--muted); font-size:13px; margin-top:16px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav"><a href="index.html">🏠 Home</a><span style="color:var(--muted)">Micro trainers</span></div>
+    <h1>Micro Trainers</h1>
+    <div class="tabs" id="tabs"></div>
+    <div id="root"></div>
+    <div class="score" id="score"></div>
+  </div>
+
+  <script>
+  (function () {
+    var units = ['μηδέν', 'ένα', 'δύο', 'τρία', 'τέσσερα', 'πέντε', 'έξι', 'εφτά', 'οχτώ', 'εννιά'];
+    var teens = ['έντεκα', 'δώδεκα', 'δεκατρία', 'δεκατέσσερα', 'δεκαπέντε', 'δεκαέξι', 'δεκαεφτά', 'δεκαοχτώ', 'δεκαεννιά'];
+    var tens = { 20: 'είκοσι', 30: 'τριάντα', 40: 'σαράντα', 50: 'πενήντα', 60: 'εξήντα', 70: 'εβδομήντα', 80: 'ογδόντα', 90: 'ενενήντα' };
+    function grNum(n) {
+      if (n < 10) return units[n];
+      if (n === 10) return 'δέκα';
+      if (n < 20) return teens[n - 11];
+      if (n === 100) return 'εκατό';
+      var t = Math.floor(n / 10) * 10, u = n % 10;
+      return tens[t] + (u ? ' ' + units[u] : '');
+    }
+    var clockHours = ['', 'μία', 'δύο', 'τρεις', 'τέσσερις', 'πέντε', 'έξι', 'εφτά', 'οχτώ', 'εννιά', 'δέκα', 'έντεκα', 'δώδεκα'];
+    var days = [['Monday', 'Δευτέρα'], ['Tuesday', 'Τρίτη'], ['Wednesday', 'Τετάρτη'], ['Thursday', 'Πέμπτη'], ['Friday', 'Παρασκευή'], ['Saturday', 'Σάββατο'], ['Sunday', 'Κυριακή']];
+    var months = [['January', 'Ιανουάριος'], ['February', 'Φεβρουάριος'], ['March', 'Μάρτιος'], ['April', 'Απρίλιος'], ['May', 'Μάιος'], ['June', 'Ιούνιος'], ['July', 'Ιούλιος'], ['August', 'Αύγουστος'], ['September', 'Σεπτέμβριος'], ['October', 'Οκτώβριος'], ['November', 'Νοέμβριος'], ['December', 'Δεκέμβριος']];
+
+    function rint(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+    function shuffle(a) { var c = a.slice(); for (var i = c.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = c[i]; c[i] = c[j]; c[j] = t; } return c; }
+    function pickDistinct(genAnswer, correct, n) { var s = [correct]; var guard = 0; while (s.length < n && guard++ < 100) { var x = genAnswer(); if (s.indexOf(x) === -1) s.push(x); } return shuffle(s); }
+
+    var MODES = {
+      numbers: function () {
+        var n = rint(0, 99); var ans = grNum(n);
+        return { label: 'number', main: String(n), sub: '', answer: ans, choices: pickDistinct(function () { return grNum(rint(0, 99)); }, ans, 4) };
+      },
+      time: function () {
+        var h = rint(1, 12), m = [0, 15, 30, 45][rint(0, 3)];
+        var disp = h + ':' + (m < 10 ? '0' + m : m);
+        var ans;
+        if (m === 0) ans = clockHours[h];
+        else if (m === 30) ans = clockHours[h] + ' και μισή';
+        else if (m === 15) ans = clockHours[h] + ' και τέταρτο';
+        else ans = clockHours[h === 12 ? 1 : h + 1] + ' παρά τέταρτο';
+        return { label: 'what time?', main: disp, sub: '', answer: ans, choices: pickDistinct(function () {
+          var hh = rint(1, 12), mm = [0, 15, 30, 45][rint(0, 3)];
+          if (mm === 0) return clockHours[hh];
+          if (mm === 30) return clockHours[hh] + ' και μισή';
+          if (mm === 15) return clockHours[hh] + ' και τέταρτο';
+          return clockHours[hh === 12 ? 1 : hh + 1] + ' παρά τέταρτο';
+        }, ans, 4) };
+      },
+      days: function () {
+        var pick = Math.random() < 0.5 ? days : months;
+        var item = pick[rint(0, pick.length - 1)];
+        return { label: 'say it in Greek', main: item[0], sub: pick === days ? 'day' : 'month', answer: item[1], choices: pickDistinct(function () { return pick[rint(0, pick.length - 1)][1]; }, item[1], 4) };
+      },
+      prices: function () {
+        var e = rint(1, 40), c = Math.random() < 0.5 ? 50 : 0;
+        var disp = '€' + e + (c ? '.50' : '.00');
+        var ans = grNum(e) + ' ευρώ' + (c ? ' και πενήντα' : '');
+        return { label: 'how much?', main: disp, sub: '', answer: ans, choices: pickDistinct(function () { var ee = rint(1, 40), cc = Math.random() < 0.5 ? 50 : 0; return grNum(ee) + ' ευρώ' + (cc ? ' και πενήντα' : ''); }, ans, 4) };
+      }
+    };
+    var MODE_LABELS = { numbers: 'Numbers', time: 'Time', days: 'Days & months', prices: 'Prices' };
+
+    var mode = 'numbers', q = null, answered = false, score = 0, n = 0;
+    var root = document.getElementById('root');
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+    document.getElementById('tabs').innerHTML = Object.keys(MODES).map(function (k) {
+      return '<button class="tab' + (k === mode ? ' active' : '') + '" data-m="' + k + '">' + MODE_LABELS[k] + '</button>';
+    }).join('');
+    document.querySelectorAll('.tab').forEach(function (b) { b.addEventListener('click', function () {
+      mode = b.getAttribute('data-m'); score = 0; n = 0;
+      document.querySelectorAll('.tab').forEach(function (x) { x.classList.toggle('active', x === b); });
+      nextQ();
+    }); });
+
+    function nextQ() { q = MODES[mode](); answered = false; render(); }
+    function render() {
+      var html = '<div class="card"><div class="q-label">' + q.label + '</div>' +
+        '<div class="q-main">' + esc(q.main) + '</div>' + (q.sub ? '<div class="q-sub">' + esc(q.sub) + '</div>' : '') +
+        '<div class="choices">' + q.choices.map(function (c) {
+          var cls = ''; if (answered) { if (c === q.answer) cls = ' correct'; else cls = ''; }
+          return '<button class="choice' + cls + '" data-c="' + esc(c) + '">' + esc(c) + '</button>';
+        }).join('') + '</div>' +
+        (answered ? '<button class="btn-primary next" id="next" style="background:var(--accent);color:#1a1205;border-color:var(--accent);font-weight:700;">Next →</button>' : '') +
+        '</div>';
+      root.innerHTML = html;
+      document.getElementById('score').textContent = score + ' / ' + n + ' correct';
+      if (!answered) root.querySelectorAll('[data-c]').forEach(function (b) { b.addEventListener('click', function () {
+        answered = true; n += 1; var chosen = b.getAttribute('data-c');
+        if (chosen === q.answer) score += 1; else b.classList.add('wrong');
+        render();
+      }); });
+      else document.getElementById('next').addEventListener('click', nextQ);
+    }
+    nextQ();
+  })();
+  </script>
+</body>
+</html>

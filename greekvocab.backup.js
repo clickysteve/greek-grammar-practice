@@ -19,7 +19,7 @@ window.GVBackup = (function () {
   var FILE = 'greek-suite-progress.json';
   var LEGACY_FILE = 'greek-vocab-progress.json';
   // Keys backed up, with whether they hold JSON (true) or are already plain.
-  var KEYS = ['gvm_vocab_track', 'gvm_vocab_simple', 'gvm_grammar', 'gvm_ratings', 'gvm_history', 'gvm_schedule'];
+  var KEYS = ['gvm_vocab_track', 'gvm_vocab_simple', 'gvm_grammar', 'gvm_ratings', 'gvm_history', 'gvm_schedule', 'gvm_vocab_srs', 'gvm_streak'];
 
   var gh = { token: '', gistId: '', lastBackup: 0 };
   try {

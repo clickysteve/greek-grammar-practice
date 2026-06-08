@@ -389,7 +389,7 @@
     }).join('');
     return '<details class="g-verbdrop"><summary>Conjugation of <strong>' + escapeHtml(v.present) + '</strong> (' + escapeHtml(v.english) + ')</summary>' +
       '<div class="vm-grid">' + cards + '</div>' +
-      '<a class="g-vlink" href="index.html">Drill this verb in the Verb Memoriser →</a></details>';
+      '<a class="g-vlink" href="verbs.html">Drill this verb in the Verb Memoriser →</a></details>';
   }
 
   // Compact reference popup (used by "Why?" during a session).
