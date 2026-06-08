@@ -123,6 +123,8 @@
     if (!track[gr]) track[gr] = { rating: 0, seen: 0, used: 0, last: null };
     track[gr].rating = rating;
     save();
+    // Bridge to the flashcard SRS: rating a word seeds/updates its spaced-review schedule.
+    if (window.GVSrsBridge) GVSrsBridge.syncSrsFromRating(gr, rating);
     // Bridge to verb practice: seed unrated drill cards for linked verbs.
     var word = ALL.filter(function (w) { return w.gr === gr; })[0];
     if (word && word.pos === 'verb' && window.GVShared) {

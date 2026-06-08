@@ -39,6 +39,11 @@
     .grade.again { border-color:rgba(255,143,143,.5); color:var(--bad); }
     .grade.good { border-color:rgba(142,226,142,.5); color:var(--good); }
     .grade.easy { border-color:rgba(127,220,255,.5); color:#7fdcff; }
+    .card-rating { margin-top:14px; font-size:13px; color:var(--muted); }
+    .card-rating .stars { color:var(--accent); letter-spacing:2px; }
+    .grade .gk { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; margin-right:7px; border-radius:5px; background:rgba(255,255,255,.10); font-size:11px; font-weight:700; vertical-align:middle; }
+    .kbd-hint { text-align:center; color:var(--muted); font-size:12px; margin-top:12px; }
+    kbd { display:inline-block; padding:1px 6px; border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; background:var(--panel2); font-family:inherit; font-size:11px; color:var(--text); }
     .done { text-align:center; padding:50px 20px; }
     .done-tick { font-size:56px; color:var(--good); }
     .foot { color:var(--muted); font-size:13px; margin-top:18px; text-align:center; }
@@ -52,6 +57,7 @@
   </div>
 
   <script src="greekvocab.data.js"></script>
+  <script src="greekvocab.srsbridge.js"></script>
   <script src="greekvocab.backup.js"></script>
   <script>
   (function () {
@@ -78,11 +84,20 @@
       if (grade === 'again') { r.stage = Math.max(0, r.stage - 2); r.due = Date.now() + 3600000; }
       else { r.correct += 1; r.stage = Math.min(MASTER, r.stage + (grade === 'easy' ? 2 : 1)); r.due = Date.now() + STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length - 1)] * 3600000; }
       save();
+      // Inter-relate with the word list: grading updates the word's 0-5 rating.
+      if (window.GVSrsBridge) GVSrsBridge.writeRating(gr, GVSrsBridge.ratingFromStage(r.stage));
     }
 
     var root = document.getElementById('root'), session = null;
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
     function shuffle(a) { var c = a.slice(); for (var i = c.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = c[i]; c[i] = c[j]; c[j] = t; } return c; }
+
+    function ratingLine(gr) {
+      if (!window.GVSrsBridge) return '';
+      var r = store[gr], rating = r ? GVSrsBridge.ratingFromStage(r.stage) : 0;
+      var stars = '★★★★★'.slice(0, rating) + '☆☆☆☆☆'.slice(0, 5 - rating);
+      return '<div class="card-rating">word-list rating: <span class="stars">' + stars + '</span> ' + rating + '/5</div>';
+    }
 
     function render() { if (session) renderCard(); else renderDash(); }
 
@@ -97,7 +112,7 @@
         '<button class="' + (dir === 'gr2en' ? 'active' : '') + '" data-dir="gr2en">Greek → English</button>' +
         '<button class="' + (dir === 'en2gr' ? 'active' : '') + '" data-dir="en2gr">English → Greek</button></div>' +
         '<div class="summary">' + learned + ' in deck · ' + mastered + ' mastered · ' + fresh + ' not started · ' + VOCAB.length + ' total</div>' +
-        '<div class="foot">Cards you grade “Again” come back soon; “Good”/“Easy” push them further out. Progress syncs with the cloud backup.</div>';
+        '<div class="foot">Grading is tied to your word-list rating (0-5): “Again” lowers it, “Good”/“Easy” raise it, and rating a word in the word list seeds it here. Keys in a session: <kbd>Space</kbd> reveal, <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> grade, <kbd>Esc</kbd> end.</div>';
       var rv = document.getElementById('review'); if (rv) rv.addEventListener('click', function () { start(shuffle(dueList())); });
       var ln = document.getElementById('learn'); if (ln) ln.addEventListener('click', function () { start(shuffle(newList()).slice(0, store.__settings.newPerSession)); });
       root.querySelectorAll('[data-dir]').forEach(function (b) { b.addEventListener('click', function () { store.__settings.dir = b.getAttribute('data-dir'); save(); renderDash(); }); });
@@ -115,21 +130,38 @@
         '<div class="card"><div class="card-art">' + (dir === 'gr2en' ? 'What does this mean?' : 'How do you say this?') + '</div>' +
         '<div class="card-front">' + esc(front) + '</div>' +
         (dir === 'gr2en' ? '<div class="card-pos">' + esc(w.pos || '') + '</div>' : '') +
-        (s.shown ? '<div class="card-back"><div class="card-answer">' + esc(back) + '</div>' + (w.note ? '<div class="card-note">' + esc(w.note) + '</div>' : '') + '</div>' : '') +
+        (s.shown ? '<div class="card-back"><div class="card-answer">' + esc(back) + '</div>' + (w.note ? '<div class="card-note">' + esc(w.note) + '</div>' : '') + ratingLine(w.gr) + '</div>' : '') +
         '</div>';
-      if (!s.shown) html += '<div class="row" style="margin-top:18px;"><button class="btn-primary" id="show" style="min-width:200px;">Show answer</button></div>';
-      else html += '<div class="grades"><button class="grade again" data-g="again">Again</button><button class="grade good" data-g="good">Good</button><button class="grade easy" data-g="easy">Easy</button></div>';
+      if (!s.shown) html += '<div class="row" style="margin-top:18px;"><button class="btn-primary" id="show" style="min-width:200px;">Show answer</button></div>' +
+        '<div class="kbd-hint"><kbd>Space</kbd> reveal · <kbd>Esc</kbd> end</div>';
+      else html += '<div class="grades">' +
+        '<button class="grade again" data-g="again"><span class="gk">1</span>Again</button>' +
+        '<button class="grade good" data-g="good"><span class="gk">2</span>Good</button>' +
+        '<button class="grade easy" data-g="easy"><span class="gk">3</span>Easy</button></div>' +
+        '<div class="kbd-hint"><kbd>1</kbd>/<kbd>a</kbd> again · <kbd>2</kbd>/<kbd>g</kbd> good · <kbd>3</kbd>/<kbd>e</kbd> easy · <kbd>Esc</kbd> end</div>';
       root.innerHTML = html;
       document.getElementById('quit').addEventListener('click', finish);
       if (!s.shown) document.getElementById('show').addEventListener('click', function () { s.shown = true; render(); });
       else root.querySelectorAll('[data-g]').forEach(function (b) { b.addEventListener('click', function () { schedule(w.gr, b.getAttribute('data-g')); s.done += 1; next(); }); });
     }
 
+    function grade(g) { schedule(session.current.gr, g); session.done += 1; next(); }
     document.addEventListener('keydown', function (e) {
       if (!session) return;
-      if (!session.shown && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); session.shown = true; render(); }
-      else if (session.shown && /^[1-3]$/.test(e.key)) { var g = ['again', 'good', 'easy'][+e.key - 1]; schedule(session.current.gr, g); session.done += 1; next(); }
+      if (e.key === 'Escape') { e.preventDefault(); finish(); return; }
+      if (!session.shown) {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); session.shown = true; render(); }
+        return;
+      }
+      // answer shown: 1/2/3 or a/g/e to grade
+      if (/^[1-3]$/.test(e.key)) { e.preventDefault(); grade(['again', 'good', 'easy'][+e.key - 1]); }
+      else if (e.key === 'a' || e.key === 'A') { e.preventDefault(); grade('again'); }
+      else if (e.key === 'g' || e.key === 'G') { e.preventDefault(); grade('good'); }
+      else if (e.key === 'e' || e.key === 'E') { e.preventDefault(); grade('easy'); }
     });
+
+    // Seed the SRS deck from any 0-5 ratings set in the word list, so the two stay one system.
+    if (window.GVSrsBridge) { var seeded = GVSrsBridge.seedInto(store); if (seeded) save(); }
 
     render();
     if (window.GVBackup) GVBackup.init();
