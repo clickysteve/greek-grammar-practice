@@ -4,14 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Greek — Vocabulary Flashcards</title>
+  <link rel="stylesheet" href="suite.css">
   <style>
-    :root { --bg:#111315; --panel:#1b1f24; --panel2:#232a31; --text:#eef2f7; --muted:#aab4c0; --border:#36404a; --accent:#ff9f43; --good:#8ee28e; --warn:#ffd84d; --bad:#ff8f8f; --shadow:0 12px 34px rgba(0,0,0,.28); }
     * { box-sizing:border-box; }
     body { margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top,rgba(255,159,67,.08),transparent 28%),linear-gradient(180deg,#0f1114,#171a1f); color:var(--text); }
     .wrap { max-width:640px; margin:0 auto; padding:24px; }
-    .nav { display:flex; gap:12px; margin-bottom:18px; font-size:14px; flex-wrap:wrap; }
-    .nav a { color:var(--muted); text-decoration:none; border:1px solid var(--border); padding:7px 12px; border-radius:999px; background:var(--panel2); }
-    .nav a:hover { color:var(--text); }
     h1 { font-size:clamp(24px,4vw,34px); margin:0 0 16px; letter-spacing:-.03em; }
     button { border:1px solid var(--border); background:var(--panel2); color:var(--text); border-radius:10px; font-size:14px; padding:10px 14px; cursor:pointer; }
     button:hover { border-color:var(--accent); }
@@ -26,8 +23,13 @@
     .toolbar .active { outline:2px solid rgba(255,159,67,.45); color:var(--text); }
     .toolbar button { font-size:12px; padding:7px 11px; }
 
-    .card { border:1px solid var(--border); border-radius:24px; background:#12161b; padding:40px 24px; text-align:center; min-height:240px; display:flex; flex-direction:column; justify-content:center; }
+    .card { position:relative; border:1px solid var(--border); border-radius:24px; background:#12161b; padding:40px 24px; text-align:center; min-height:240px; display:flex; flex-direction:column; justify-content:center; }
+    .card-level { position:absolute; top:14px; right:14px; font-size:11px; font-weight:700; letter-spacing:.06em; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:3px 9px; background:var(--panel2); }
     .card-art { font-size:15px; color:var(--muted); }
+    .card-ex { margin-top:14px; font-size:16px; }
+    .card-ex .ex-gr { color:var(--text); line-height:1.45; }
+    .card-ex .ex-en { color:var(--muted); font-size:13px; margin-top:3px; }
+    .card-forms { font-size:13px; color:var(--muted); margin-top:10px; }
     .card-front { font-size:clamp(34px,7vw,56px); font-weight:800; letter-spacing:-.03em; }
     .card-pos { font-size:13px; color:var(--muted); margin-top:8px; }
     .card-back { margin-top:18px; padding-top:18px; border-top:1px dashed var(--border); }
@@ -51,22 +53,25 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="nav"><a href="index.html">🏠 Home</a><a href="words.html">📖 Word list</a><a href="vocab.html">✎ Writing prompts</a><span style="color:var(--muted)">Flashcards</span></div>
+    <div class="nav"><a href="index.html">Home</a><a href="verbs.html">Verbs</a><a href="grammar.html">Grammar</a><span class="here">Flashcards</span><a href="vocab.html">Writing</a><a href="words.html">Words</a><a href="builder.html">Builder</a><a href="micro.html">Micro</a><a href="stats.html">Stats</a></div>
     <h1>Vocabulary Flashcards</h1>
     <div id="root"></div>
   </div>
 
   <script src="greekvocab.data.js"></script>
   <script src="greekvocab.srsbridge.js"></script>
+  <script src="greeksuite.stats.js"></script>
   <script src="greekvocab.backup.js"></script>
   <script>
   (function () {
-    var STAGE_HOURS = [4, 8, 24, 72, 168, 336, 720, 1440], MASTER = STAGE_HOURS.length;
+    // SRS ladder is defined once in greekvocab.srsbridge.js (literal fallback matches it).
+    var STAGE_HOURS = (window.GVSrsBridge && GVSrsBridge.STAGE_HOURS) || [4, 8, 24, 72, 168, 336, 720, 1440];
+    var MASTER = (window.GVSrsBridge && GVSrsBridge.MASTER) || STAGE_HOURS.length;
     var KEY = 'gvm_vocab_srs';
     var store = {};
     try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { store = {}; }
     if (!store.__settings) store.__settings = { dir: 'gr2en', newPerSession: 5 };
-    store.__settings.newPerSession = 5; // learn 5 new per session
+    if (typeof store.__settings.newPerSession !== 'number') store.__settings.newPerSession = 5; // default only — keep the persisted value
     function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
 
     // Deck = built-in vocab + user custom words (from the word-list page)
@@ -83,10 +88,26 @@
       var r = store[gr] || (store[gr] = { stage: 0, due: 0, seen: 0, correct: 0, last: null });
       r.seen += 1; r.last = Date.now();
       if (grade === 'again') { r.stage = Math.max(0, r.stage - 2); r.due = Date.now() + 3600000; }
-      else { r.correct += 1; r.stage = Math.min(MASTER, r.stage + (grade === 'easy' ? 2 : 1)); r.due = Date.now() + STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length - 1)] * 3600000; }
+      else {
+        r.correct += 1;
+        r.stage = Math.min(MASTER, r.stage + (grade === 'easy' ? 2 : 1));
+        var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length - 1)];
+        if (hours >= 24) {
+          // Fuzz the interval ±10% so cards don't clump, then round the due time
+          // down to local start-of-day — otherwise daily reviews drift later each day.
+          var fuzzed = hours * 3600000 * (0.9 + Math.random() * 0.2);
+          var d = new Date(Date.now() + fuzzed);
+          d.setHours(0, 0, 0, 0);
+          r.due = d.getTime();
+        } else {
+          r.due = Date.now() + hours * 3600000; // sub-24h intervals stay exact
+        }
+      }
       save();
       // Inter-relate with the word list: grading updates the word's 0-5 rating.
       if (window.GVSrsBridge) GVSrsBridge.writeRating(gr, GVSrsBridge.ratingFromStage(r.stage));
+      // Grading counts as practice for the daily streak.
+      if (window.GSStats) GSStats.touchStreak();
     }
 
     var root = document.getElementById('root'), session = null;
@@ -127,11 +148,25 @@
       var s = session, w = s.current, dir = store.__settings.dir;
       var front = dir === 'gr2en' ? ((w.art ? w.art + ' ' : '') + w.gr) : w.en;
       var back = dir === 'gr2en' ? w.en : ((w.art ? w.art + ' ' : '') + w.gr);
+      // Extras on the BACK only (the example contains the Greek word, so it must
+      // never appear on the front): example sentence, noun plural/genitive.
+      var extras = '';
+      if (w.ex && w.ex.gr) {
+        extras += '<div class="card-ex"><div class="ex-gr">' + esc(w.ex.gr) + '</div>' +
+          (w.ex.en ? '<div class="ex-en">' + esc(w.ex.en) + '</div>' : '') + '</div>';
+      }
+      if (w.pos === 'noun' && (w.pl || w.gen)) {
+        var forms = [];
+        if (w.pl) forms.push('πλ. ' + esc(w.pl));
+        if (w.gen) forms.push('γεν. ' + esc(w.gen));
+        extras += '<div class="card-forms">' + forms.join(' · ') + '</div>';
+      }
       var html = '<div class="sess-top"><button id="quit">✕ end</button><span>' + (s.done + 1) + ' / ' + (s.done + 1 + s.queue.length) + '</span></div>' +
-        '<div class="card"><div class="card-art">' + (dir === 'gr2en' ? 'What does this mean?' : 'How do you say this?') + '</div>' +
+        '<div class="card">' + (w.level ? '<div class="card-level">' + esc(w.level) + '</div>' : '') +
+        '<div class="card-art">' + (dir === 'gr2en' ? 'What does this mean?' : 'How do you say this?') + '</div>' +
         '<div class="card-front">' + esc(front) + '</div>' +
         (dir === 'gr2en' ? '<div class="card-pos">' + esc(w.pos || '') + '</div>' : '') +
-        (s.shown ? '<div class="card-back"><div class="card-answer">' + esc(back) + '</div>' + (w.note ? '<div class="card-note">' + esc(w.note) + '</div>' : '') + ratingLine(w.gr) + '</div>' : '') +
+        (s.shown ? '<div class="card-back"><div class="card-answer">' + esc(back) + '</div>' + (w.note ? '<div class="card-note">' + esc(w.note) + '</div>' : '') + extras + ratingLine(w.gr) + '</div>' : '') +
         '</div>';
       if (!s.shown) html += '<div class="row" style="margin-top:18px;"><button class="btn-primary" id="show" style="min-width:200px;">Show answer</button></div>' +
         '<div class="kbd-hint"><kbd>Space</kbd> reveal · <kbd>Esc</kbd> end</div>';

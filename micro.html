@@ -4,14 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Greek — Micro Trainers</title>
+  <link rel="stylesheet" href="suite.css">
   <style>
-    :root { --bg:#111315; --panel:#1b1f24; --panel2:#232a31; --text:#eef2f7; --muted:#aab4c0; --border:#36404a; --accent:#ff9f43; --good:#8ee28e; --bad:#ff8f8f; --shadow:0 12px 34px rgba(0,0,0,.28); }
     * { box-sizing:border-box; }
     body { margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top,rgba(255,159,67,.08),transparent 28%),linear-gradient(180deg,#0f1114,#171a1f); color:var(--text); }
     .wrap { max-width:600px; margin:0 auto; padding:24px; }
-    .nav { display:flex; gap:12px; margin-bottom:18px; font-size:14px; flex-wrap:wrap; }
-    .nav a { color:var(--muted); text-decoration:none; border:1px solid var(--border); padding:7px 12px; border-radius:999px; background:var(--panel2); }
-    .nav a:hover { color:var(--text); }
     h1 { font-size:clamp(24px,4vw,34px); margin:0 0 14px; letter-spacing:-.03em; }
     button { border:1px solid var(--border); background:var(--panel2); color:var(--text); border-radius:10px; font-size:14px; padding:10px 14px; cursor:pointer; }
     button:hover { border-color:var(--accent); }
@@ -37,7 +34,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="nav"><a href="index.html">🏠 Home</a><span style="color:var(--muted)">Micro trainers</span></div>
+    <div class="nav"><a href="index.html">Home</a><a href="verbs.html">Verbs</a><a href="grammar.html">Grammar</a><a href="flashcards.html">Flashcards</a><a href="vocab.html">Writing</a><a href="words.html">Words</a><a href="builder.html">Builder</a><span class="here">Micro</span><a href="stats.html">Stats</a></div>
     <h1>Micro Trainers</h1>
     <div class="tabs" id="tabs"></div>
     <div id="root"></div>

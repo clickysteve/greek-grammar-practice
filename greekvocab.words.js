@@ -46,11 +46,10 @@
 
   var state = { q: '', reg: 'all', pos: 'all', rating: 'all', sort: 'alpha', limit: PAGE };
 
+  // Canonical normalizer lives in greekvocab.shared.js; tiny wrapper for load-order safety.
   function normGr(s) {
-    return (s || '').toLowerCase()
-      .replace(/ά/g, 'α').replace(/έ/g, 'ε').replace(/ή/g, 'η')
-      .replace(/[ίϊΐ]/g, 'ι').replace(/ό/g, 'ο').replace(/[ύϋΰ]/g, 'υ')
-      .replace(/ώ/g, 'ω').replace(/ς/g, 'σ');
+    if (window.GVShared && GVShared.normGr) return GVShared.normGr(s);
+    return String(s == null ? '' : s).toLowerCase().replace(/ς/g, 'σ');
   }
   function ratingOf(gr) { return track[gr] ? (track[gr].rating || 0) : 0; }
   function seenOf(gr) { return track[gr] ? (track[gr].seen || 0) : 0; }
@@ -119,18 +118,17 @@
       ' words (' + track.__custom.length + ' custom) · ' + mastered + ' mastered · ' + learning + ' learning · ' + unrated + ' unrated';
   }
 
+  // Writes ONLY the page's own track store. SRS sync + verb-drill seeding happen
+  // once, centrally, in GVShared.rateAndRefresh (which calls this via onRate).
   function applyRating(gr, rating) {
     if (!track[gr]) track[gr] = { rating: 0, seen: 0, used: 0, last: null };
     track[gr].rating = rating;
     save();
-    // Bridge to the flashcard SRS: rating a word seeds/updates its spaced-review schedule.
-    if (window.GVSrsBridge) GVSrsBridge.syncSrsFromRating(gr, rating);
-    // Bridge to verb practice: seed unrated drill cards for linked verbs.
-    var word = ALL.filter(function (w) { return w.gr === gr; })[0];
-    if (word && word.pos === 'verb' && window.GVShared) {
-      var entry = GVShared.findVerbAppEntry(gr);
-      if (entry) GVShared.seedVerbRatings(entry, rating);
-    }
+  }
+  // Route every rating through the shared central path so bridges fire exactly once.
+  function rate(gr, rating) {
+    if (window.GVShared && GVShared.rateAndRefresh) GVShared.rateAndRefresh(gr, rating);
+    else { applyRating(gr, rating); render(); }
   }
 
   // Shared word-detail modal (conjugations, grammar, related words).
@@ -148,14 +146,15 @@
   el.wlist.addEventListener('click', function (e) {
     var t = e.target;
     if (t.hasAttribute && t.hasAttribute('data-r')) {
-      applyRating(t.getAttribute('data-gr'), parseInt(t.getAttribute('data-r'), 10));
-      render();
+      rate(t.getAttribute('data-gr'), parseInt(t.getAttribute('data-r'), 10));
     } else if (t.hasAttribute && t.hasAttribute('data-del')) {
       var g = t.getAttribute('data-del');
       if (confirm('Delete custom word "' + g + '"? Its rating history goes too.')) {
         track.__custom = track.__custom.filter(function (w) { return w.gr !== g; });
         delete track[g];
         save();
+        // Remove its flashcard SRS record too (rating 0 = delete from the deck).
+        if (window.GVSrsBridge) GVSrsBridge.syncSrsFromRating(g, 0);
         ALL = buildAll();
         render();
       }

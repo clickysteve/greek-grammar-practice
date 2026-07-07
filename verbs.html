@@ -4,25 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Greek Verb Memoriser</title>
+  <link rel="stylesheet" href="suite.css">
   <style>
     :root {
-      --bg: #111315;
-      --panel: #1b1f24;
-      --panel2: #232a31;
-      --text: #eef2f7;
-      --muted: #aab4c0;
-      --border: #36404a;
-      --accent: #ff9f43;
-      --accent-strong: #ff9f43;
-      --good: #8ee28e;
-      --bad: #ff8f8f;
-      --warn: #ffd84d;
-      --shadow: 0 12px 34px rgba(0,0,0,.28);
+      /* page-specific tense colours (shared palette comes from suite.css) */
       --present: #4ea1ff;
       --past: #ffd84d;
       --future: #7fdcff;
       --pastc: #ff9f43;
       --futurec: #b78cff;
+      --perfect: #8ee28e;
+      --pluperf: #f2a1c2;
+      --imper: #ff8f8f;
       --english: rgba(255,255,255,.03);
     }
     * { box-sizing: border-box; }
@@ -76,6 +69,9 @@
     .prompt-tense.future { color: var(--future); }
     .prompt-tense.pastCont { color: var(--pastc); }
     .prompt-tense.futureCont { color: var(--futurec); }
+    .prompt-tense.perfect { color: var(--perfect); }
+    .prompt-tense.pluperfect { color: var(--pluperf); }
+    .prompt-tense.imperative { color: var(--imper); }
     .big { font-size: clamp(34px, 6vw, 64px); font-weight: 700; line-height: 1.1; margin-bottom: 12px; letter-spacing: -.04em; }
     .person-chip { display: inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(255,159,67,.14); border: 1px solid rgba(255,159,67,.3); color: var(--accent-strong); font-size: 13px; margin: 6px 0 10px; letter-spacing: .04em; }
     .hint { color: var(--muted); font-size: 15px; max-width: 760px; display: grid; gap: 10px; }
@@ -131,6 +127,12 @@
     .mini.future { background: color-mix(in srgb, var(--future) 18%, transparent); border-color: color-mix(in srgb, var(--future) 55%, var(--border)); }
     .mini.pastCont { background: color-mix(in srgb, var(--pastc) 18%, transparent); border-color: color-mix(in srgb, var(--pastc) 55%, var(--border)); }
     .mini.futureCont { background: color-mix(in srgb, var(--futurec) 18%, transparent); border-color: color-mix(in srgb, var(--futurec) 55%, var(--border)); }
+    .mini.perfect { background: color-mix(in srgb, var(--perfect) 14%, transparent); border-color: color-mix(in srgb, var(--perfect) 55%, var(--border)); }
+    .mini.pluperfect { background: color-mix(in srgb, var(--pluperf) 14%, transparent); border-color: color-mix(in srgb, var(--pluperf) 55%, var(--border)); }
+    .mini.imperative { background: color-mix(in srgb, var(--imper) 14%, transparent); border-color: color-mix(in srgb, var(--imper) 55%, var(--border)); }
+    .mini.perfect.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 0 0 2px rgba(142,226,142,.24), 0 0 34px rgba(142,226,142,.40); }
+    .mini.pluperfect.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 0 0 2px rgba(242,161,194,.24), 0 0 34px rgba(242,161,194,.40); }
+    .mini.imperative.focus { box-shadow: inset 0 0 0 2px rgba(255,255,255,.22), 0 0 0 2px rgba(255,143,143,.24), 0 0 34px rgba(255,143,143,.40); }
     .mini .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
     .mini .v { font-size: 22px; font-weight: 700; line-height: 1.15; }
     .mini .row-line { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 3px 0; border-bottom: 1px dashed rgba(255,255,255,.08); }
@@ -222,9 +224,19 @@
 </head>
 <body>
   <div class="wrap">
+    <div class="nav">
+      <a href="index.html">Home</a>
+      <span class="here">Verbs</span>
+      <a href="grammar.html">Grammar</a>
+      <a href="flashcards.html">Flashcards</a>
+      <a href="vocab.html">Writing</a>
+      <a href="words.html">Words</a>
+      <a href="builder.html">Builder</a>
+      <a href="micro.html">Micro</a>
+      <a href="stats.html">Stats</a>
+    </div>
     <h1>Greek Verb Memoriser</h1>
     <div class="sub">Flashcards, typed answers, tense drilling, full conjugation practice, and repetition for the verbs that actually matter.</div>
-    <div style="margin:-6px 0 16px; display:flex; gap:10px; flex-wrap:wrap;"><a href="vocab.html" style="color:var(--accent-strong); text-decoration:none; border:1px solid var(--border); padding:8px 14px; border-radius:999px; background:var(--panel2); font-size:14px;">✎ Vocabulary writing prompts →</a><a href="words.html" style="color:var(--accent-strong); text-decoration:none; border:1px solid var(--border); padding:8px 14px; border-radius:999px; background:var(--panel2); font-size:14px;">📖 Word list →</a><a href="grammar.html" style="color:var(--accent-strong); text-decoration:none; border:1px solid var(--border); padding:8px 14px; border-radius:999px; background:var(--panel2); font-size:14px;">🧩 Grammar →</a></div>
 
     <div class="layout">
       <div class="panel controls controls-panel">
@@ -336,6 +348,7 @@
   </div>
 
   <script src="greekverbprac.data.js"></script>
+  <script src="greeksuite.stats.js"></script>
   <script src="greekverbprac.app.js"></script>
 </body>
 </html>

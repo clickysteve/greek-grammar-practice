@@ -8,11 +8,15 @@
  */
 window.GSStats = (function () {
   'use strict';
-  var MASTER = 8;
+  // SRS ladder length comes from the bridge when it's loaded on the page; the
+  // literal fallback matches GVSrsBridge.STAGE_HOURS.length.
+  var MASTER = (window.GVSrsBridge && GVSrsBridge.MASTER) || 8;
   function J(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function dayStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
   function todayStr() { return dayStr(new Date()); }
+  // "Due today" = due before local end-of-today (not just already past due).
+  function endOfToday() { var d = new Date(); d.setHours(23, 59, 59, 999); return d.getTime(); }
 
   /* ---- streak ---- */
   function touchStreak() {
@@ -32,11 +36,11 @@ window.GSStats = (function () {
   function grammar() {
     var g = J('gvm_grammar') || {};
     var srs = g.__srs || {}, prac = g.__practice || {}, lessons = g.__lessons || {};
-    var now = Date.now(), due = 0, mastered = 0, inSrs = 0;
+    var eod = endOfToday(), due = 0, mastered = 0, inSrs = 0;
     Object.keys(srs).forEach(function (id) {
       var r = srs[id]; inSrs++;
       if (r.stage >= MASTER) mastered++;
-      else if ((r.due || 0) <= now) due++;
+      else if ((r.due || 0) <= eod) due++;
     });
     var ps = 0, pc = 0;
     Object.keys(prac).forEach(function (id) { ps += prac[id].seen || 0; pc += prac[id].correct || 0; });
@@ -54,7 +58,7 @@ window.GSStats = (function () {
     Object.keys(sched).forEach(function (k) { if ((sched[k].dueAt || 0) <= now) due++; });
     return {
       rated: ids.length, avg: avg != null ? Math.round(avg * 10) / 10 : null,
-      mastered: vals.filter(function (v) { return v >= 4; }).length,
+      mastered: vals.filter(function (v) { return v >= 5; }).length, // rating 5 = mastered (same rule as vocab)
       weak: vals.filter(function (v) { return v > 0 && v <= 2; }).length,
       due: due, ratings: ratings
     };
@@ -70,11 +74,11 @@ window.GSStats = (function () {
       if (r >= 5) mastered++; else if (r > 0) learning++;
       if (r > 0) rated++;
     });
-    var now = Date.now(), due = 0, inSrs = 0;
+    var eod = endOfToday(), due = 0, inSrs = 0;
     Object.keys(srs).forEach(function (k) {
       if (k.indexOf('__') === 0) return;
       var r = srs[k]; inSrs++;
-      if (r.stage < MASTER && (r.due || 0) <= now) due++;
+      if (r.stage < MASTER && (r.due || 0) <= eod) due++;
     });
     return { rated: rated, mastered: mastered, learning: learning, srsDue: due, srsCount: inSrs, track: t, srs: srs };
   }

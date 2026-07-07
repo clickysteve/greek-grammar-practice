@@ -19,11 +19,12 @@ window.GVShared = (function () {
   var currentWord = null;
 
   /* ---------- text helpers ---------- */
+  // Canonical Greek normalizer: NFD-decompose, strip combining marks (accents,
+  // breathings, diaeresis — covers polytonic too), lowercase, fold final sigma.
   function normGr(s) {
-    return (s || '').toLowerCase()
-      .replace(/[άἀἁ]/g, 'α').replace(/έ/g, 'ε').replace(/ή/g, 'η')
-      .replace(/[ίϊΐ]/g, 'ι').replace(/ό/g, 'ο').replace(/[ύϋΰ]/g, 'υ')
-      .replace(/ώ/g, 'ω').replace(/ς/g, 'σ');
+    s = String(s == null ? '' : s);
+    try { s = s.normalize('NFD'); } catch (e) {}
+    return s.replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ς/g, 'σ');
   }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -226,7 +227,7 @@ window.GVShared = (function () {
   }
 
   /* ---------- detail modal ---------- */
-  var POS_LABEL = { noun: 'noun', adj: 'adjective', verb: 'verb', adv: 'adverb / connector', phrase: 'phrase' };
+  var POS_LABEL = { noun: 'noun', adj: 'adjective', verb: 'verb', adv: 'adverb / connector', phrase: 'phrase', conj: 'conjunction', prep: 'preposition', pron: 'pronoun' };
   var PERSONS = ['εγώ', 'εσύ', 'αυτός/ή', 'εμείς', 'εσείς', 'αυτοί'];
 
   function detailHtml(w) {
@@ -312,14 +313,19 @@ window.GVShared = (function () {
       h += '<div class="wd-section"><div class="wd-title">Related words</div><div class="wd-rel">' +
         rel.map(function (x) {
           return '<button class="wd-rel-chip" data-gr="' + escapeHtml(x.gr) + '">' +
-            (x.art ? x.art + ' ' : '') + escapeHtml(x.gr) + ' <span class="wd-rel-en">' + escapeHtml(x.en) + '</span></button>';
+            (x.art ? escapeHtml(x.art) + ' ' : '') + escapeHtml(x.gr) + ' <span class="wd-rel-en">' + escapeHtml(x.en) + '</span></button>';
         }).join('') + '</div></div>';
     }
     return h;
   }
 
+  /* The ONE place a word-list rating fans out from: page store (onRate),
+   * flashcard SRS (syncSrsFromRating) and verb-drill seeding all happen here,
+   * exactly once per rate, regardless of which page the rating came from. */
   function rateAndRefresh(gr, rating) {
     cfg.onRate(gr, rating);
+    // Bridge to the flashcard SRS: rating a word seeds/updates its schedule.
+    if (window.GVSrsBridge) GVSrsBridge.syncSrsFromRating(gr, rating);
     // Bridge: seed unrated drill cards for linked verbs.
     var word = cfg.vocab.filter(function (x) { return x.gr === gr; })[0];
     if (word && word.pos === 'verb') {
@@ -370,6 +376,7 @@ window.GVShared = (function () {
     init: init,
     openDetail: openDetail,
     closeDetail: closeDetail,
+    rateAndRefresh: rateAndRefresh,
     normGr: normGr,
     findVerbAppEntry: findVerbAppEntry,
     verbPracticeStats: verbPracticeStats,

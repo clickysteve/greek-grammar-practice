@@ -1,0 +1,29 @@
+/* Greek suite — shared design tokens + navigation bar.
+ * Loaded by every page BEFORE its inline <style>, so pages can override
+ * any variable inline if they intentionally deviate. */
+:root {
+  --bg: #111315;
+  --panel: #1b1f24;
+  --panel2: #232a31;
+  --text: #eef2f7;
+  --muted: #aab4c0;
+  --border: #36404a;
+  --accent: #ff9f43;
+  --accent-strong: #ff9f43;
+  --good: #8ee28e;
+  --warn: #ffd84d;
+  --bad: #ff8f8f;
+  --shadow: 0 12px 34px rgba(0,0,0,.28);
+}
+
+/* Common navigation bar. The current page is a <span class="here">. */
+.nav { display: flex; gap: 8px; align-items: center; margin-bottom: 18px; font-size: 14px; flex-wrap: wrap; }
+.nav a {
+  color: var(--muted); text-decoration: none; border: 1px solid var(--border);
+  padding: 7px 12px; border-radius: 999px; background: var(--panel2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav .here {
+  color: var(--accent); border: 1px solid var(--accent); padding: 7px 12px;
+  border-radius: 999px; background: rgba(255,159,67,.10); font-weight: 600;
+}

@@ -4,14 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Greek — Stats</title>
+  <link rel="stylesheet" href="suite.css">
   <style>
-    :root { --bg:#111315; --panel:#1b1f24; --panel2:#232a31; --text:#eef2f7; --muted:#aab4c0; --border:#36404a; --accent:#ff9f43; --good:#8ee28e; --warn:#ffd84d; --bad:#ff8f8f; --shadow:0 12px 34px rgba(0,0,0,.28); }
     * { box-sizing:border-box; }
     body { margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top,rgba(255,159,67,.08),transparent 28%),linear-gradient(180deg,#0f1114,#171a1f); color:var(--text); }
     .wrap { max-width:760px; margin:0 auto; padding:24px; }
-    .nav { display:flex; gap:12px; margin-bottom:18px; font-size:14px; flex-wrap:wrap; }
-    .nav a { color:var(--muted); text-decoration:none; border:1px solid var(--border); padding:7px 12px; border-radius:999px; background:var(--panel2); }
-    .nav a:hover { color:var(--text); }
     h1 { font-size:clamp(24px,4vw,34px); margin:0 0 16px; letter-spacing:-.03em; }
     .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-bottom:18px; }
     .kpi { background:#12161b; border:1px solid var(--border); border-radius:16px; padding:16px; text-align:center; }
@@ -39,7 +36,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="nav"><a href="index.html">🏠 Home</a><a href="verbs.html">Verbs</a><a href="grammar.html">Grammar</a><a href="flashcards.html">Flashcards</a><span style="color:var(--muted)">Stats</span></div>
+    <div class="nav"><a href="index.html">Home</a><a href="verbs.html">Verbs</a><a href="grammar.html">Grammar</a><a href="flashcards.html">Flashcards</a><a href="vocab.html">Writing</a><a href="words.html">Words</a><a href="builder.html">Builder</a><a href="micro.html">Micro</a><span class="here">Stats</span></div>
     <h1>Your progress</h1>
     <div class="kpis" id="kpis"></div>
     <div class="panel"><h2>Mastery by area</h2><div class="stack" id="areas"></div>
@@ -60,7 +57,7 @@
     function kpi(n, l) { return '<div class="kpi"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>'; }
     document.getElementById('kpis').innerHTML =
       kpi(st.days || 0, 'day streak') + kpi(st.best || 0, 'best streak') +
-      kpi(S.totalDue(), 'due now') + kpi((g.mastered + v.mastered + o.mastered), 'mastered total');
+      kpi(S.totalDue(), 'due today') + kpi((g.mastered + v.mastered + o.mastered), 'mastered total');
 
     function bar(label, segs, right) {
       var inner = segs.filter(function (s) { return s.n > 0; }).map(function (s) { return '<span class="seg ' + s.c + '" style="width:' + s.w + '%"></span>'; }).join('');

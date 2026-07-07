@@ -92,7 +92,7 @@
     return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
   }
   function countSeen(words) {
-    words.forEach(function (w) { var r = rec(w.gr); r.seen += 1; r.last = todayStr(); });
+    words.forEach(function (w) { var r = rec(w.gr); r.seen += 1; r.last = Date.now(); });
     saveTrack();
   }
 
@@ -167,17 +167,26 @@
   }
 
   /* ---------- text helpers ---------- */
+  // Canonical normalizer lives in greekvocab.shared.js; tiny wrapper for load-order safety.
   function normGr(s) {
-    return (s || '').toLowerCase()
-      .replace(/[άἀἁ]/g, 'α').replace(/έ/g, 'ε').replace(/ή/g, 'η')
-      .replace(/[ίϊΐ]/g, 'ι').replace(/ό/g, 'ο').replace(/[ύϋΰ]/g, 'υ')
-      .replace(/ώ/g, 'ω').replace(/ς/g, 'σ');
+    if (window.GVShared && GVShared.normGr) return GVShared.normGr(s);
+    return String(s == null ? '' : s).toLowerCase().replace(/ς/g, 'σ');
   }
+  function isLetterCh(c) { return !!c && /[a-zα-ω]/.test(c); }
+  // A word counts as used when its stem STARTS a word in the (normalized) text —
+  // bare-substring matching gave false positives on short stems.
   function wordUsed(word, text) {
+    if (!text) return false;
     var t = normGr(text);
     var base = normGr(word.gr);
     var stem = base.length > 5 ? base.slice(0, base.length - 2) : base;
-    return t.indexOf(stem) !== -1;
+    if (!stem) return false;
+    var idx = t.indexOf(stem);
+    while (idx !== -1) {
+      if (idx === 0 || !isLetterCh(t.charAt(idx - 1))) return true;
+      idx = t.indexOf(stem, idx + 1);
+    }
+    return false;
   }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -228,12 +237,7 @@
     }
     var text = el.writing ? el.writing.value : '';
     el.wordChips.innerHTML = state.words.map(function (w, i) {
-      var used = wordUsed(w, text);
-      if (used && !state.usedCounted[w.gr]) {
-        state.usedCounted[w.gr] = true;
-        var r = rec(w.gr); r.used += 1; r.last = todayStr(); saveTrack();
-        renderTrackStats();
-      }
+      var used = wordUsed(w, text); // display only — counting happens in updateUsedWords()
       var color = (THEMES[w.theme] && THEMES[w.theme].color) || 'var(--accent)';
       var article = w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '';
       var reg = w.register === 'everyday' ? 'everyday' : 'expressive';
@@ -282,6 +286,21 @@
     el.includeKnownBtn.textContent = track.__settings.includeKnown ? 'Mastered words: included' : 'Mastered words: hidden';
   }
 
+  // Mark prompt words found in the writing as "used" (once per prompt) —
+  // kept out of the render path so rendering stays side-effect free.
+  function updateUsedWords() {
+    var text = el.writing ? el.writing.value : '';
+    var changed = false;
+    state.words.forEach(function (w) {
+      if (!state.usedCounted[w.gr] && wordUsed(w, text)) {
+        state.usedCounted[w.gr] = true;
+        var r = rec(w.gr); r.used += 1; r.last = Date.now();
+        changed = true;
+      }
+    });
+    if (changed) { saveTrack(); renderTrackStats(); }
+  }
+
   /* ---------- actions ---------- */
   function regenerate(newScenario) {
     state.daily = false;
@@ -299,7 +318,15 @@
       state.words = snap.words.map(function (g) {
         return VOCAB.filter(function (w) { return w.gr === g; })[0];
       }).filter(Boolean);
-      state.scenario = SCENARIOS[snap.scenario] || SCENARIOS[0];
+      // Scenario is stored by its Greek text (stable across data edits);
+      // older snapshots stored an array index — accept that as a fallback.
+      var sc = null;
+      if (typeof snap.scenario === 'string') {
+        sc = SCENARIOS.filter(function (s) { return s.gr === snap.scenario; })[0];
+      } else if (typeof snap.scenario === 'number') {
+        sc = SCENARIOS[snap.scenario];
+      }
+      state.scenario = sc || pickScenario(mulberry32(dateSeed())); // else re-roll (same all day)
     } else {
       var rng = mulberry32(dateSeed());
       state.scenario = pickScenario(rng);
@@ -308,7 +335,7 @@
       try {
         localStorage.setItem(DAILY_KEY, JSON.stringify({
           date: todayStr(),
-          scenario: SCENARIOS.indexOf(state.scenario),
+          scenario: state.scenario.gr,
           words: state.words.map(function (w) { return w.gr; })
         }));
       } catch (e) {}
@@ -354,7 +381,17 @@
     state.scenario = pickScenario();
     renderScenario();
   });
-  el.writing.addEventListener('input', function () { renderChips(); renderWriteCount(); });
+  // Debounced: marking used words + re-rendering chips on every keystroke is wasteful.
+  var writeTimer = null;
+  el.writing.addEventListener('input', function () {
+    renderWriteCount();
+    if (writeTimer) clearTimeout(writeTimer);
+    writeTimer = setTimeout(function () {
+      writeTimer = null;
+      updateUsedWords();
+      renderChips();
+    }, 300);
+  });
   el.clearBtn.addEventListener('click', function () {
     if (!el.writing.value || confirm('Clear your writing?')) {
       el.writing.value = '';

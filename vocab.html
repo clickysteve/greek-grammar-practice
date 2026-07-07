@@ -4,21 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Greek Vocabulary — Writing Prompts</title>
+  <link rel="stylesheet" href="suite.css">
   <style>
-    :root {
-      --bg: #111315;
-      --panel: #1b1f24;
-      --panel2: #232a31;
-      --text: #eef2f7;
-      --muted: #aab4c0;
-      --border: #36404a;
-      --accent: #ff9f43;
-      --accent-strong: #ff9f43;
-      --good: #8ee28e;
-      --warn: #ffd84d;
-      --bad: #ff8f8f;
-      --shadow: 0 12px 34px rgba(0,0,0,.28);
-    }
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -27,9 +14,6 @@
       color: var(--text);
     }
     .wrap { max-width: 900px; margin: 0 auto; padding: 24px; }
-    .nav { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; font-size: 14px; }
-    .nav a { color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 7px 12px; border-radius: 999px; background: var(--panel2); }
-    .nav a:hover { color: var(--text); }
     h1 { font-size: clamp(26px, 4vw, 38px); margin: 0 0 6px; letter-spacing: -.03em; }
     .sub { color: var(--muted); margin-bottom: 20px; max-width: 640px; }
     .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); padding: 18px; margin-bottom: 18px; }
@@ -172,11 +156,15 @@
 <body>
   <div class="wrap">
     <div class="nav">
-      <a href="index.html">🏠 Home</a>
-      <a href="verbs.html">← Verb practice</a>
-      <span style="color:var(--muted)">Vocabulary writing</span>
-      <a href="words.html">Word list →</a>
-      <a href="grammar.html">Grammar →</a>
+      <a href="index.html">Home</a>
+      <a href="verbs.html">Verbs</a>
+      <a href="grammar.html">Grammar</a>
+      <a href="flashcards.html">Flashcards</a>
+      <span class="here">Writing</span>
+      <a href="words.html">Words</a>
+      <a href="builder.html">Builder</a>
+      <a href="micro.html">Micro</a>
+      <a href="stats.html">Stats</a>
     </div>
 
     <h1>Vocabulary — Writing Prompts</h1>
@@ -244,6 +232,7 @@
   <script src="greekverbprac.data.js"></script>
   <script src="greekvocab.data.js"></script>
   <script src="greekvocab.shared.js"></script>
+  <script src="greekvocab.srsbridge.js"></script>
   <script src="greekvocab.backup.js"></script>
   <script src="greekvocab.app.js"></script>
 </body>

@@ -2,7 +2,9 @@
  * Expects the following globals from greekverbprac.data.js:
  *   - VERBS           (array of verb objects)
  *   - CONJUGATIONS    (overrides keyed by verb.english → { present:[6], past:[6], future:[6], pastCont:[6], futureCont:[6] })
- *   - EXAMPLES        (keyed by verb.english → { present:[gr,en], past:[gr,en], ... })
+ *   - APAREMFATO_OVERRIDES (keyed by lemma → perfective infinitive, or null = verb has no perfect)
+ *   - IMPERATIVES     (keyed by lemma → [2sg, 2pl] perfective imperative; absent = not drillable)
+ *   - EXAMPLES        (keyed by verb.english → { present:[gr,en], past:[gr,en], ... } — tenses may be missing)
  *   - FAMILIES        (object: key → { label, note, members:[english, ...] })
  *   - GRAMMAR_NOTES   (keyed by tense → { short, title })
  *   - STEM_MAPS       (keyed by verb.english → { presentSide, pastSide, note })
@@ -23,12 +25,16 @@ const PERSONS = [
 const PERSON_INDEX = { '1sg':0, '2sg':1, '3sg':2, '1pl':3, '2pl':4, '3pl':5 };
 
 const directions = [{ key: 'en-to-gr', label: 'English → Greek' }, { key: 'gr-to-en', label: 'Greek → English' }];
+const DRILL_TENSES = ['present','past','future','pastCont','futureCont','perfect','pluperfect','imperative'];
 const tenses = [
   { key: 'present', label: 'Present' },
   { key: 'past', label: 'Simple Past' },
   { key: 'future', label: 'Future Simple' },
   { key: 'pastCont', label: 'Past Continuous' },
   { key: 'futureCont', label: 'Future Continuous' },
+  { key: 'perfect', label: 'Perfect' },
+  { key: 'pluperfect', label: 'Pluperfect' },
+  { key: 'imperative', label: 'Imperative' },
   { key: 'mixed', label: 'Mixed' }
 ];
 const drillTypes = [
@@ -124,7 +130,52 @@ function conjugateComputed(v, tense) {
   return [present1, present1, present1, present1, present1, present1];
 }
 
+/* Perfect / pluperfect / imperative -------------------------------------- */
+
+const PERFECT_AUX    = ['έχω','έχεις','έχει','έχουμε','έχετε','έχουν'];
+const PLUPERFECT_AUX = ['είχα','είχες','είχε','είχαμε','είχατε','είχαν'];
+// Persons that exist in the imperative (2sg, 2pl).
+const IMPERATIVE_PERSONS = [1, 4];
+
+// Perfective infinitive (aparemfato): derived from the future-simple 1sg by
+// stripping "θα " and swapping the final -ω/-ώ for -ει/-εί (θα γράψω → γράψει).
+// APAREMFATO_OVERRIDES (data file, keyed by lemma) wins; a null there means
+// "this verb has no perfect".
+function aparemfatoFor(v) {
+  const ov = window.APAREMFATO_OVERRIDES || {};
+  const lemma = v.lemma || v.present;
+  if (Object.prototype.hasOwnProperty.call(ov, lemma)) return ov[lemma];
+  const f = (v.future || '').replace(/^θα\s+/, '');
+  if (f.endsWith('ώ')) return f.slice(0, -1) + 'εί';
+  if (f.endsWith('ω')) return f.slice(0, -1) + 'ει';
+  return null;
+}
+
+function imperativeFor(v) {
+  const imp = (window.IMPERATIVES || {})[v.lemma || v.present];
+  return (Array.isArray(imp) && imp.length === 2) ? imp : null;
+}
+
+// Whether this verb can be drilled in the given tense (defective verbs are
+// excluded from perfect/pluperfect via a null aparemfato override, and from
+// the imperative by simply not appearing in IMPERATIVES).
+function hasTense(v, tense) {
+  if (tense === 'perfect' || tense === 'pluperfect') return !!aparemfatoFor(v);
+  if (tense === 'imperative') return !!imperativeFor(v);
+  return true;
+}
+
 function conjugate(v, tense) {
+  if (tense === 'imperative') {
+    const imp = imperativeFor(v);
+    return imp ? ['', imp[0], '', '', imp[1], ''] : ['', '', '', '', '', ''];
+  }
+  if (tense === 'perfect' || tense === 'pluperfect') {
+    const ap = aparemfatoFor(v);
+    if (!ap) return ['', '', '', '', '', ''];
+    const aux = tense === 'perfect' ? PERFECT_AUX : PLUPERFECT_AUX;
+    return aux.map(a => `${a} ${ap}`);
+  }
   const ov = (window.CONJUGATIONS || {})[v.english];
   if (ov && ov[tense] && ov[tense].length === 6) return ov[tense];
   return conjugateComputed(v, tense);
@@ -178,9 +229,19 @@ function idFor(v, tense, dir, drillType, personIdx) {
 
 function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]); }
 function norm(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'΄]/g, '').replace(/\s+/g, ' ').trim(); }
-function stripAccentsOnly(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim(); }
+// Canonical form for the "exact" comparison tier: unicode-normalise, lowercase,
+// fold final sigma (\u03c2 \u2194 \u03c3 is purely positional), collapse whitespace.
+function canonGreek(s) { return (s || '').normalize('NFC').toLowerCase().replace(/\u03c2/g, '\u03c3').replace(/\s+/g, ' ').trim(); }
+function stripAccentsOnly(s) { return (s || '').normalize('NFC').toLowerCase().replace(/\u03c2/g, '\u03c3').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim(); }
 
 function greekForms(v, tense) {
+  if (tense === 'perfect' || tense === 'pluperfect' || tense === 'imperative') {
+    // Derived tenses have no field on the verb object; the vocab-mode "citation"
+    // form is the 1sg (perfect/pluperfect) or the 2sg (imperative).
+    const arr = conjugate(v, tense);
+    const form = arr[tense === 'imperative' ? 1 : 0];
+    return form ? [form] : [];
+  }
   const forms = [v[tense], ...(v[`${tense}Alt`] || [])].filter(Boolean);
   return Array.from(new Set(forms));
 }
@@ -199,7 +260,7 @@ function foldOmicronOmega(s) {
 
 function compareGreek(typed, expectedForms) {
   const forms = Array.isArray(expectedForms) ? expectedForms : [expectedForms];
-  const exact = forms.find(form => typed.trim() === form.trim());
+  const exact = forms.find(form => canonGreek(typed) === canonGreek(form));
   if (exact) return { result: 'correct', expected: exact };
   const accent = forms.find(form => stripAccentsOnly(typed) === stripAccentsOnly(form));
   if (accent) return { result: 'accent', expected: accent };
@@ -279,50 +340,58 @@ function matchesSearch(v, q) {
     .some(x => x.toLowerCase().includes(ql));
 }
 
-function pool() {
+function verbsInScope() {
   const verbs = window.VERBS || [];
   let p = state.set === 'all' ? verbs.slice() : verbs.filter(v => v.set === state.set);
   const q = state.search.trim();
   if (q) p = p.filter(v => matchesSearch(v, q));
-  if (state.review === 'weak') {
-    p = p.filter(v => {
-      return [0,1,2,3,4].some(ti => {
-        const t = ['present','past','future','pastCont','futureCont'][ti];
-        const id = idFor(v, t, state.direction, state.drillType, 0);
-        const r = Number(state.ratings[id] ?? -1);
-        return r >= 0 && r <= 1;
-      });
-    });
-  } else if (state.review === 'due') {
-    const now = Date.now();
-    p = p.filter(v => {
-      return [0,1,2,3,4].some(ti => {
-        const t = ['present','past','future','pastCont','futureCont'][ti];
-        const id = idFor(v, t, state.direction, state.drillType, 0);
-        const s = state.schedule[id];
-        return s && s.dueAt && s.dueAt <= now;
-      });
-    });
-  }
   return p;
 }
 
-function tensePick() {
-  if (state.tense !== 'mixed') return state.tense;
-  const arr = ['present','past','future','pastCont','futureCont'];
-  return arr[Math.floor(Math.random() * arr.length)];
+function tenseOptions() {
+  return state.tense === 'mixed' ? DRILL_TENSES : [state.tense];
 }
-function personPick() {
-  if (state.person !== 'random') return PERSON_INDEX[state.person];
-  return Math.floor(Math.random() * 6);
+function personOptionsFor(tense) {
+  if (tense === 'imperative') {
+    // Only 2sg/2pl exist. Vocab mode drills the 2sg; conjugation mode drills
+    // whichever of 2sg/2pl the person filter allows (or both).
+    if (state.drillType !== 'conjugation') return [1];
+    if (state.person !== 'random' && IMPERATIVE_PERSONS.includes(PERSON_INDEX[state.person])) return [PERSON_INDEX[state.person]];
+    return IMPERATIVE_PERSONS.slice();
+  }
+  if (state.drillType !== 'conjugation') return [0];
+  if (state.person !== 'random') return [PERSON_INDEX[state.person]];
+  return [0, 1, 2, 3, 4, 5];
 }
 
-function weightedPick(p) {
+// Builds the pool at the (verb, tense, person) card level, so the review
+// filters ("Due now", "Weak only") apply to the actual cards being served.
+function cardPool() {
   const now = Date.now();
-  const scored = p.map(v => {
-    const tense = tensePick();
-    const personIdx = state.drillType === 'conjugation' ? personPick() : 0;
-    const id = idFor(v, tense, state.direction, state.drillType, personIdx);
+  const cards = [];
+  for (const v of verbsInScope()) {
+    for (const tense of tenseOptions()) {
+      if (!hasTense(v, tense)) continue;
+      for (const personIdx of personOptionsFor(tense)) {
+        const id = idFor(v, tense, state.direction, state.drillType, personIdx);
+        if (state.review === 'weak') {
+          const r = Number(state.ratings[id] ?? -1);
+          if (!(r >= 0 && r <= 1)) continue;
+        } else if (state.review === 'due') {
+          const s = state.schedule[id];
+          if (!(s && s.dueAt && s.dueAt <= now)) continue;
+        }
+        cards.push({ v, tense, personIdx });
+      }
+    }
+  }
+  return cards;
+}
+
+function weightedPick(cards) {
+  const now = Date.now();
+  const scored = cards.map(card => {
+    const id = idFor(card.v, card.tense, state.direction, state.drillType, card.personIdx);
     const s = state.schedule[id] || { dueAt: 0, lapses: 0, lastSeenAt: 0 };
     const r = Number(state.ratings[id] ?? 0);
     const overdueMs = now - (s.dueAt || 0);
@@ -330,7 +399,7 @@ function weightedPick(p) {
     const difficulty = Math.max(1, 6 - r);
     const lapse = 1 + (s.lapses || 0) * 0.35;
     const freshness = s.lastSeenAt && now - s.lastSeenAt < 90 * 1000 ? 0.1 : 1;
-    return { v, tense, personIdx, score: overdue * difficulty * lapse * freshness };
+    return { ...card, score: overdue * difficulty * lapse * freshness };
   });
   const total = scored.reduce((a,b) => a + b.score, 0);
   let pick = Math.random() * total;
@@ -361,6 +430,10 @@ function scheduleCard(level) {
   state.history[id] = { rating: level, updatedAt: new Date().toISOString(), english: state.current.english, tense: state.currentTense, direction: state.direction, personIdx: state.currentPerson, drillType: state.drillType };
   state.lastRating = level;
   save();
+  // Practising verbs counts toward the shared daily streak (optional dependency).
+  if (window.GSStats && typeof window.GSStats.touchStreak === 'function') {
+    try { window.GSStats.touchStreak(); } catch (e) { /* never let streak tracking break grading */ }
+  }
 }
 
 /* ----------------- UI rendering ----------------- */
@@ -418,7 +491,10 @@ function renderAnswers(v, tense, personIdx) {
     ['Simple Past',     null, 'past',       tense === 'past'],
     ['Future Simple',   null, 'future',     tense === 'future'],
     ['Past Continuous', null, 'pastCont',   tense === 'pastCont'],
-    ['Future Continuous', null, 'futureCont', tense === 'futureCont']
+    ['Future Continuous', null, 'futureCont', tense === 'futureCont'],
+    ['Perfect',         null, 'perfect',    tense === 'perfect'],
+    ['Pluperfect',      null, 'pluperfect', tense === 'pluperfect'],
+    ['Imperative',      null, 'imperative', tense === 'imperative']
   ];
   cells.forEach(([k, _val, key, isFocus]) => {
     const d = document.createElement('div');
@@ -429,10 +505,11 @@ function renderAnswers(v, tense, personIdx) {
       const forms = conjugate(v, key);
       const personLabels = ['εγώ','εσύ','αυτός','εμείς','εσείς','αυτοί'];
       const rows = forms.map((f, i) => {
+        if (!f) return ''; // imperative only has 2sg/2pl; defective tenses may be empty
         const hi = (state.drillType === 'conjugation' && isFocus && i === personIdx);
         return `<div class="row-line${hi ? ' focus-row' : ''}"><span class="per">${personLabels[i]}</span><span>${f}</span></div>`;
       }).join('');
-      d.innerHTML = `<div class="k">${k}${isFocus ? ' ★' : ''}</div>${rows}`;
+      d.innerHTML = `<div class="k">${k}${isFocus ? ' ★' : ''}</div>${rows || '<div class="row-line"><span class="per">—</span><span>not available</span></div>'}`;
     }
     el.answerGrid.appendChild(d);
   });
@@ -724,7 +801,10 @@ function renderGrammar() {
     past: `<p><strong>Mental model:</strong> whole action, one-shot.</p><p><strong>Build:</strong> past stem + present endings (+ ε- often).</p>`,
     future: `<p><strong>Mental model:</strong> one-shot in the future.</p><p><strong>Build:</strong> θα + past stem + present endings.</p>`,
     pastCont: `<p><strong>Mental model:</strong> was inside the action.</p><p><strong>Build:</strong> present stem + past endings (+ ε- sometimes).</p>`,
-    futureCont: `<p><strong>Mental model:</strong> ongoing in the future.</p><p><strong>Build:</strong> θα + present tense.</p>`
+    futureCont: `<p><strong>Mental model:</strong> ongoing in the future.</p><p><strong>Build:</strong> θα + present tense.</p>`,
+    perfect: `<p><strong>Mental model:</strong> done, and it matters now.</p><p><strong>Build:</strong> έχω/έχεις/έχει… + aparemfato (perfective infinitive: future-simple 1sg minus θα, with -ω/-ώ → -ει/-εί — θα γράψω → γράψει, so έχω γράψει).</p>`,
+    pluperfect: `<p><strong>Mental model:</strong> already done before another past moment.</p><p><strong>Build:</strong> είχα/είχες/είχε… + the same aparemfato (είχα γράψει).</p>`,
+    imperative: `<p><strong>Mental model:</strong> a command — only 2sg and 2pl exist.</p><p><strong>Build:</strong> active verbs: aorist stem + -ε / -τε (γράψε / γράψτε). Mediopassives: aorist-passive stem + -ου / -είτε (κοιμήσου / κοιμηθείτε). Several everyday verbs are irregular: πες/πείτε, δες/δείτε, έλα/ελάτε, φάε/φάτε.</p>`
   };
   el.grammarContent.innerHTML =
     (note ? `<p><strong>${note.title}</strong></p>` : '') +
@@ -818,7 +898,7 @@ function renderCard() {
     el.personChip.style.display = 'none';
     if (state.direction === 'en-to-gr') {
       el.promptText.textContent = v.english;
-      renderHint(`Type the Greek for ${tenseLabel.toLowerCase()} (1sg).`);
+      renderHint(`Type the Greek for ${tenseLabel.toLowerCase()} (${tense === 'imperative' ? '2sg' : '1sg'}).`);
       el.answerInput.placeholder = 'Type the Greek answer here';
     } else {
       el.promptText.textContent = displayForm(v, tense);
@@ -890,7 +970,7 @@ function checkAnswer() {
 }
 
 function nextCard() {
-  const p = pool();
+  const p = cardPool();
   if (!p.length) { state.current = null; renderCard(); renderTable(); renderStats(); return; }
   const chosen = weightedPick(p);
   state.current = chosen.v;

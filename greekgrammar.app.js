@@ -18,14 +18,39 @@
   var byId = {};
   GRAMMAR.forEach(function (p) { byId[p.id] = p; });
 
-  var STAGE_HOURS = [4, 8, 24, 72, 168, 336, 720, 1440]; // hours to next review per stage
-  var MASTER = STAGE_HOURS.length;
+  // Shared SRS ladder (greekvocab.srsbridge.js) when present; literal fallback otherwise.
+  var STAGE_HOURS = (window.GVSrsBridge && GVSrsBridge.STAGE_HOURS) || [4, 8, 24, 72, 168, 336, 720, 1440]; // hours to next review per stage
+  var MASTER = (window.GVSrsBridge && GVSrsBridge.MASTER) || STAGE_HOURS.length;
   var VERSION = 2;
 
   var KEY = 'gvm_grammar';
   var store = {};
+  function isObj(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { store = {}; }
-  if (store.__version !== VERSION) store = {}; // one-time reset to the new schema
+  if (store.__version !== VERSION) {
+    // Version bump: back up the old store, then migrate — keep any progress
+    // sections that still look valid instead of silently wiping everything.
+    try { localStorage.setItem('gvm_grammar_backup_' + (store.__version == null ? 'unversioned' : store.__version), JSON.stringify(store)); } catch (e) {}
+    var migrated = {};
+    if (isObj(store.__srs)) {
+      migrated.__srs = {};
+      Object.keys(store.__srs).forEach(function (id) {
+        var r = store.__srs[id];
+        if (isObj(r) && typeof r.stage === 'number' && typeof r.due === 'number') migrated.__srs[id] = r;
+      });
+    }
+    if (isObj(store.__practice)) {
+      migrated.__practice = {};
+      Object.keys(store.__practice).forEach(function (id) {
+        var p = store.__practice[id];
+        if (isObj(p) && typeof p.seen === 'number' && typeof p.correct === 'number') migrated.__practice[id] = p;
+      });
+    }
+    if (isObj(store.__lessons)) migrated.__lessons = store.__lessons;
+    if (isObj(store.__settings)) migrated.__settings = store.__settings;
+    if (isObj(store.__open)) migrated.__open = store.__open;
+    store = migrated;
+  }
   store.__version = VERSION;
   if (!store.__settings) store.__settings = {};
   if (!store.__settings.answerMode) store.__settings.answerMode = 'choice';
@@ -55,7 +80,17 @@
     if (correct) {
       r.correct += 1;
       r.stage = Math.min(MASTER, r.stage + 1);
-      r.due = Date.now() + STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length - 1)] * 3600000;
+      var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length - 1)];
+      if (hours >= 24) {
+        // Fuzz the interval ±10% so items don't clump, then round the due time
+        // down to local start-of-day — otherwise daily reviews drift later each day.
+        var fuzzed = hours * 3600000 * (0.9 + Math.random() * 0.2);
+        var d = new Date(Date.now() + fuzzed);
+        d.setHours(0, 0, 0, 0);
+        r.due = d.getTime();
+      } else {
+        r.due = Date.now() + hours * 3600000; // sub-24h intervals stay exact
+      }
     } else {
       r.incorrect += 1;
       r.stage = Math.max(0, r.stage - 2);
@@ -465,6 +500,7 @@
   function answer(given, forceWrong) {
     var s = state.session, cur = s.current;
     var correct = !forceWrong && answerCorrect(cur.item, given);
+    try { if (window.GSStats && GSStats.touchStreak) GSStats.touchStreak(); } catch (e) {} // graded item = suite streak activity
     s.answered = true; s.lastCorrect = correct; s.done += 1;
     if (correct) s.correctCount += 1;
     if (!cur.counted) {
@@ -573,7 +609,19 @@
   function importProgress(file) {
     var reader = new FileReader();
     reader.onload = function () {
-      try { var d = JSON.parse(reader.result); if (typeof d !== 'object' || d === null) throw 0; store = d; store.__version = VERSION; save(); render(); alert('Grammar progress imported.'); }
+      try {
+        var d = JSON.parse(reader.result);
+        if (!isObj(d)) throw 0;
+        var sections = ['__srs', '__practice', '__lessons'].filter(function (k) { return isObj(d[k]); });
+        if (!sections.length) throw 0; // not a grammar progress file
+        try { localStorage.setItem('gvm_grammar_backup_preimport', JSON.stringify(store)); } catch (e2) {}
+        sections.forEach(function (k) {
+          if (!isObj(store[k])) store[k] = {};
+          Object.keys(d[k]).forEach(function (id) { store[k][id] = d[k][id]; });
+        });
+        if (isObj(d.__settings)) Object.keys(d.__settings).forEach(function (k) { store.__settings[k] = d.__settings[k]; });
+        store.__version = VERSION; save(); render(); alert('Grammar progress imported.');
+      }
       catch (e) { alert('Could not read that file.'); }
     };
     reader.readAsText(file);
