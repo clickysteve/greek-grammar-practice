@@ -2,12 +2,19 @@
  * One secret GitHub gist holds ALL progress across the apps:
  *   - gvm_vocab_track   (vocab ratings, known words, custom words)
  *   - gvm_vocab_simple  (writing-prompt settings)
+ *   - gvm_vocab_srs     (flashcard SRS schedule)
  *   - gvm_grammar       (grammar SRS progress + settings)
  *   - gvm_ratings / gvm_history / gvm_schedule  (verb practice)
+ *   - gvm_streak        (daily streak)
  *
  * Reuses the existing token/gist stored in 'gvm_vocab_gh', so anyone already set up
  * keeps working. The combined backup file is 'greek-suite-progress.json'; on restore
  * it falls back to the legacy vocab-only file if that's all the gist has.
+ *
+ * Cross-device: on a new browser, paste the token AND the gist ID (from the gist's
+ * URL) into the modal, then Restore. Auto-backup only ever PATCHes an existing gist
+ * (it never creates one), and it skips the write if the gist holds a backup newer
+ * than this browser's last one — so a stale device can't clobber a fresh backup.
  *
  * Usage: load this script on any page, then GVBackup.init() (sets up auto-backup) and
  * wire a button to GVBackup.openModal().
@@ -18,7 +25,6 @@ window.GVBackup = (function () {
   var GH_KEY = 'gvm_vocab_gh';
   var FILE = 'greek-suite-progress.json';
   var LEGACY_FILE = 'greek-vocab-progress.json';
-  // Keys backed up, with whether they hold JSON (true) or are already plain.
   var KEYS = ['gvm_vocab_track', 'gvm_vocab_simple', 'gvm_grammar', 'gvm_ratings', 'gvm_history', 'gvm_schedule', 'gvm_vocab_srs', 'gvm_streak'];
 
   var gh = { token: '', gistId: '', lastBackup: 0 };
@@ -71,8 +77,17 @@ window.GVBackup = (function () {
     });
   }
 
-  function backup(silent) {
-    if (!gh.token) { if (!silent) openModal('Add a token first.'); return Promise.resolve(); }
+  // Timestamp of the backup currently in the gist (0 if none/unreadable).
+  function remoteExportedAt() {
+    if (!gh.gistId) return Promise.resolve(0);
+    return ghApi('GET', '/gists/' + gh.gistId).then(function (g) {
+      var f = (g.files || {})[FILE];
+      if (!f || !f.content) return 0;
+      try { return Date.parse(JSON.parse(f.content).exportedAt) || 0; } catch (e) { return 0; }
+    }).catch(function () { return 0; });
+  }
+
+  function doBackup(silent) {
     var payload = { description: 'Greek learning suite — progress backup (greek.clickysteve.com)', files: {} };
     payload.files[FILE] = { content: JSON.stringify(collect(), null, 2) };
     var p = gh.gistId
@@ -88,8 +103,20 @@ window.GVBackup = (function () {
     });
   }
 
+  function backup(silent) {
+    if (!gh.token) { if (!silent) openModal('Add a token first.'); return Promise.resolve(); }
+    if (!silent) return doBackup(false);
+    // Silent (auto) backups never create a gist and never overwrite a backup
+    // that is newer than this browser's last one (made from another device).
+    if (!gh.gistId) return Promise.resolve();
+    return remoteExportedAt().then(function (remoteAt) {
+      if (remoteAt > (gh.lastBackup || 0)) return; // remote is newer — leave it
+      return doBackup(true);
+    });
+  }
+
   function restore() {
-    if (!gh.token || !gh.gistId) { openModal('No backup to restore from yet.'); return; }
+    if (!gh.token || !gh.gistId) { openModal('Add your token and the gist ID first.'); return; }
     ghApi('GET', '/gists/' + gh.gistId).then(function (g) {
       var files = g.files || {};
       var f = files[FILE] || files[LEGACY_FILE];
@@ -116,12 +143,14 @@ window.GVBackup = (function () {
       '<div class="gvb-panel"><button class="gvb-close" aria-label="Close">×</button>' +
       '<div class="gvb-title">Cloud backup — secret gist</div>' +
       '<p class="gvb-help">Backs up <strong>everything</strong> in one place: vocabulary, grammar SRS, and verb-practice progress. Create a <strong>classic</strong> personal access token with only the <code>gist</code> scope (GitHub → Settings → Developer settings → Tokens (classic)). It is stored only in this browser. Auto-backup runs on page load when the last one is over a day old.</p>' +
+      '<p class="gvb-help"><strong>New device?</strong> Paste the same token and the gist ID (the long hex part of the gist URL), save, then hit Restore.</p>' +
       '<input type="password" id="gvbToken" class="gvb-input" placeholder="' + (hasToken ? 'token saved — paste here to replace' : 'ghp_…') + '" />' +
+      '<input type="text" id="gvbGist" class="gvb-input" style="margin-top:8px;" placeholder="gist ID (auto-filled after first backup)" value="' + escapeHtml(gh.gistId || '') + '" />' +
       '<div class="gvb-status">Last backup: ' + escapeHtml(lastTxt) +
         (gh.gistId ? ' · <a href="https://gist.github.com/' + escapeHtml(gh.gistId) + '" target="_blank" rel="noopener">view gist</a>' : '') +
         (status ? '<div class="gvb-msg">' + escapeHtml(status) + '</div>' : '') + '</div>' +
       '<div class="gvb-btns">' +
-        '<button id="gvbSave">Save token</button>' +
+        '<button id="gvbSave">Save token / gist ID</button>' +
         '<button id="gvbBackup"' + (hasToken ? '' : ' disabled') + '>Back up now</button>' +
         '<button id="gvbRestore"' + (gh.token && gh.gistId ? '' : ' disabled') + '>Restore</button>' +
         '<button id="gvbForget"' + (hasToken ? '' : ' disabled') + '>Forget token</button>' +
@@ -130,8 +159,16 @@ window.GVBackup = (function () {
     m.querySelector('.gvb-backdrop').addEventListener('click', close);
     m.querySelector('.gvb-close').addEventListener('click', close);
     document.getElementById('gvbSave').addEventListener('click', function () {
-      var v = document.getElementById('gvbToken').value.trim();
-      if (v) { gh.token = v; ghSave(); openModal('Token saved.'); }
+      var t = document.getElementById('gvbToken').value.trim();
+      var gid = document.getElementById('gvbGist').value.trim();
+      // Accept a full gist URL or a bare ID.
+      var idMatch = gid.match(/([0-9a-f]{8,})\s*$/i);
+      var changed = false;
+      if (t) { gh.token = t; changed = true; }
+      if (gid && idMatch) { gh.gistId = idMatch[1]; changed = true; }
+      else if (!gid && gh.gistId) { /* leave existing gist id alone when field cleared by re-render */ }
+      if (changed) { ghSave(); openModal('Saved.'); }
+      else openModal('Nothing to save.');
     });
     document.getElementById('gvbBackup').addEventListener('click', function () { backup(false); });
     document.getElementById('gvbRestore').addEventListener('click', restore);
@@ -163,7 +200,10 @@ window.GVBackup = (function () {
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && document.getElementById('gvBackupModal') && document.getElementById('gvBackupModal').style.display === 'block') close();
     });
-    if (gh.token && window.fetch && Date.now() - (gh.lastBackup || 0) > 24 * 3600 * 1000) backup(true);
+    // Auto-backup: only when a gist already exists (never silently create one —
+    // on a fresh device that would bind this browser to an empty backup and
+    // strand the real one; see backup() for the freshness guard too).
+    if (gh.token && gh.gistId && window.fetch && Date.now() - (gh.lastBackup || 0) > 24 * 3600 * 1000) backup(true);
   }
 
   return { init: init, openModal: openModal, backupNow: function () { return backup(true); } };

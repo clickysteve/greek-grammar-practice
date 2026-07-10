@@ -86,12 +86,15 @@
 
   function rowHtml(w) {
     var color = (THEMES[w.theme] && THEMES[w.theme].color) || 'var(--border)';
+    // Whitelist the register — imported custom words can carry arbitrary strings,
+    // and this value lands in a class attribute.
+    var reg = w.register === 'expressive' ? 'expressive' : 'everyday';
     var r = ratingOf(w.gr);
     var btns = '';
     for (var i = 0; i <= 5; i++) {
       btns += '<button class="lvl' + i + (i === r ? ' active' : '') + '" data-gr="' + escapeHtml(w.gr) + '" data-r="' + i + '">' + i + '</button>';
     }
-    return '<div class="wrow ' + w.register + '" style="--chip:' + color + '" data-gr="' + escapeHtml(w.gr) + '">' +
+    return '<div class="wrow ' + reg + '" style="--chip:' + color + '" data-gr="' + escapeHtml(w.gr) + '">' +
       '<div class="w-main">' +
         '<div class="w-gr">' + (w.art ? '<span class="art">' + escapeHtml(w.art) + '</span> ' : '') + escapeHtml(w.gr) +
           (w.custom ? '<span class="custom-tag">custom</span>' : '') + '</div>' +
@@ -169,8 +172,11 @@
     }
   });
 
-  ['search'].forEach(function (id) {
-    el[id].addEventListener('input', function () { state.q = el.search.value; state.limit = PAGE; render(); });
+  var searchTimer = null;
+  el.search.addEventListener('input', function () {
+    state.q = el.search.value; state.limit = PAGE;
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () { searchTimer = null; render(); }, 200); // debounced: 150 rows per keystroke was janky
   });
   el.regFilter.addEventListener('change', function () { state.reg = el.regFilter.value; state.limit = PAGE; render(); });
   el.posFilter.addEventListener('change', function () { state.pos = el.posFilter.value; state.limit = PAGE; render(); });

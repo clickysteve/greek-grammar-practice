@@ -57,7 +57,7 @@
 
     <div class="due-hero">
       <div class="due-num" id="dueNum">0</div>
-      <div class="due-label">reviews due today</div>
+      <div class="due-label">reviews due now</div>
       <div class="due-break" id="dueBreak"></div>
     </div>
 
@@ -68,7 +68,6 @@
     <div class="trouble" id="trouble"></div>
   </div>
 
-  <script src="greekverbprac.data.js"></script>
   <script src="greekgrammar.data.js"></script>
   <script src="greekvocab.data.js"></script>
   <script src="greeksuite.stats.js"></script>
@@ -76,7 +75,7 @@
   (function () {
     var S = window.GSStats;
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-    var st = S.touchStreak();
+    var st = S.streak(); // read-only: only graded answers count as practice
     document.getElementById('streakN').textContent = st.days || 0;
 
     var v = S.verbs(), g = S.grammar(), o = S.vocab();

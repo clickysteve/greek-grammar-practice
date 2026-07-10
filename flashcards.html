@@ -76,8 +76,18 @@
 
     // Deck = built-in vocab + user custom words (from the word-list page)
     var VOCAB = (window.VOCAB || []).slice();
-    try { var t = JSON.parse(localStorage.getItem('gvm_vocab_track') || '{}'); if (Array.isArray(t.__custom)) { var have = {}; VOCAB.forEach(function (w) { have[w.gr] = 1; }); t.__custom.forEach(function (w) { if (w && w.gr && !have[w.gr]) VOCAB.push(w); }); } } catch (e) {}
+    try { var t = JSON.parse(localStorage.getItem('gvm_vocab_track') || '{}'); if (Array.isArray(t.__custom)) { var have = {}; VOCAB.forEach(function (w) { have[w.gr] = 1; }); t.__custom.forEach(function (w) { if (w && w.gr && w.en && !have[w.gr]) VOCAB.push(w); }); } } catch (e) {}
     var byGr = {}; VOCAB.forEach(function (w) { byGr[w.gr] = w; });
+    // Sweep orphaned SRS records (word deleted / renamed / lost in an import):
+    // they can never be reviewed here but would still count as "due" on the hub.
+    (function () {
+      var swept = false;
+      Object.keys(store).forEach(function (k) {
+        if (k.indexOf('__') === 0) return;
+        if (!byGr[k]) { delete store[k]; swept = true; }
+      });
+      if (swept) save();
+    })();
 
     function rec(gr) { return store[gr]; }
     function isDue(gr) { var r = store[gr]; return !!r && r.stage < MASTER && (r.due || 0) <= Date.now(); }
@@ -91,13 +101,17 @@
       else {
         r.correct += 1;
         r.stage = Math.min(MASTER, r.stage + (grade === 'easy' ? 2 : 1));
-        var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length - 1)];
+        // Stage n waits STAGE_HOURS[n-1] — uses the full ladder from the 4h rung.
+        var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length) - 1];
         if (hours >= 24) {
           // Fuzz the interval ±10% so cards don't clump, then round the due time
-          // down to local start-of-day — otherwise daily reviews drift later each day.
+          // down to local start-of-day so daily reviews don't drift later each
+          // day — but never into the past (a same-day floor would make the card
+          // instantly due again); in that case fall to the NEXT midnight.
           var fuzzed = hours * 3600000 * (0.9 + Math.random() * 0.2);
           var d = new Date(Date.now() + fuzzed);
           d.setHours(0, 0, 0, 0);
+          if (d.getTime() <= Date.now()) { d = new Date(); d.setHours(24, 0, 0, 0); }
           r.due = d.getTime();
         } else {
           r.due = Date.now() + hours * 3600000; // sub-24h intervals stay exact

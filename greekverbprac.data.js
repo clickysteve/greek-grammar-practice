@@ -24,7 +24,7 @@
 
 window.GRAMMAR_NOTES = {
   present:   { short: '<strong>Present stem + present endings</strong>. Inside-the-action form.', title: 'Present = present stem + present endings' },
-  past:      { short: '<strong>Past stem + present endings</strong> (+ <strong>ε-</strong> often). One-shot form.', title: 'Simple past = past stem + present endings' },
+  past:      { short: '<strong>Past stem + past endings (-α, -ες, -ε…)</strong> (+ <strong>ε-</strong> often). One-shot form.', title: 'Simple past = past stem + past endings' },
   future:    { short: '<strong>Θα + past stem + present endings</strong>. Whole action in the future.', title: 'Future simple = θα + past stem + present endings' },
   pastCont:  { short: '<strong>Present stem + past endings</strong> (+ <strong>ε-</strong> sometimes). Inside the action in the past.', title: 'Past continuous = present stem + past endings' },
   futureCont:{ short: '<strong>Θα + present tense</strong>. Inside the action in the future.', title: 'Future continuous = θα + present tense' },

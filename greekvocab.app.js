@@ -4,10 +4,11 @@
  * conjugations for verbs that exist in the Verb Memoriser.
  *
  * Tracking: progress lives in localStorage ('gvm_vocab_track'):
- *   { "<greek word>": { known: bool, seen: n, used: n, last: "YYYY-MM-DD" }, "__settings": {...} }
- *   - seen  = times the word was drawn into a prompt
- *   - used  = times you actually used it in your writing
- *   - known = retired from the pool (unless "include known" is on)
+ *   { "<greek word>": { rating: 0-5, seen: n, used: n, last: ms }, "__settings": {...}, "__custom": [words] }
+ *   - rating = 0 (unknown) … 5 (mastered/retired unless "include known" is on)
+ *   - seen   = times the word was drawn into a prompt
+ *   - used   = times you actually used it in your writing
+ *   (older stores had { known: bool } — migrated to rating on load)
  * Sampling is weighted toward words you have seen/used least.
  */
 (function () {
@@ -67,7 +68,7 @@
     Object.keys(t).forEach(function (k) {
       if (k.indexOf('__') === 0) return; // reserved keys: __settings, __custom
       var r = t[k];
-      if (r && typeof r.rating !== 'number') r.rating = r.known ? 5 : 0;
+      if (r && typeof r === 'object' && typeof r.rating !== 'number') r.rating = r.known ? 5 : 0;
     });
     if (!t.__settings) t.__settings = { includeKnown: false };
     return t;
@@ -359,7 +360,15 @@
     reader.onload = function () {
       try {
         var data = JSON.parse(reader.result);
-        if (typeof data !== 'object' || data === null) throw new Error('bad format');
+        if (typeof data !== 'object' || data === null || Array.isArray(data)) throw new Error('bad format');
+        // Sanity check: a vocab export has word entries and/or custom words —
+        // reject other JSON files instead of silently replacing all progress.
+        var looksRight = Array.isArray(data.__custom) ||
+          Object.keys(data).some(function (k) { return k.indexOf('__') !== 0 && data[k] && typeof data[k] === 'object'; });
+        if (!looksRight) { alert('That file does not look like a vocabulary progress export. Nothing was imported.'); return; }
+        // Never lose custom words: keep the current ones if the file has none
+        // (older exports predate __custom).
+        if (!Array.isArray(data.__custom) && Array.isArray(track.__custom)) data.__custom = track.__custom;
         track = migrateTrack(data);
         saveTrack();
         renderTrackStats();
@@ -399,14 +408,25 @@
       el.writing.focus();
     }
   });
+  // 'input' updates the labels live while dragging; the prompt itself only
+  // regenerates on 'change' (drag release). Regenerating per drag step drew a
+  // fresh prompt each notch and permanently inflated the words' "seen" counts.
   el.countSlider.addEventListener('input', function () {
     state.count = parseInt(el.countSlider.value, 10) || 1;
     el.countVal.textContent = String(state.count);
+    renderMixLabel();
+  });
+  el.countSlider.addEventListener('change', function () {
+    state.count = parseInt(el.countSlider.value, 10) || 1;
     saveCounts();
     renderMixLabel();
     regenerate(false);
   });
   el.mixSlider.addEventListener('input', function () {
+    state.exprRatio = (parseInt(el.mixSlider.value, 10) || 0) / 100;
+    renderMixLabel();
+  });
+  el.mixSlider.addEventListener('change', function () {
     state.exprRatio = (parseInt(el.mixSlider.value, 10) || 0) / 100;
     saveCounts();
     renderMixLabel();
@@ -424,8 +444,8 @@
     el.importFile.value = '';
   });
   el.resetTrackBtn.addEventListener('click', function () {
-    if (confirm('Reset ALL vocabulary progress (known words, counts)? This cannot be undone.')) {
-      track = { __settings: { includeKnown: false } };
+    if (confirm('Reset ALL vocabulary progress (ratings, seen/used counts)? Your custom words are kept. This cannot be undone.')) {
+      track = { __settings: { includeKnown: false }, __custom: Array.isArray(track.__custom) ? track.__custom : [] };
       saveTrack();
       try { localStorage.removeItem(DAILY_KEY); } catch (e) {}
       renderTrackStats();

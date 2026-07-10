@@ -48,7 +48,6 @@
   </div>
 
   <script src="greekgrammar.data.js"></script>
-  <script src="greekvocab.data.js"></script>
   <script src="greeksuite.stats.js"></script>
   <script>
   (function () {
@@ -57,7 +56,7 @@
     function kpi(n, l) { return '<div class="kpi"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>'; }
     document.getElementById('kpis').innerHTML =
       kpi(st.days || 0, 'day streak') + kpi(st.best || 0, 'best streak') +
-      kpi(S.totalDue(), 'due today') + kpi((g.mastered + v.mastered + o.mastered), 'mastered total');
+      kpi(S.totalDue(), 'due now') + kpi((g.mastered + v.mastered + o.mastered), 'mastered total');
 
     function bar(label, segs, right) {
       var inner = segs.filter(function (s) { return s.n > 0; }).map(function (s) { return '<span class="seg ' + s.c + '" style="width:' + s.w + '%"></span>'; }).join('');

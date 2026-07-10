@@ -456,7 +456,7 @@ function renderControls() {
   buttonSet(el.directionBtns, directions, state.direction, v => { state.direction = v; nextCard(); });
   buttonSet(el.tenseBtns, tenses, state.tense, v => { state.tense = v; nextCard(); });
   buttonSet(el.personBtns, PERSONS, state.person, v => { state.person = v; nextCard(); });
-  const setsList = [{ key: 1, label: 'Set 1' }, { key: 2, label: 'Set 2' }, { key: 3, label: 'Set 3' }, { key: 4, label: 'Set 4 (essentials)' }, { key: 'all', label: 'All' }];
+  const setsList = [{ key: 1, label: 'Set 1' }, { key: 2, label: 'Set 2' }, { key: 3, label: 'Set 3' }, { key: 4, label: 'Set 4 (essentials)' }, { key: 5, label: 'Set 5' }, { key: 'all', label: 'All' }];
   buttonSet(el.setBtns, setsList, state.set, v => { state.set = v; nextCard(); });
   buttonSet(el.modeBtns, modes, state.mode, v => { state.mode = v; renderMode(); renderCard(); if (state.mode === 'typed') el.answerInput.focus(); });
   buttonSet(el.reviewBtns, reviewFilters, state.review, v => { state.review = v; nextCard(); });
@@ -798,7 +798,7 @@ function renderGrammar() {
     : `<p>This verb is relatively regular — the main job is hearing the split between present-stem and past-stem families.</p>`;
   const tips = {
     present: `<p><strong>Mental model:</strong> inside the action, loop running.</p><p><strong>Build:</strong> present stem + present endings.</p>`,
-    past: `<p><strong>Mental model:</strong> whole action, one-shot.</p><p><strong>Build:</strong> past stem + present endings (+ ε- often).</p>`,
+    past: `<p><strong>Mental model:</strong> whole action, one-shot.</p><p><strong>Build:</strong> past stem + past endings (-α, -ες, -ε, -αμε, -ατε, -αν) (+ ε- often).</p>`,
     future: `<p><strong>Mental model:</strong> one-shot in the future.</p><p><strong>Build:</strong> θα + past stem + present endings.</p>`,
     pastCont: `<p><strong>Mental model:</strong> was inside the action.</p><p><strong>Build:</strong> present stem + past endings (+ ε- sometimes).</p>`,
     futureCont: `<p><strong>Mental model:</strong> ongoing in the future.</p><p><strong>Build:</strong> θα + present tense.</p>`,
@@ -1002,7 +1002,13 @@ function importProgress(file) {
   reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
-      state.ratings = data.ratings || {}; state.history = data.history || {}; state.schedule = data.schedule || {};
+      const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+      // Only accept files that actually look like a Verb Memoriser export —
+      // importing the wrong (but valid) JSON used to silently wipe everything.
+      const sections = ['ratings', 'history', 'schedule'].filter(k => isObj(data) && isObj(data[k]));
+      if (!sections.length) { alert('That file does not look like a Verb Memoriser export (no ratings/history/schedule in it). Nothing was imported.'); return; }
+      try { localStorage.setItem('gvm_verbs_backup_preimport', JSON.stringify({ ratings: state.ratings, history: state.history, schedule: state.schedule })); } catch (e2) {}
+      sections.forEach(k => { state[k] = data[k]; });
       save(); renderStats(); nextCard();
     } catch { alert('That JSON file did not parse properly.'); }
   };
@@ -1016,7 +1022,12 @@ function clearProgress() {
 
 /* ----------------- Events ----------------- */
 
-el.search.addEventListener('input', e => { state.search = e.target.value; nextCard(); });
+let searchTimer = null;
+el.search.addEventListener('input', e => {
+  state.search = e.target.value;
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { searchTimer = null; nextCard(); }, 250); // debounced: full re-render per keystroke was heavy and yanked the card mid-typing
+});
 el.shuffleBtn.addEventListener('click', nextCard);
 el.revealBtn.addEventListener('click', reveal);
 el.nextBtn.addEventListener('click', nextCard);
@@ -1050,7 +1061,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (e.key === ' ') { e.preventDefault(); if (state.revealed) nextCard(); else reveal(); }
-  if (/^[0-5]$/.test(e.key)) { e.preventDefault(); scheduleCard(Number(e.key)); renderStats(); nextCard(); }
+  if (/^[0-5]$/.test(e.key) && (state.revealed || state.checked)) { e.preventDefault(); scheduleCard(Number(e.key)); renderStats(); nextCard(); }
 });
 
 /* Theme: set CSS variables without reloading */

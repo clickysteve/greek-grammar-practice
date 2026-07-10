@@ -30,7 +30,16 @@
   if (store.__version !== VERSION) {
     // Version bump: back up the old store, then migrate — keep any progress
     // sections that still look valid instead of silently wiping everything.
-    try { localStorage.setItem('gvm_grammar_backup_' + (store.__version == null ? 'unversioned' : store.__version), JSON.stringify(store)); } catch (e) {}
+    var backupKey = 'gvm_grammar_backup_' + (store.__version == null ? 'unversioned' : store.__version);
+    try { localStorage.setItem(backupKey, JSON.stringify(store)); } catch (e) {}
+    // Keep only the backup just written (plus any pre-import backup) — older
+    // version backups otherwise accumulate in localStorage forever.
+    try {
+      for (var bi = localStorage.length - 1; bi >= 0; bi--) {
+        var bk = localStorage.key(bi);
+        if (bk && bk.indexOf('gvm_grammar_backup_') === 0 && bk !== backupKey && bk !== 'gvm_grammar_backup_preimport') localStorage.removeItem(bk);
+      }
+    } catch (e) {}
     var migrated = {};
     if (isObj(store.__srs)) {
       migrated.__srs = {};
@@ -80,13 +89,17 @@
     if (correct) {
       r.correct += 1;
       r.stage = Math.min(MASTER, r.stage + 1);
-      var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length - 1)];
+      // Stage n waits STAGE_HOURS[n-1] — uses the full ladder from the 4h rung.
+      var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length) - 1];
       if (hours >= 24) {
         // Fuzz the interval ±10% so items don't clump, then round the due time
-        // down to local start-of-day — otherwise daily reviews drift later each day.
+        // down to local start-of-day so daily reviews don't drift later each
+        // day — but never into the past (a same-day floor would make the item
+        // instantly due again); in that case fall to the NEXT midnight.
         var fuzzed = hours * 3600000 * (0.9 + Math.random() * 0.2);
         var d = new Date(Date.now() + fuzzed);
         d.setHours(0, 0, 0, 0);
+        if (d.getTime() <= Date.now()) { d = new Date(); d.setHours(24, 0, 0, 0); }
         r.due = d.getTime();
       } else {
         r.due = Date.now() + hours * 3600000; // sub-24h intervals stay exact

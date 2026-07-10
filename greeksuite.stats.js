@@ -15,32 +15,43 @@ window.GSStats = (function () {
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function dayStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
   function todayStr() { return dayStr(new Date()); }
-  // "Due today" = due before local end-of-today (not just already past due).
-  function endOfToday() { var d = new Date(); d.setHours(23, 59, 59, 999); return d.getTime(); }
+  function yesterdayStr() { var y = new Date(); y.setDate(y.getDate() - 1); return dayStr(y); }
 
-  /* ---- streak ---- */
+  /* ---- streak ----
+   * touchStreak() records practice activity and is called ONLY when the user
+   * actually grades/answers something (verbs, grammar, flashcards). Pages that
+   * just display the streak must use the read-only streak(). */
   function touchStreak() {
     var s = J('gvm_streak') || { last: null, days: 0, best: 0 };
     var t = todayStr();
     if (s.last !== t) {
-      var y = new Date(); y.setDate(y.getDate() - 1);
-      s.days = (s.last === dayStr(y)) ? (s.days || 0) + 1 : 1;
+      s.days = (s.last === yesterdayStr()) ? (s.days || 0) + 1 : 1;
       s.last = t; s.best = Math.max(s.best || 0, s.days);
       try { localStorage.setItem('gvm_streak', JSON.stringify(s)); } catch (e) {}
     }
     return s;
   }
-  function streak() { return J('gvm_streak') || { last: null, days: 0, best: 0 }; }
+  // Read-only view. A streak is only alive if the last practice was today or
+  // yesterday; otherwise it reads as 0 (best is kept) without writing anything.
+  function streak() {
+    var s = J('gvm_streak') || { last: null, days: 0, best: 0 };
+    if (s.last !== todayStr() && s.last !== yesterdayStr()) {
+      return { last: s.last, days: 0, best: s.best || 0 };
+    }
+    return s;
+  }
 
-  /* ---- grammar ---- */
+  /* ---- grammar ----
+   * "Due" everywhere in the suite = due NOW (the same definition the apps use
+   * to serve cards), so the hub numbers always match what you can review. */
   function grammar() {
     var g = J('gvm_grammar') || {};
     var srs = g.__srs || {}, prac = g.__practice || {}, lessons = g.__lessons || {};
-    var eod = endOfToday(), due = 0, mastered = 0, inSrs = 0;
+    var now = Date.now(), due = 0, mastered = 0, inSrs = 0;
     Object.keys(srs).forEach(function (id) {
       var r = srs[id]; inSrs++;
       if (r.stage >= MASTER) mastered++;
-      else if ((r.due || 0) <= eod) due++;
+      else if ((r.due || 0) <= now) due++;
     });
     var ps = 0, pc = 0;
     Object.keys(prac).forEach(function (id) { ps += prac[id].seen || 0; pc += prac[id].correct || 0; });
@@ -74,11 +85,11 @@ window.GSStats = (function () {
       if (r >= 5) mastered++; else if (r > 0) learning++;
       if (r > 0) rated++;
     });
-    var eod = endOfToday(), due = 0, inSrs = 0;
+    var now = Date.now(), due = 0, inSrs = 0;
     Object.keys(srs).forEach(function (k) {
       if (k.indexOf('__') === 0) return;
       var r = srs[k]; inSrs++;
-      if (r.stage < MASTER && (r.due || 0) <= eod) due++;
+      if (r.stage < MASTER && (r.due || 0) <= now) due++;
     });
     return { rated: rated, mastered: mastered, learning: learning, srsDue: due, srsCount: inSrs, track: t, srs: srs };
   }
@@ -91,14 +102,27 @@ window.GSStats = (function () {
   function troubleSpots(limit) {
     limit = limit || 12;
     var out = [];
-    // Verbs: rated 0-2
+    // Verbs: rated 0-2, ONE row per verb (a verb has many cards — tenses ×
+    // directions × persons — and seeding can create several identical low
+    // ratings at once; per-card rows would crowd everything else out).
     var vr = J('gvm_ratings') || {};
+    var weakVerbs = {};
     Object.keys(vr).forEach(function (id) {
       var r = Number(vr[id]);
       if (r <= 2) {
         var parts = id.split('__'); // set__english__tense__dir[__person]
-        out.push({ type: 'verb', label: parts[1] || id, sub: (parts[2] || '') + ' · rated ' + r + '/5', score: r, href: 'verbs.html' });
+        var key = (parts[0] || '') + '__' + (parts[1] || id);
+        var w = weakVerbs[key];
+        if (!w) weakVerbs[key] = { label: parts[1] || id, worst: r, count: 1, tense: parts[2] || '' };
+        else { w.count++; if (r < w.worst) { w.worst = r; w.tense = parts[2] || ''; } }
       }
+    });
+    Object.keys(weakVerbs).forEach(function (k) {
+      var w = weakVerbs[k];
+      var sub = w.count > 1
+        ? (w.count + ' weak cards · worst ' + w.worst + '/5')
+        : (w.tense + ' · rated ' + w.worst + '/5');
+      out.push({ type: 'verb', label: w.label, sub: sub, score: w.worst, href: 'verbs.html' });
     });
     // Grammar: practice accuracy < 65%
     var g = J('gvm_grammar') || {}; var prac = g.__practice || {};

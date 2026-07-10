@@ -33,7 +33,7 @@ window.GVShared = (function () {
   }
 
   /* ---------- grammar engine (rule-based, approximate) ---------- */
-  var INVARIABLE_NOUNS = ['ασανσέρ', 'ρεπό', 'μαγιό', 'ραντεβού', 'καλοριφέρ', 'μπουφάν', 'στυλό', 'κλισέ', 'ρούμι', 'τσάι', 'σινεμά'];
+  var INVARIABLE_NOUNS = ['ασανσέρ', 'ρεπό', 'μαγιό', 'ραντεβού', 'καλοριφέρ', 'μπουφάν', 'στυλό', 'κλισέ', 'τσάι', 'σινεμά'];
   var GR_VOWELS = 'αεηιουωάέήίόύώϊϋΐΰ';
   var GR_ACCENTED = 'άέήίόύώΐΰ';
 
@@ -53,6 +53,17 @@ window.GVShared = (function () {
     while (k + 1 < arr.length && GR_VOWELS.indexOf(arr[k + 1]) !== -1) k++;
     arr[k] = AC[arr[k]] || arr[k];
     return arr.join('');
+  }
+  var DEACCENT_MAP = { 'ά': 'α', 'έ': 'ε', 'ή': 'η', 'ί': 'ι', 'ό': 'ο', 'ύ': 'υ', 'ώ': 'ω', 'ΐ': 'ϊ', 'ΰ': 'ϋ' };
+  function deAccent(s) { return s.replace(/[άέήίόύώΐΰ]/g, function (c) { return DEACCENT_MAP[c]; }); }
+  function countVowelGroups(s) {
+    var n = 0, inV = false;
+    for (var i = 0; i < s.length; i++) {
+      var isV = GR_VOWELS.indexOf(s[i]) !== -1;
+      if (isV && !inV) n++;
+      inV = isV;
+    }
+    return n;
   }
   function groupsAfterAccent(s) {
     var i = -1;
@@ -75,6 +86,8 @@ window.GVShared = (function () {
     var proparox = groupsAfterAccent(g) >= 2;
     if (w.art === 'ο') {
       if (endsWith('ος')) return g.slice(0, -2) + 'οι';
+      if (endsWith('ές')) return g.slice(0, -1) + 'δες';   // καφές → καφέδες
+      if (endsWith('ούς')) return g.slice(0, -1) + 'δες';  // παππούς → παππούδες
       if (endsWith('άς')) return g.slice(0, -2) + 'άδες';
       if (endsWith('ας')) return g.slice(0, -2) + 'ες';
       if (endsWith('ής')) return g.slice(0, -2) + 'ές';
@@ -86,7 +99,10 @@ window.GVShared = (function () {
         return proparox ? shiftStressRight(pl) : pl;
       }
       if (endsWith('α')) return g.slice(0, -1) + 'ες';
-      if (endsWith('ά')) return g.slice(0, -1) + 'άδες';
+      if (endsWith('ά')) {
+        var FEM_ADES = ['γιαγιά', 'μαμά', 'νταντά', 'κυρά']; // kinship/borrowed class
+        return FEM_ADES.indexOf(g) !== -1 ? g + 'δες' : g.slice(0, -1) + 'ές';
+      }
       if (endsWith('η')) return g.slice(0, -1) + 'ες';
       if (endsWith('ή')) return g.slice(0, -1) + 'ές';
     }
@@ -95,7 +111,10 @@ window.GVShared = (function () {
         var plm = g + 'τα';
         return proparox ? shiftStressRight(plm) : plm;
       }
-      if (endsWith('ος')) return g.slice(0, -2) + 'η';
+      if (endsWith('ος')) {
+        var pln = g.slice(0, -2) + 'η';
+        return proparox ? shiftStressRight(pln) : pln;
+      }
       if (endsWith('ί'))  return g.slice(0, -1) + 'ιά';
       if (endsWith('ι'))  return g + 'α';
       if (endsWith('ο'))  return g.slice(0, -1) + 'α';
@@ -132,12 +151,18 @@ window.GVShared = (function () {
   function verbPresentTable(g) {
     function ew(e) { return g.length > e.length && g.slice(-e.length) === e; }
     var s;
-    if (ew('άω'))   { s = g.slice(0, -2); return [g, s + 'άς', s + 'άει', s + 'άμε', s + 'άτε', s + 'άνε']; }
+    if (ew('άω'))   { s = g.slice(0, -2); return [g, s + (countVowelGroups(s) ? 'άς' : 'ας'), s + 'άει', s + 'άμε', s + 'άτε', s + 'άνε']; }
     if (ew('ιέμαι')){ s = g.slice(0, -5); return [g, s + 'ιέσαι', s + 'ιέται', s + 'ιόμαστε', s + 'ιέστε', s + 'ιούνται']; }
     if (ew('ούμαι')){ s = g.slice(0, -5); return [g, s + 'είσαι', s + 'είται', s + 'ούμαστε', s + 'είστε', s + 'ούνται']; }
     if (ew('άμαι')) { s = g.slice(0, -4); return [g, s + 'άσαι', s + 'άται', s + 'όμαστε', s + 'άστε', s + 'ούνται']; }
-    if (ew('ομαι')) { s = g.slice(0, -4); return [g, s + 'εσαι', s + 'εται', s + 'όμαστε', s + 'εστε', s + 'ονται']; }
+    if (ew('ομαι')) { s = g.slice(0, -4); return [g, s + 'εσαι', s + 'εται', deAccent(s) + 'όμαστε', s + 'εστε', s + 'ονται']; }
     if (ew('ώ'))    { s = g.slice(0, -1); return [g, s + 'είς', s + 'εί', s + 'ούμε', s + 'είτε', s + 'ούν']; }
+    // Vowel-stem verbs (τρώω, λέω, ακούω, καίω…): endings contract onto the vowel.
+    if (ew('ω') && GR_VOWELS.indexOf(g[g.length - 2]) !== -1) {
+      s = g.slice(0, -1);
+      var s2 = countVowelGroups(s) === 1 ? deAccent(s) : s; // monosyllabic 2sg: τρως, λες, καις
+      return [g, s2 + 'ς', s + 'ει', s + 'με', s + 'τε', s + 'νε'];
+    }
     if (ew('ω'))    { s = g.slice(0, -1); return [g, s + 'εις', s + 'ει', s + 'ουμε', s + 'ετε', s + 'ουν']; }
     return null;
   }
@@ -289,11 +314,15 @@ window.GVShared = (function () {
 
     if (w.pos === 'noun') {
       var gender = { 'ο': 'masculine (ο)', 'η': 'feminine (η)', 'το': 'neuter (το)', 'οι': 'plural', 'τα': 'plural' }[w.art] || '';
-      var pl = nounPlural(w);
+      // Prefer the hand-curated plural/genitive from the data file; the rule
+      // engine is only a fallback for words (e.g. user-added) that have none.
+      var plCurated = !!w.pl;
+      var pl = w.pl || nounPlural(w);
       h += '<div class="wd-section"><div class="wd-title">Grammar</div><div class="wd-grid">' +
         '<div class="wd-k">Gender</div><div class="wd-v">' + gender + '</div>' +
-        (pl ? '<div class="wd-k">Plural ≈</div><div class="wd-v">' + escapeHtml(pl) + '</div>' : '') +
-        '</div>' + (pl ? '<p class="wd-approx">Plural is rule-based — a few nouns are irregular.</p>' : '') + '</div>';
+        (pl ? '<div class="wd-k">Plural' + (plCurated ? '' : ' ≈') + '</div><div class="wd-v">' + escapeHtml(pl) + '</div>' : '') +
+        (w.gen ? '<div class="wd-k">Genitive</div><div class="wd-v">' + escapeHtml(w.gen) + '</div>' : '') +
+        '</div>' + (pl && !plCurated ? '<p class="wd-approx">Plural is rule-based — a few nouns are irregular.</p>' : '') + '</div>';
     }
 
     if (w.pos === 'adj') {
