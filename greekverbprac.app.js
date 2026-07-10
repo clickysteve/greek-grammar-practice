@@ -410,20 +410,30 @@ function weightedPick(cards) {
 
 /* ----------------- SRS ----------------- */
 
+// Scheduling now runs on the suite's ONE shared ladder (greeksuite.srs.js) —
+// the same stages/intervals as the flashcards and grammar reviews.
+// Older records (pre-ladder) stored intervalHours; derive a stage from it once.
+function stageFromIntervalHours(h) {
+  if (!h || !window.GSSrs) return 0;
+  const HOURS = GSSrs.STAGE_HOURS;
+  let stage = 0;
+  for (let i = 0; i < HOURS.length; i++) if (h >= HOURS[i]) stage = i + 1;
+  return Math.min(stage, GSSrs.MASTER);
+}
+
 function scheduleCard(level) {
   if (!state.current) return;
   const id = idFor(state.current, state.currentTense, state.direction, state.drillType, state.currentPerson);
   const now = Date.now();
-  const s = state.schedule[id] || { intervalHours: 0, dueAt: 0, reps: 0, lapses: 0, lastSeenAt: 0 };
-  let interval = 0;
-  if (level <= 1) { interval = level === 0 ? 0.08 : 0.5; s.lapses = (s.lapses || 0) + 1; s.reps = 0; }
-  else if (level === 2) { interval = 4; s.reps = (s.reps || 0) + 1; }
-  else if (level === 3) { interval = 12; s.reps = (s.reps || 0) + 1; }
-  else if (level === 4) { interval = Math.max(24, (s.intervalHours || 12) * 2); s.reps = (s.reps || 0) + 1; }
-  else { interval = Math.max(72, (s.intervalHours || 24) * 3); s.reps = (s.reps || 0) + 1; }
-  s.intervalHours = interval;
+  const s = state.schedule[id] || { stage: 0, dueAt: 0, reps: 0, lapses: 0, lastSeenAt: 0 };
+  if (typeof s.stage !== 'number') s.stage = stageFromIntervalHours(s.intervalHours); // one-time migration
+  const res = GSSrs.applyRating(s.stage, level);
+  s.stage = res.stage;
+  if (res.lapse) { s.lapses = (s.lapses || 0) + 1; s.reps = 0; }
+  else s.reps = (s.reps || 0) + 1;
   s.lastSeenAt = now;
-  s.dueAt = now + interval * 60 * 60 * 1000;
+  s.dueAt = res.due;
+  s.intervalHours = Math.round((res.due - now) / 3600000 * 100) / 100; // kept for export back-compat
   s.lastRating = level;
   state.schedule[id] = s;
   state.ratings[id] = level;

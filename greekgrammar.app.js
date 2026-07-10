@@ -18,9 +18,11 @@
   var byId = {};
   GRAMMAR.forEach(function (p) { byId[p.id] = p; });
 
-  // Shared SRS ladder (greekvocab.srsbridge.js) when present; literal fallback otherwise.
-  var STAGE_HOURS = (window.GVSrsBridge && GVSrsBridge.STAGE_HOURS) || [4, 8, 24, 72, 168, 336, 720, 1440]; // hours to next review per stage
-  var MASTER = (window.GVSrsBridge && GVSrsBridge.MASTER) || STAGE_HOURS.length;
+  // The ONE shared scheduler (greeksuite.srs.js) — grammar, flashcards and
+  // verbs all schedule through it, so "due" means the same thing everywhere.
+  var SRS = window.GSSrs;
+  var STAGE_HOURS = (SRS && SRS.STAGE_HOURS) || (window.GVSrsBridge && GVSrsBridge.STAGE_HOURS) || [4, 8, 24, 72, 168, 336, 720, 1440];
+  var MASTER = (SRS && SRS.MASTER) || (window.GVSrsBridge && GVSrsBridge.MASTER) || STAGE_HOURS.length;
   var VERSION = 2;
 
   var KEY = 'gvm_grammar';
@@ -86,29 +88,12 @@
   function srsSchedule(id, correct) {
     var r = store.__srs[id]; if (!r) { addToSrs(id); r = store.__srs[id]; }
     r.seen += 1; r.last = Date.now();
-    if (correct) {
-      r.correct += 1;
-      r.stage = Math.min(MASTER, r.stage + 1);
-      // Stage n waits STAGE_HOURS[n-1] — uses the full ladder from the 4h rung.
-      var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length) - 1];
-      if (hours >= 24) {
-        // Fuzz the interval ±10% so items don't clump, then round the due time
-        // down to local start-of-day so daily reviews don't drift later each
-        // day — but never into the past (a same-day floor would make the item
-        // instantly due again); in that case fall to the NEXT midnight.
-        var fuzzed = hours * 3600000 * (0.9 + Math.random() * 0.2);
-        var d = new Date(Date.now() + fuzzed);
-        d.setHours(0, 0, 0, 0);
-        if (d.getTime() <= Date.now()) { d = new Date(); d.setHours(24, 0, 0, 0); }
-        r.due = d.getTime();
-      } else {
-        r.due = Date.now() + hours * 3600000; // sub-24h intervals stay exact
-      }
-    } else {
-      r.incorrect += 1;
-      r.stage = Math.max(0, r.stage - 2);
-      r.due = Date.now() + 3600000; // relearn in ~1h
-    }
+    if (correct) r.correct += 1; else r.incorrect += 1;
+    // All interval math lives in the shared scheduler (greeksuite.srs.js).
+    var res = SRS.applyGrade(r.stage, !!correct);
+    r.stage = res.stage;
+    r.due = res.due;
+    if (res.lapse) r.lapses = (r.lapses || 0) + 1; // leech signal
     save();
   }
   function recordPractice(id, right, total) {

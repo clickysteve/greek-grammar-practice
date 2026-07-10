@@ -17,8 +17,11 @@
  */
 window.GVSrsBridge = (function () {
   'use strict';
-  var MASTER = 8;
-  var STAGE_HOURS = [4, 8, 24, 72, 168, 336, 720, 1440];
+  // The scheduler core lives in greeksuite.srs.js (load it first); the
+  // literals below are a fallback so this file still works standalone.
+  var CORE = window.GSSrs || null;
+  var MASTER = (CORE && CORE.MASTER) || 8;
+  var STAGE_HOURS = (CORE && CORE.STAGE_HOURS) || [4, 8, 24, 72, 168, 336, 720, 1440];
   var SRS_KEY = 'gvm_vocab_srs';
   var TRACK_KEY = 'gvm_vocab_track';
   var FAR = STAGE_HOURS[STAGE_HOURS.length - 1] * 3600000; // mastered interval
@@ -26,10 +29,11 @@ window.GVSrsBridge = (function () {
   function load(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
   function store(key, obj) { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
 
-  function stageFromRating(r) { return [0, 2, 3, 5, 6, 8][Math.max(0, Math.min(5, r | 0))]; }
-  function ratingFromStage(s) { if (s <= 0) return 0; if (s >= MASTER) return 5; return Math.round(s / MASTER * 5); }
+  function stageFromRating(r) { return CORE ? CORE.stageFromRating(r) : [0, 2, 3, 5, 6, 8][Math.max(0, Math.min(5, r | 0))]; }
+  function ratingFromStage(s) { if (CORE) return CORE.ratingFromStage(s); if (s <= 0) return 0; if (s >= MASTER) return 5; return Math.round(s / MASTER * 5); }
   // Next-review time for a card that just reached `stage` (stage n → STAGE_HOURS[n-1]).
   function dueForStage(stage) {
+    if (CORE) return CORE.nextDue(stage);
     if (stage >= MASTER) return Date.now() + FAR;
     var hours = STAGE_HOURS[Math.max(0, Math.min(stage, STAGE_HOURS.length) - 1)];
     return Date.now() + hours * 3600000;

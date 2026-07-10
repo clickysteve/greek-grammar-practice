@@ -31,6 +31,9 @@
     .card-ex .ex-en { color:var(--muted); font-size:13px; margin-top:3px; }
     .card-forms { font-size:13px; color:var(--muted); margin-top:10px; }
     .card-front { font-size:clamp(34px,7vw,56px); font-weight:800; letter-spacing:-.03em; }
+    .card-cloze { font-size:clamp(20px,4vw,28px); font-weight:600; line-height:1.55; }
+    .card-cloze .cloze-gap { border-bottom:2px solid var(--accent); padding:0 22px; color:var(--accent); letter-spacing:2px; }
+    .card-cloze .cloze-fill { color:var(--accent); border-bottom:2px solid var(--accent); }
     .card-pos { font-size:13px; color:var(--muted); margin-top:8px; }
     .card-back { margin-top:18px; padding-top:18px; border-top:1px dashed var(--border); }
     .card-answer { font-size:clamp(22px,4vw,30px); font-weight:700; }
@@ -59,14 +62,16 @@
   </div>
 
   <script src="greekvocab.data.js"></script>
+  <script src="greeksuite.srs.js"></script>
   <script src="greekvocab.srsbridge.js"></script>
   <script src="greeksuite.stats.js"></script>
   <script src="greekvocab.backup.js"></script>
   <script>
   (function () {
-    // SRS ladder is defined once in greekvocab.srsbridge.js (literal fallback matches it).
-    var STAGE_HOURS = (window.GVSrsBridge && GVSrsBridge.STAGE_HOURS) || [4, 8, 24, 72, 168, 336, 720, 1440];
-    var MASTER = (window.GVSrsBridge && GVSrsBridge.MASTER) || STAGE_HOURS.length;
+    // The ONE shared scheduler (greeksuite.srs.js) — all interval math lives there.
+    var SRS = window.GSSrs;
+    var STAGE_HOURS = (SRS && SRS.STAGE_HOURS) || [4, 8, 24, 72, 168, 336, 720, 1440];
+    var MASTER = (SRS && SRS.MASTER) || STAGE_HOURS.length;
     var KEY = 'gvm_vocab_srs';
     var store = {};
     try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { store = {}; }
@@ -89,6 +94,42 @@
       if (swept) save();
     })();
 
+    /* ---- cloze: blank the target word out of its example sentence ---- */
+    function fold(s) {
+      s = String(s == null ? '' : s);
+      try { s = s.normalize('NFD'); } catch (e) {}
+      return s.replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\u03c2/g, '\u03c3');
+    }
+    var clozeCache = {};
+    function clozeInfo(w) {
+      if (w.gr in clozeCache) return clozeCache[w.gr];
+      var out = null;
+      if (w.ex && w.ex.gr && w.gr) {
+        var sent = w.ex.gr;
+        // (a) the word/phrase appears verbatim
+        var idx = sent.indexOf(w.gr);
+        if (idx !== -1) {
+          out = { pre: sent.slice(0, idx), answer: w.gr, post: sent.slice(idx + w.gr.length) };
+        } else if (w.gr.indexOf(' ') === -1) {
+          // (b) single words: accent-insensitive stem match against each token,
+          // so inflected forms (plural, conjugated) still blank correctly
+          var base = fold(w.gr);
+          var stem = base.length > 5 ? base.slice(0, base.length - 2) : base;
+          var re = /[\u0370-\u03ff\u1f00-\u1fff]+/g, m;
+          while ((m = re.exec(sent))) {
+            var tok = fold(m[0]);
+            if (tok === base || (tok.indexOf(stem) === 0 && Math.abs(tok.length - base.length) <= 3)) {
+              out = { pre: sent.slice(0, m.index), answer: m[0], post: sent.slice(m.index + m[0].length) };
+              break;
+            }
+          }
+        }
+      }
+      clozeCache[w.gr] = out;
+      return out;
+    }
+    function clozePool() { return VOCAB.filter(function (w) { return clozeInfo(w); }); }
+
     function rec(gr) { return store[gr]; }
     function isDue(gr) { var r = store[gr]; return !!r && r.stage < MASTER && (r.due || 0) <= Date.now(); }
     function dueList() { return VOCAB.filter(function (w) { return isDue(w.gr); }); }
@@ -97,26 +138,12 @@
     function schedule(gr, grade) {
       var r = store[gr] || (store[gr] = { stage: 0, due: 0, seen: 0, correct: 0, last: null });
       r.seen += 1; r.last = Date.now();
-      if (grade === 'again') { r.stage = Math.max(0, r.stage - 2); r.due = Date.now() + 3600000; }
-      else {
-        r.correct += 1;
-        r.stage = Math.min(MASTER, r.stage + (grade === 'easy' ? 2 : 1));
-        // Stage n waits STAGE_HOURS[n-1] — uses the full ladder from the 4h rung.
-        var hours = STAGE_HOURS[Math.min(r.stage, STAGE_HOURS.length) - 1];
-        if (hours >= 24) {
-          // Fuzz the interval ±10% so cards don't clump, then round the due time
-          // down to local start-of-day so daily reviews don't drift later each
-          // day — but never into the past (a same-day floor would make the card
-          // instantly due again); in that case fall to the NEXT midnight.
-          var fuzzed = hours * 3600000 * (0.9 + Math.random() * 0.2);
-          var d = new Date(Date.now() + fuzzed);
-          d.setHours(0, 0, 0, 0);
-          if (d.getTime() <= Date.now()) { d = new Date(); d.setHours(24, 0, 0, 0); }
-          r.due = d.getTime();
-        } else {
-          r.due = Date.now() + hours * 3600000; // sub-24h intervals stay exact
-        }
-      }
+      if (grade !== 'again') r.correct += 1;
+      // All interval math lives in the shared scheduler (greeksuite.srs.js).
+      var res = SRS.applyGrade(r.stage, grade);
+      r.stage = res.stage;
+      r.due = res.due;
+      if (res.lapse) r.lapses = (r.lapses || 0) + 1; // leech signal
       save();
       // Inter-relate with the word list: grading updates the word's 0-5 rating.
       if (window.GVSrsBridge) GVSrsBridge.writeRating(gr, GVSrsBridge.ratingFromStage(r.stage));
@@ -140,32 +167,47 @@
     function renderDash() {
       var due = dueList().length, fresh = newList().length, dir = store.__settings.dir;
       var learned = VOCAB.length - fresh, mastered = VOCAB.filter(function (w) { var r = store[w.gr]; return r && r.stage >= MASTER; }).length;
+      var nCloze = clozePool().length;
       root.innerHTML =
         '<div class="hero"><div class="hero-num">' + due + '</div><div class="hero-label">cards due</div>' +
         '<div class="row"><button class="btn-primary" id="review"' + (due ? '' : ' disabled') + '>Review due</button>' +
-        '<button id="learn"' + (fresh ? '' : ' disabled') + '>Learn ' + Math.min(store.__settings.newPerSession, fresh) + ' new</button></div></div>' +
+        '<button id="learn"' + (fresh ? '' : ' disabled') + '>Learn ' + Math.min(store.__settings.newPerSession, fresh) + ' new</button>' +
+        '<button id="cloze"' + (nCloze ? '' : ' disabled') + ' title="Fill the word into its example sentence">Cloze session</button></div></div>' +
         '<div class="toolbar"><span>Direction:</span>' +
         '<button class="' + (dir === 'gr2en' ? 'active' : '') + '" data-dir="gr2en">Greek → English</button>' +
         '<button class="' + (dir === 'en2gr' ? 'active' : '') + '" data-dir="en2gr">English → Greek</button></div>' +
         '<div class="summary">' + learned + ' in deck · ' + mastered + ' mastered · ' + fresh + ' not started · ' + VOCAB.length + ' total</div>' +
-        '<div class="foot">Grading is tied to your word-list rating (0-5): “Again” lowers it, “Good”/“Easy” raise it, and rating a word in the word list seeds it here. Keys in a session: <kbd>Space</kbd> reveal, <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> grade, <kbd>Esc</kbd> end.</div>';
+        '<div class="foot">Grading is tied to your word-list rating (0-5): “Again” lowers it (and the card comes back later in the same session), “Good”/“Easy” raise it, and rating a word in the word list seeds it here. Cloze sessions blank the word out of its example sentence — grade yourself the same way. Keys in a session: <kbd>Space</kbd> reveal, <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> grade, <kbd>Esc</kbd> end.</div>';
       var rv = document.getElementById('review'); if (rv) rv.addEventListener('click', function () { start(shuffle(dueList())); });
       var ln = document.getElementById('learn'); if (ln) ln.addEventListener('click', function () { start(shuffle(newList()).slice(0, store.__settings.newPerSession)); });
+      var cz = document.getElementById('cloze'); if (cz) cz.addEventListener('click', startCloze);
       root.querySelectorAll('[data-dir]').forEach(function (b) { b.addEventListener('click', function () { store.__settings.dir = b.getAttribute('data-dir'); save(); renderDash(); }); });
     }
 
-    function start(cards) { if (!cards.length) return; session = { queue: cards.slice(), done: 0, total: cards.length, current: null, shown: false }; next(); }
+    function start(cards, opts) { if (!cards.length) return; session = { queue: cards.slice(), done: 0, total: cards.length, current: null, shown: false, cloze: !!(opts && opts.cloze), relearn: 0 }; next(); }
+    function startCloze() {
+      var pool = clozePool();
+      if (!pool.length) return;
+      var due = shuffle(pool.filter(function (w) { return isDue(w.gr); }));
+      var rest = shuffle(pool.filter(function (w) { return !isDue(w.gr); }))
+        .sort(function (a, b) { // weakest (lowest stage) first; unseen count as stage 0
+          var sa = store[a.gr] ? store[a.gr].stage : 0, sb = store[b.gr] ? store[b.gr].stage : 0;
+          return sa - sb;
+        });
+      start(due.concat(rest).slice(0, 10), { cloze: true });
+    }
     function next() { var s = session; if (!s.queue.length) { finish(); return; } s.current = s.queue.shift(); s.shown = false; render(); }
     function finish() { var n = session.done; session = null; root.innerHTML = '<div class="done"><div class="done-tick">✓</div><div style="font-size:24px;font-weight:700;margin-top:8px;">Session complete</div><div style="color:var(--muted);margin:8px 0 22px;">' + n + ' cards reviewed</div><button class="btn-primary" id="back">Back</button></div>'; document.getElementById('back').addEventListener('click', render); }
 
     function renderCard() {
       var s = session, w = s.current, dir = store.__settings.dir;
+      var c = s.cloze ? clozeInfo(w) : null;
       var front = dir === 'gr2en' ? ((w.art ? w.art + ' ' : '') + w.gr) : w.en;
       var back = dir === 'gr2en' ? w.en : ((w.art ? w.art + ' ' : '') + w.gr);
       // Extras on the BACK only (the example contains the Greek word, so it must
       // never appear on the front): example sentence, noun plural/genitive.
       var extras = '';
-      if (w.ex && w.ex.gr) {
+      if (!c && w.ex && w.ex.gr) {
         extras += '<div class="card-ex"><div class="ex-gr">' + esc(w.ex.gr) + '</div>' +
           (w.ex.en ? '<div class="ex-en">' + esc(w.ex.en) + '</div>' : '') + '</div>';
       }
@@ -175,12 +217,28 @@
         if (w.gen) forms.push('γεν. ' + esc(w.gen));
         extras += '<div class="card-forms">' + forms.join(' · ') + '</div>';
       }
+      var faceHtml;
+      if (c) {
+        // Cloze: the sentence with the word blanked; the gap fills in on reveal.
+        var gap = s.shown
+          ? '<span class="cloze-fill">' + esc(c.answer) + '</span>'
+          : '<span class="cloze-gap">____</span>';
+        faceHtml = '<div class="card-art">Fill the gap</div>' +
+          '<div class="card-cloze">' + esc(c.pre) + gap + esc(c.post) + '</div>' +
+          (w.ex.en ? '<div class="ex-en" style="margin-top:12px;">' + esc(w.ex.en) + '</div>' : '');
+      } else {
+        faceHtml = '<div class="card-art">' + (dir === 'gr2en' ? 'What does this mean?' : 'How do you say this?') + '</div>' +
+          '<div class="card-front">' + esc(front) + '</div>' +
+          (dir === 'gr2en' ? '<div class="card-pos">' + esc(w.pos || '') + '</div>' : '');
+      }
+      var backHtml = c
+        ? '<div class="card-answer">' + esc((w.art ? w.art + ' ' : '') + w.gr) + '</div>' +
+          '<div class="card-note">' + esc(w.en) + (w.note ? ' · ' + esc(w.note) : '') + '</div>' + extras + ratingLine(w.gr)
+        : '<div class="card-answer">' + esc(back) + '</div>' + (w.note ? '<div class="card-note">' + esc(w.note) + '</div>' : '') + extras + ratingLine(w.gr);
       var html = '<div class="sess-top"><button id="quit">✕ end</button><span>' + (s.done + 1) + ' / ' + (s.done + 1 + s.queue.length) + '</span></div>' +
         '<div class="card">' + (w.level ? '<div class="card-level">' + esc(w.level) + '</div>' : '') +
-        '<div class="card-art">' + (dir === 'gr2en' ? 'What does this mean?' : 'How do you say this?') + '</div>' +
-        '<div class="card-front">' + esc(front) + '</div>' +
-        (dir === 'gr2en' ? '<div class="card-pos">' + esc(w.pos || '') + '</div>' : '') +
-        (s.shown ? '<div class="card-back"><div class="card-answer">' + esc(back) + '</div>' + (w.note ? '<div class="card-note">' + esc(w.note) + '</div>' : '') + extras + ratingLine(w.gr) + '</div>' : '') +
+        faceHtml +
+        (s.shown ? '<div class="card-back">' + backHtml + '</div>' : '') +
         '</div>';
       if (!s.shown) html += '<div class="row" style="margin-top:18px;"><button class="btn-primary" id="show" style="min-width:200px;">Show answer</button></div>' +
         '<div class="kbd-hint"><kbd>Space</kbd> reveal · <kbd>Esc</kbd> end</div>';
@@ -192,10 +250,21 @@
       root.innerHTML = html;
       document.getElementById('quit').addEventListener('click', finish);
       if (!s.shown) document.getElementById('show').addEventListener('click', function () { s.shown = true; render(); });
-      else root.querySelectorAll('[data-g]').forEach(function (b) { b.addEventListener('click', function () { schedule(w.gr, b.getAttribute('data-g')); s.done += 1; next(); }); });
+      else root.querySelectorAll('[data-g]').forEach(function (b) { b.addEventListener('click', function () { grade(b.getAttribute('data-g')); }); });
     }
 
-    function grade(g) { schedule(session.current.gr, g); session.done += 1; next(); }
+    function grade(g) {
+      var s = session, w = s.current;
+      schedule(w.gr, g);
+      if (g === 'again') {
+        // Failed cards come back a few cards later in the SAME session instead
+        // of vanishing until their retry time.
+        s.queue.splice(Math.min(s.queue.length, 3), 0, w);
+        s.relearn += 1;
+      }
+      s.done += 1;
+      next();
+    }
     document.addEventListener('keydown', function (e) {
       if (!session) return;
       if (e.key === 'Escape') { e.preventDefault(); finish(); return; }

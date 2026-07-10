@@ -10,7 +10,7 @@ window.GSStats = (function () {
   'use strict';
   // SRS ladder length comes from the bridge when it's loaded on the page; the
   // literal fallback matches GVSrsBridge.STAGE_HOURS.length.
-  var MASTER = (window.GVSrsBridge && GVSrsBridge.MASTER) || 8;
+  var MASTER = (window.GSSrs && GSSrs.MASTER) || (window.GVSrsBridge && GVSrsBridge.MASTER) || 8;
   function J(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function dayStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
@@ -97,11 +97,61 @@ window.GSStats = (function () {
   function totalDue() { var g = grammar(), o = vocab(); return g.due + o.srsDue; } // verbs excluded: conjugation practice, not learning-SRS
 
   /* ---- trouble spots (weakest items across systems) ----
-   * Returns up to `limit` items: { type, label, sub, score, href }.
+   * Returns up to `limit` items: { type, label, sub, score, href, leech? }.
+   * Leeches — items you keep failing (repeated lapses or a low correct ratio
+   * in the SRS) — surface first, ahead of merely low-rated items.
    */
+  function isLeech(rec) {
+    if (!rec || rec.stage >= MASTER) return false;
+    var seen = rec.seen || 0, correct = rec.correct || 0, lapses = rec.lapses || 0;
+    return lapses >= 3 || (seen >= 6 && correct / seen <= 0.5);
+  }
   function troubleSpots(limit) {
     limit = limit || 12;
     var out = [];
+    var leeched = {}; // '<type>|<label>' → true, so leech rows suppress duplicates
+
+    // Vocab leeches (flashcard SRS records carry seen/correct/lapses)
+    var vsrs = J('gvm_vocab_srs') || {};
+    Object.keys(vsrs).forEach(function (k) {
+      if (k.indexOf('__') === 0) return;
+      var r = vsrs[k];
+      if (isLeech(r)) {
+        leeched['vocab|' + k] = true;
+        out.push({ type: 'vocab', label: k, sub: 'leech · ' + (r.correct || 0) + '/' + (r.seen || 0) + ' correct', leech: true,
+          score: -1 + ((r.seen ? (r.correct || 0) / r.seen : 0)), href: 'flashcards.html' });
+      }
+    });
+    // Grammar leeches (SRS records carry seen/correct/incorrect/lapses)
+    var g = J('gvm_grammar') || {}; var gsrs = g.__srs || {};
+    Object.keys(gsrs).forEach(function (id) {
+      var r = gsrs[id];
+      var fails = Math.max(r.lapses || 0, r.incorrect || 0);
+      if (r.stage < MASTER && (isLeech(r) || (fails >= 3 && (r.seen ? (r.correct || 0) / r.seen : 0) <= 0.6))) {
+        leeched['grammar|' + id] = true;
+        out.push({ type: 'grammar', label: id, sub: 'leech · failed ' + fails + '×', leech: true,
+          score: -1 + ((r.seen ? (r.correct || 0) / r.seen : 0)), href: 'grammar.html', id: id });
+      }
+    });
+    // Verb leeches (schedule records carry lapses), ONE row per verb
+    var sched = J('gvm_schedule') || {};
+    var leechVerbs = {};
+    Object.keys(sched).forEach(function (id) {
+      var s = sched[id];
+      if ((s.lapses || 0) >= 3) {
+        var parts = id.split('__');
+        var key = parts[1] || id;
+        var L = leechVerbs[key] || (leechVerbs[key] = { lapses: 0, cards: 0 });
+        L.lapses = Math.max(L.lapses, s.lapses); L.cards++;
+      }
+    });
+    Object.keys(leechVerbs).forEach(function (eng) {
+      var L = leechVerbs[eng];
+      leeched['verb|' + eng] = true;
+      out.push({ type: 'verb', label: eng, sub: 'leech · failed ' + L.lapses + '×' + (L.cards > 1 ? ' (' + L.cards + ' cards)' : ''), leech: true,
+        score: -1, href: 'verbs.html' });
+    });
+
     // Verbs: rated 0-2, ONE row per verb (a verb has many cards — tenses ×
     // directions × persons — and seeding can create several identical low
     // ratings at once; per-card rows would crowd everything else out).
@@ -112,6 +162,7 @@ window.GSStats = (function () {
       if (r <= 2) {
         var parts = id.split('__'); // set__english__tense__dir[__person]
         var key = (parts[0] || '') + '__' + (parts[1] || id);
+        if (leeched['verb|' + (parts[1] || id)]) return;
         var w = weakVerbs[key];
         if (!w) weakVerbs[key] = { label: parts[1] || id, worst: r, count: 1, tense: parts[2] || '' };
         else { w.count++; if (r < w.worst) { w.worst = r; w.tense = parts[2] || ''; } }
@@ -125,8 +176,9 @@ window.GSStats = (function () {
       out.push({ type: 'verb', label: w.label, sub: sub, score: w.worst, href: 'verbs.html' });
     });
     // Grammar: practice accuracy < 65%
-    var g = J('gvm_grammar') || {}; var prac = g.__practice || {};
+    var prac = g.__practice || {};
     Object.keys(prac).forEach(function (id) {
+      if (leeched['grammar|' + id]) return;
       var p = prac[id]; if (p.seen >= 3) {
         var acc = Math.round(100 * p.correct / p.seen);
         if (acc < 65) out.push({ type: 'grammar', label: id, sub: acc + '% practice', score: acc / 20, href: 'grammar.html', id: id });
@@ -136,6 +188,7 @@ window.GSStats = (function () {
     var vt = J('gvm_vocab_track') || {};
     Object.keys(vt).forEach(function (k) {
       if (k.indexOf('__') === 0) return;
+      if (leeched['vocab|' + k]) return;
       var r = (vt[k] && vt[k].rating) || 0;
       if (r > 0 && r <= 2) out.push({ type: 'vocab', label: k, sub: 'rated ' + r + '/5', score: r, href: 'words.html' });
     });
